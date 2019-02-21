@@ -36,7 +36,7 @@
   </repositories>
   <dependencies>
   
-    <!-- The spigot API -->
+    <!-- The spigot API currently using 1.12 because those methods exist across most versions. -->
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
