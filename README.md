@@ -2,7 +2,7 @@
 
 This is the repository of CraftEnhance. 
 
-The basic idea of the plugin is that it allows users to make custom recipes on minecraft servers that run on bukkit/spigot. One thing that this plugin is unique in is that it allows items in the recipe to have metadata like enchantments or custom names.
+The basic idea of the plugin is that it allows users to make custom recipes on minecraft servers that run on the bukkit/spigot API. One thing that this plugin is unique in is that it allows items in recipes to have metadata like enchantments or custom names. It also features full GUI support, which makes in-game recipe editing/creation possible.
 
 The plugin is properly documented here for users: https://dev.bukkit.org/projects/craftenhance.
 
