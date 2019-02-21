@@ -1,0 +1,27 @@
+########################################################################
+#                                                                      #
+# This is the config file of CraftEnhance. Created by DutchJelly.      #
+#                                                                      #
+########################################################################
+
+enable-debug: false
+enable-recipes: true
+
+#If this option is enabled, people can only see recipes that they have permissions to.
+only-show-available: false
+
+debug-prefix: "[DEBUG] "
+global-prefix: "&7[&bCraft&dEnhance&7] &r"
+
+perms:
+  recipe-editor: "craftenhance.edit"
+  recipe-viewer: "craftenhance.view"
+  item-editor: "craftenhance.edititems"
+
+messages:
+  global:
+    no-perms: "You don't have permission to do that."
+  commands:
+    show-options: "You entered an unfinished command. It can be completed by adding one of the following arguments: &e[PLACEHOLDER]&r."
+    few-arguments: "Expected [PLACEHOLDER] arguments for the command." 
+    only-for-players: "This command is only for players."

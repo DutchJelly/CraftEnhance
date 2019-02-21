@@ -1,0 +1,13 @@
+main: com.dutchjelly.craftenhance.CraftEnhance
+name: CraftEnhance
+version: 2.1
+commands:
+  recipes:
+    description: Opens a GUI to view the custom recipes. This is an alias of /ceh viewer. Use /recipes help to see the description.
+    usage: /recipes
+  edititem:
+    description: Edits the item in your hand. Try to tab complete to view all subcommands. To see what a subcommand does, do /edititem [subcommand] help.
+    usage: /edititem [lore,itemflag,enchant,durability,name,localizedname]
+  ceh:
+    description: Use /ceh and see tab completions. To see what a command does do /ceh [subcommand] help.
+    usage: /ceh [viewer,changekey,createrecipe,cleanitemfile,recipeperm,setpermission,specs,orderrecipes]
