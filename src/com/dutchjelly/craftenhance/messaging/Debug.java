@@ -10,7 +10,7 @@ public class Debug {
 	}
 	
 	private static boolean enable; //could be a config thing
-	private static String prefix = "[DEBUG] ";
+	private static String prefix;
 	
 	public static void Send(Object obj){
 		if(!enable) return;
