@@ -13,6 +13,12 @@ public class InventoryCreator {
 	//There are errors in the function getNextValidIndex because index 0 gets skipped I think.
 	//Also there must be errors in increasing the pageindex
 	
+	/*
+	 * 
+	 * This class currently doesn't get used and isn't finished.
+	 * 
+	 */
+	
 	private String name;
 	private int size;
 	List<Inventory> inventories;

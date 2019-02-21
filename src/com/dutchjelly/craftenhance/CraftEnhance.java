@@ -36,55 +36,10 @@ import com.dutchjelly.itemcreation.commands.LoreCmd;
 public class CraftEnhance extends JavaPlugin{
 	
 	
-	//TODO categories.. probably too much work
-	//TODO fix redundant setcancelled in GUIs. Manage that through the container?
-	//TODO clean up the config messages because there are many duplicates and it's not generic enough.
-	//TODO make logical commands like this:
-	/*
- 	/ceh createrecipe [key] [permission]
- 	/ceh editrecipe [key]
- 	/ceh recipespecs [key]
- 	/ceh viewer
-	/ceh orderrecipes
-	/ceh setpermission [key] [permission]
-	/ceh setkey [old_key] [new_key]
-	/ceh cleanitemfile
+	//TODO Try to add categories.
+	//TODO Clean up redundant setcancelled in GUIs onclick event.
 	
- 	/recipes
- 	/recipe [key]
- 	
- 	/edititem enchant ([enchantment] [level])*
- 	/edititem lore [linenumber] [string]
- 	/edititem displayname [string]
- 	/edititem localizedname [string]
- 	/edititem durability [percentage]
- 	/edititem toggleflag [ItemFlag]
- 	
- 	/ceh help: this will show all commands with short explanation
-	/ceh help [command] this will show a really detailed explanation with examples.
-	
-	An idea I have is to use paths for commands. For example edititem.enchant. This system will be
-	generic because it allows for commands like "/edititem enchant random unsafe". This is also easy 
-	to use in the annotation system.
-	
-	The annotations could be along the lines of
-	@(cmdPath="ceh.setkey").
-	
-	The classes could maybe implement CommandTemplate in order to have default constructors/functions like
-	
-	String getDescription(){}
-	String getPermission(){}
-	void handlePlayerCommand(Player player, String[] args) throws CommandError
-	
-	void handleConsoleCommand(Sender sender, String[] args) throws CommandError
-	
-	
-	This system would be easy to be implemented later on.
-  
-  
-	 */
-	
-	
+	//Can be used in the future to use 1.13 functions with reflection.
 	public static int getServerVersion(){
 		char[] version = Bukkit.getBukkitVersion().toCharArray();
 		int intVersion = 0;

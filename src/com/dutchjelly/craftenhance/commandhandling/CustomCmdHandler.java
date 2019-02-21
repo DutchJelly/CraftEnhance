@@ -22,6 +22,7 @@ public class CustomCmdHandler implements TabCompleter{
 	
 	private CraftEnhance main;
 	
+	//Pass main instance and register tab completion on all commands.
 	public CustomCmdHandler(CraftEnhance main){
 		commandClasses = new HashMap<>();
 		this.main = main;
@@ -30,11 +31,14 @@ public class CustomCmdHandler implements TabCompleter{
 		});
 	}
 	
+	//Load all command classes in baseClasses so they can handle commands.
 	public void loadCommandClasses(List<CmdInterface> baseClasses){
 		if(baseClasses == null) return;
 		baseClasses.forEach(x -> loadCommandClass(x));
 	}
 	
+	//Load the command class baseClass by finding the annotation and 
+	//storing it in the commandClasses map.
 	public void loadCommandClass(CmdInterface baseClass){
 		if(baseClass == null) return;
 		CustomCmd annotation = null;
@@ -51,10 +55,13 @@ public class CustomCmdHandler implements TabCompleter{
 		commandClasses.put(baseClass, annotation);
 	}
 	
+	
+	//Get the main plugin instance.
 	public CraftEnhance getMain(){
 		return main;
 	}
 	
+	//Assign command to a class and check for permissions.
 	public boolean handleCommand(CommandSender sender, String label, String[] args){
 		CmdInterface executor;
 		args = pushLabelArg(label, args);
@@ -86,6 +93,7 @@ public class CustomCmdHandler implements TabCompleter{
 		return true;
 	}
 	
+	//Send options that could complete the given arguments to sender.
 	private void sendOptions(String[] args, CommandSender sender){
 		String[] emptyLast = new String[args.length+1];
 		for(int i = 0; i < args.length; i++) emptyLast[i] = args[i];
@@ -98,6 +106,7 @@ public class CustomCmdHandler implements TabCompleter{
 		main.getMessenger().messageFromConfig("messages.commands.show-options", sender, completions);;
 	}
 	
+	//Push the label argument to index 0 of the array of arguments.
 	private String[] pushLabelArg(String label, String[] args){
 		String[] pushed = new String[args.length+1];
 		for(int i = 1; i < pushed.length; i++)
@@ -106,11 +115,13 @@ public class CustomCmdHandler implements TabCompleter{
 		return pushed;
 	}
 	
+	//Handle tab completion by returning all tab completions.
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
 		return this.getTabCompleteMatches(pushLabelArg(label, args));
 	}
 	
+	//Pop amount arguments recursively from args.
 	private String[] popArguments(int amount, String[] args){
 		if(amount == 0 || amount > args.length || args.length < 1) return args;
 		String[] popped = new String[args.length-1];
@@ -120,6 +131,7 @@ public class CustomCmdHandler implements TabCompleter{
 		return popArguments(amount-1, popped);
 	}
 	
+	//Get the executor object from given args.
 	public CmdInterface getExecutor(String[] args){
 		int maxMatching = -1, currentMatch;
 		CmdInterface bestMatch = null;
@@ -136,6 +148,7 @@ public class CustomCmdHandler implements TabCompleter{
 		return bestMatch;
 	}
 	
+	//Get the best matching path with args of all paths in the annotation.
 	private String getMatchingPath(String [] args, CustomCmd annotation){
 		int bestMatch = -1, currentMatch;
 		String bestMatchingPath = null;
@@ -149,6 +162,8 @@ public class CustomCmdHandler implements TabCompleter{
 		return bestMatchingPath;
 	}
 	
+	//Check if the array of strings match with the path by returning the length
+	//of the found path. Returns -1 if it doesn't match.
 	private int cmdPathMatches(String[] args, String path){
 		String[] splitPath = path.split("\\.");
 		if(splitPath.length > args.length) return -1;
@@ -164,11 +179,12 @@ public class CustomCmdHandler implements TabCompleter{
 	}
 	*/
 	
+	//Returns if the sender has permission for command class with annotation.
 	private boolean hasPermission(CommandSender sender, CustomCmd annotation){
 		return annotation.perms().equals("") || annotation.perms() == null || sender.hasPermission(main.getConfig().getString(annotation.perms()));
 	}
 	
-	
+	//Find all possible tab completions for args.
 	private List<String> getTabCompleteMatches(String[] args){
 		List<String> completions = new ArrayList<String>();
 		String completion;
@@ -183,6 +199,8 @@ public class CustomCmdHandler implements TabCompleter{
 		return completions;
 	}
 	
+	//Returns the possible completion of args to result in path. So returns null
+	//if there is none.
 	private String getCompletion(String[] args, String path){
 		String[] splitPath = path.split("\\.");
 		if(args.length > splitPath.length) return null;
