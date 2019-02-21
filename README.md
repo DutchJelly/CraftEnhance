@@ -16,4 +16,11 @@ Some examples of why I would use this plugin as an API in certain cases is to:
  - Use the debugger/messenger.
  - Add own GUI's by extending the GUIElement interface class.
  
+These are some of the TODO's including future features. Any help in doing those will be appreciated.
+ - TODO: Remove functions for checking if the recipe is equal to some matrix of items from the Recipe class and add it to the RecipeInjector class.
+ - TODO: Add a class extending Recipe that handles "lore-upgrading".
+ - TODO: Add optional category property to the Recipe class.
+ - TODO: Add "hide" property to Recipe class. Useful for recipes that don't need to be shown, maybe useful for the lore upgrade feature.
+ - TODO: Make the glass panes in the release that's built for all spigot versions other color than white.
+ 
  
