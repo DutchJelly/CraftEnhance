@@ -35,7 +35,7 @@ import com.dutchjelly.itemcreation.commands.LoreCmd;
 
 public class CraftEnhance extends JavaPlugin{
 	
-	
+	//TODO handle 2*2 crafting
 	//TODO Try to add categories.
 	//TODO Clean up redundant setcancelled in GUIs onclick event.
 	

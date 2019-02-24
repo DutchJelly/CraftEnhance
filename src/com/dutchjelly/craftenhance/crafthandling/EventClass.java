@@ -19,8 +19,6 @@ public class EventClass implements Listener{
 	
 	@EventHandler
 	public void onPrepareCraft(PrepareItemCraftEvent e){
-		if(e.getInventory().getType().equals(InventoryType.CRAFTING))
-			return;
 		main.getRecipeInjector().injectResult(e.getInventory());
 	}
 	

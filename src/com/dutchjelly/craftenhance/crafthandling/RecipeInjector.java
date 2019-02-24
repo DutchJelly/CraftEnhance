@@ -7,6 +7,7 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.dutchjelly.craftenhance.data.FileManager;
+import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.util.Recipe;
 
 public class RecipeInjector {
@@ -20,7 +21,7 @@ public class RecipeInjector {
 	public void injectResult(CraftingInventory inv){
 		List<Recipe> recipes = fm.getRecipes();
 		if(recipes == null || recipes.isEmpty()) return;
-		ItemStack[] invContent = formattedContent(inv.getMatrix());
+		ItemStack[] invContent = ensureDefaultSize(formattedContent(inv.getMatrix()));
 		ItemStack result = getResult(invContent, recipes, inv.getViewers());
 		//If the result is null, getResult() didn't find any default results. If it's AIR, it found a default
 		//result of air which means the default version of the recipe doesn't exist on the server. If 
@@ -28,12 +29,26 @@ public class RecipeInjector {
 		//be the case.
 		if(result != null) inv.setResult(result);
 	}
-	 
+	
+	private ItemStack[] ensureDefaultSize(ItemStack[] matrix){
+		if(matrix.length == 9) return matrix;
+		ItemStack[] defaultMatrix = new ItemStack[9];
+		for(int i = 0; i < 9; i++){
+			defaultMatrix[i] = null;
+		}
+		defaultMatrix[0] = matrix[0];
+		defaultMatrix[1] = matrix[1];
+		defaultMatrix[3] = matrix[2];
+		defaultMatrix[4] = matrix[3];
+		
+		return defaultMatrix;
+	}
+	
 	private ItemStack getResult(ItemStack[] invContent, List<Recipe> recipes, List<HumanEntity> viewers){
 		ItemStack defaultResult = null;
 		for(Recipe r : recipes){
-			if(r.materialsMatch(invContent)){
-				if(r.itemsMatch(invContent) && viewersHavePermission(r,viewers))
+			if(materialsMatch(r.getContents(), invContent)){
+				if(itemsMatch(r.getContents(), invContent) && viewersHavePermission(r,viewers))
 					return r.getResult();
 				else
 					defaultResult = r.getDefaultResult();
@@ -110,4 +125,45 @@ public class RecipeInjector {
 		}
 		return true;
 	}
+	
+	public boolean itemsMatch(ItemStack[] recipe, ItemStack[] content){
+		for(int i = 0; i < recipe.length; i++){
+			if(!areEqualItems(content[i], recipe[i])) return false;
+		}
+		return true;
+	}
+	
+	//Needs testing... I'm tired.
+	public boolean itemsMatch2(ItemStack[] recipe, ItemStack[] content){
+		int recipeWidth = (int) Math.sqrt(recipe.length);
+		int contentWidth = (int) Math.sqrt(content.length);
+		for(int i = 0; i < recipeWidth; i++){
+			for(int j = 0; j < recipeWidth; j++){
+				if(i < contentWidth && j < contentWidth){
+					if(!areEqualItems(recipe[i + (recipeWidth * j)], content[i + (contentWidth * j)]))
+						return false;
+				} else if(recipe[i + (recipeWidth * j)] != null)
+					return false;
+				
+			}
+		}
+		return true;
+	}
+	
+	public boolean materialsMatch(ItemStack[] recipe, ItemStack[] content){
+		for(int i = 0; i < recipe.length; i++){
+			if(!areEqualTypes(content[i], recipe[i])) return false;
+		}
+		return true;
+	}
+	private boolean areEqualTypes(ItemStack content, ItemStack recipe){
+		return content == recipe || (content != null && recipe != null && 
+				recipe.getType().equals(content.getType()));
+	}
+	private boolean areEqualItems(ItemStack content, ItemStack recipe){
+		return content == recipe || (content != null && recipe != null &&
+				recipe.isSimilar(content));
+	}
+	
+	
 }

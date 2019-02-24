@@ -100,27 +100,7 @@ public class Recipe implements ConfigurationSerializable {
 		return serialized;
 	}
 	
-	public boolean itemsMatch(ItemStack[] content){
-		for(int i = 0; i < recipe.length; i++){
-			if(!areEqualItems(content[i], recipe[i])) return false;
-		}
-		return true;
-	}
 	
-	public boolean materialsMatch(ItemStack[] content){
-		for(int i = 0; i < recipe.length; i++){
-			if(!areEqualTypes(content[i], recipe[i])) return false;
-		}
-		return true;
-	}
-	private boolean areEqualTypes(ItemStack content, ItemStack recipe){
-		return content == recipe || (content != null && recipe != null && 
-				recipe.getType().equals(content.getType()));
-	}
-	private boolean areEqualItems(ItemStack content, ItemStack recipe){
-		return content == recipe || (content != null && recipe != null &&
-				recipe.isSimilar(content));
-	}
 	//Returns the shaped recipe if the crafting type is workbench.
 	public ShapedRecipe getShapedRecipe(){
 		@SuppressWarnings("deprecation")
