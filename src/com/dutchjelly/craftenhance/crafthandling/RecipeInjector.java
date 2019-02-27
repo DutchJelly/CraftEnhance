@@ -7,8 +7,7 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.dutchjelly.craftenhance.data.FileManager;
-import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.util.Recipe;
+import com.dutchjelly.craftenhance.util.CraftRecipe;
 
 public class RecipeInjector {
 	
@@ -19,9 +18,10 @@ public class RecipeInjector {
 	}
 	
 	public void injectResult(CraftingInventory inv){
-		List<Recipe> recipes = fm.getRecipes();
+		List<CraftRecipe> recipes = fm.getRecipes();
 		if(recipes == null || recipes.isEmpty()) return;
-		ItemStack[] invContent = ensureDefaultSize(formattedContent(inv.getMatrix()));
+		ItemStack[] invContent = ensureDefaultSize(inv.getMatrix());
+		invContent = formattedContent(invContent);
 		ItemStack result = getResult(invContent, recipes, inv.getViewers());
 		//If the result is null, getResult() didn't find any default results. If it's AIR, it found a default
 		//result of air which means the default version of the recipe doesn't exist on the server. If 
@@ -44,9 +44,9 @@ public class RecipeInjector {
 		return defaultMatrix;
 	}
 	
-	private ItemStack getResult(ItemStack[] invContent, List<Recipe> recipes, List<HumanEntity> viewers){
+	private ItemStack getResult(ItemStack[] invContent, List<CraftRecipe> recipes, List<HumanEntity> viewers){
 		ItemStack defaultResult = null;
-		for(Recipe r : recipes){
+		for(CraftRecipe r : recipes){
 			if(materialsMatch(r.getContents(), invContent)){
 				if(itemsMatch(r.getContents(), invContent) && viewersHavePermission(r,viewers))
 					return r.getResult();
@@ -117,7 +117,7 @@ public class RecipeInjector {
 		} return true;
 	} 
 	
-	private boolean viewersHavePermission(Recipe recipe, List<HumanEntity> humans){
+	private boolean viewersHavePermission(CraftRecipe recipe, List<HumanEntity> humans){
 		if(recipe.getPerms().equals("")) return true;
 		for(HumanEntity human : humans){
 			if(!human.hasPermission(recipe.getPerms()))

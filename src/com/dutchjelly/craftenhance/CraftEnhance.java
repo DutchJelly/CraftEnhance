@@ -16,7 +16,6 @@ import com.dutchjelly.craftenhance.commands.OrderRecipesCmd;
 import com.dutchjelly.craftenhance.commands.RecipesCmd;
 import com.dutchjelly.craftenhance.commands.SetPermissionCmd;
 import com.dutchjelly.craftenhance.commands.SpecsCommand;
-import com.dutchjelly.craftenhance.crafthandling.EventClass;
 import com.dutchjelly.craftenhance.crafthandling.RecipeInjector;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
 import com.dutchjelly.craftenhance.data.ConfigFormatter;
@@ -25,7 +24,7 @@ import com.dutchjelly.craftenhance.gui.GUIContainer;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.messaging.Messenger;
 import com.dutchjelly.craftenhance.util.GUIButtons;
-import com.dutchjelly.craftenhance.util.Recipe;
+import com.dutchjelly.craftenhance.util.CraftRecipe;
 import com.dutchjelly.itemcreation.commands.DisplayNameCmd;
 import com.dutchjelly.itemcreation.commands.DurabilityCmd;
 import com.dutchjelly.itemcreation.commands.EnchantCmd;
@@ -92,7 +91,7 @@ public class CraftEnhance extends JavaPlugin{
 	
 	//Registers the classes that extend ConfigurationSerializable.
 	private void registerSerialization(){
-		ConfigurationSerialization.registerClass(Recipe.class, "Recipe");
+		ConfigurationSerialization.registerClass(CraftRecipe.class, "Recipe");
 	}
 	
 	//Create basic instances where order doesn't matter.

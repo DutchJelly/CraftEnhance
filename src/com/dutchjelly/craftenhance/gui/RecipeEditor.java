@@ -7,16 +7,16 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import com.dutchjelly.craftenhance.util.GUIButtons;
-import com.dutchjelly.craftenhance.util.Recipe;
+import com.dutchjelly.craftenhance.util.CraftRecipe;
 
 public class RecipeEditor implements GUIElement{
 	
 	private GUIElement previous;
 	private Inventory inventory;
-	private Recipe recipe;
+	private CraftRecipe recipe;
 	private GUIContainer container;
 	
-	public RecipeEditor(GUIContainer container, Recipe recipe, GUIElement previous){
+	public RecipeEditor(GUIContainer container, CraftRecipe recipe, GUIElement previous){
 		this.previous = previous;
 		this.recipe = recipe;
 		this.container = container;
@@ -26,7 +26,7 @@ public class RecipeEditor implements GUIElement{
 	public RecipeEditor(GUIContainer container, String key, String perm){
 		this.container = container;
 		ItemStack[] content = new ItemStack[9];
-		recipe = new Recipe(perm, null, content);
+		recipe = new CraftRecipe(perm, null, content);
 		recipe.setKey(key);
 		
 		initInventory();

@@ -11,11 +11,11 @@ import org.bukkit.inventory.ItemStack;
 
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.util.GUIButtons;
-import com.dutchjelly.craftenhance.util.Recipe;
+import com.dutchjelly.craftenhance.util.CraftRecipe;
 
 public class OrderEditor implements GUIElement{
 
-	List<Recipe> recipes;
+	List<CraftRecipe> recipes;
 	private GUIContainer container;
 	private Inventory[] inventories;
 	private int currentPage;
@@ -29,7 +29,7 @@ public class OrderEditor implements GUIElement{
 	}
 	
 	private void generateInventory(){
-		Recipe add;
+		CraftRecipe add;
 		int getIndex;
 		inventories = new Inventory[(int) Math.ceil((double)recipes.size() / 45)];
 		Debug.Send("The amount of pages in the new recipes viewer is " + inventories.length + ".");
@@ -69,7 +69,7 @@ public class OrderEditor implements GUIElement{
 		
 		Player player = (Player) e.getWhoClicked();
 		
-		Recipe recipe;
+		CraftRecipe recipe;
 		
 		recipe = findResultingRecipe(e.getCurrentItem(), e.getRawSlot());
 		if(recipe != null){
@@ -90,7 +90,7 @@ public class OrderEditor implements GUIElement{
 		
 	}
 	
-	private void move(Recipe recipe, int translation){
+	private void move(CraftRecipe recipe, int translation){
 		int startIndex = translation > 0 ? 0 : -translation;
 		int endIndex = translation > 0 ? recipes.size()-translation : recipes.size();
 		for(int i = startIndex; i < endIndex; i++)
@@ -101,12 +101,12 @@ public class OrderEditor implements GUIElement{
 	}
 	
 	private void switchRecipes(int a, int b){
-		Recipe temp = recipes.get(a);
+		CraftRecipe temp = recipes.get(a);
 		recipes.set(a, recipes.get(b));
 		recipes.set(b, temp);
 	}
 	
-	private Recipe findResultingRecipe(ItemStack result, int clickPos){
+	private CraftRecipe findResultingRecipe(ItemStack result, int clickPos){
 		if(clickPos > getInventory().getSize()-9) return null;
 		int translatedClickPos = currentPage * (getInventory().getSize()-9) + clickPos;
 		if(translatedClickPos >= recipes.size()) return null;

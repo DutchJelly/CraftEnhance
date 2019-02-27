@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import com.dutchjelly.craftenhance.commandhandling.CmdInterface;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmd;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
-import com.dutchjelly.craftenhance.util.Recipe;
+import com.dutchjelly.craftenhance.util.CraftRecipe;
 
 @CustomCmd(cmdPath="ceh.changekey", perms="perms.recipe-editor")
 public class ChangeKeyCmd implements CmdInterface {
@@ -28,7 +28,7 @@ public class ChangeKeyCmd implements CmdInterface {
 			handler.getMain().getMessenger().messageFromConfig("messages.commands.few-arguments", p, "2");
 			return;
 		}
-		Recipe recipe = handler.getMain().getFileManager().getRecipe(args[0]);
+		CraftRecipe recipe = handler.getMain().getFileManager().getRecipe(args[0]);
 		if(recipe == null) {
 			handler.getMain().getMessenger().message("That recipe key doesn't exist", p);
 			return;
@@ -43,7 +43,7 @@ public class ChangeKeyCmd implements CmdInterface {
 			handler.getMain().getMessenger().messageFromConfig("messages.commands.few-arguments", sender, "2");
 			return;
 		}
-		Recipe recipe = handler.getMain().getFileManager().getRecipe(args[0]);
+		CraftRecipe recipe = handler.getMain().getFileManager().getRecipe(args[0]);
 		if(recipe == null) {
 			handler.getMain().getMessenger().message("That recipe key doesn't exist", sender);
 			return;

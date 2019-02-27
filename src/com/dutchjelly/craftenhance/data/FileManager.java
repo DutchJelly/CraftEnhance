@@ -14,7 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.util.Recipe;
+import com.dutchjelly.craftenhance.util.CraftRecipe;
 
 public class FileManager {
 	
@@ -27,15 +27,15 @@ public class FileManager {
 	private Logger logger;
 	
 	private Map<String, ItemStack> items;
-	private List<Recipe> recipes;
-	private List<Recipe> bin;
+	private List<CraftRecipe> recipes;
+	private List<CraftRecipe> bin;
 
 	public static FileManager init(CraftEnhance main){
 		FileManager fm = new FileManager();
 		fm.seperator = File.separator;
 		fm.items = new HashMap<String, ItemStack>();
-		fm.recipes = new ArrayList<Recipe>();
-		fm.bin = new ArrayList<Recipe>();
+		fm.recipes = new ArrayList<CraftRecipe>();
+		fm.bin = new ArrayList<CraftRecipe>();
 		fm.logger = main.getLogger();
 		fm.dataFolder = main.getDataFolder();
 		fm.dataFolder.mkdir();
@@ -69,12 +69,12 @@ public class FileManager {
 	
 	public void cacheRecipes(){
 		Debug.Send("The filemanageer is caching recipes...");
-		Recipe keyValue;
+		CraftRecipe keyValue;
 		recipesConfig = getYamlConfig(recipesFile);
 		recipes.clear();
 		for(String key : recipesConfig.getKeys(false)){
 			Debug.Send("Caching recipe with key " + key);
-			keyValue = (Recipe)recipesConfig.get(key);
+			keyValue = (CraftRecipe)recipesConfig.get(key);
 			keyValue.setKey(key);
 			recipes.add(keyValue);
 		}
@@ -119,12 +119,12 @@ public class FileManager {
 		return unique;
 	}
 	
-	public List<Recipe> getRecipes(){
+	public List<CraftRecipe> getRecipes(){
 		return recipes;
 	}
 	
-	public Recipe getRecipe(String key){
-		for(Recipe recipe : recipes){
+	public CraftRecipe getRecipe(String key){
+		for(CraftRecipe recipe : recipes){
 			if(recipe.getKey().equals(key))
 				return recipe;
 		}
@@ -150,7 +150,7 @@ public class FileManager {
 		return false;
 	}
 	
-	public void saveRecipe(Recipe recipe){
+	public void saveRecipe(CraftRecipe recipe){
 		Debug.Send("Saving recipe " + recipe.toString() + " with key " + recipe.getKey());
 		recipesConfig = getYamlConfig(recipesFile);
 		recipesConfig.set(recipe.getKey(), recipe);
@@ -164,7 +164,7 @@ public class FileManager {
 		}
 	}
 	
-	public void removeRecipe(Recipe recipe){
+	public void removeRecipe(CraftRecipe recipe){
 		Debug.Send("Removing recipe " + recipe.toString() + " with key " + recipe.getKey());
 		recipesConfig = getYamlConfig(recipesFile);
 		recipesConfig.set(recipe.getKey(), null);
@@ -177,14 +177,14 @@ public class FileManager {
 		}
 	}
 	
-	public void changeKey(Recipe recipe, String newKey){
+	public void changeKey(CraftRecipe recipe, String newKey){
 		recipe.setKey(newKey);
 		overrideSave();
 	}
 	
 	public void overrideSave(){
 		Debug.Send("Overriding saved recipes with new list..");
-		List<Recipe> cloned = new ArrayList<Recipe>();
+		List<CraftRecipe> cloned = new ArrayList<CraftRecipe>();
 		recipes.forEach(x -> cloned.add(x));
 		removeAllRecipes();
 		cloned.forEach(x -> saveRecipe(x));
@@ -214,7 +214,7 @@ public class FileManager {
 	}
 	
 	private boolean isItemInUse(ItemStack item){
-		for(Recipe r : recipes){
+		for(CraftRecipe r : recipes){
 			if(r.getResult().equals(item)) return true;
 			for(ItemStack inRecipe : r.getContents()){
 				if(inRecipe != null && inRecipe.equals(item)) return true;

@@ -6,7 +6,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 
 import com.dutchjelly.craftenhance.util.GUIButtons;
-import com.dutchjelly.craftenhance.util.Recipe;
+import com.dutchjelly.craftenhance.util.CraftRecipe;
 
 public class RecipeViewer implements GUIElement {
 	
@@ -14,9 +14,9 @@ public class RecipeViewer implements GUIElement {
 	private GUIContainer container;
 	private GUIElement previousGUI;
 	private Inventory inventory;
-	private Recipe recipe;
+	private CraftRecipe recipe;
 	
-	public RecipeViewer(GUIContainer container, GUIElement previousGUI, Recipe recipe){
+	public RecipeViewer(GUIContainer container, GUIElement previousGUI, CraftRecipe recipe){
 		this.container = container;
 		this.previousGUI = previousGUI;
 		this.recipe = recipe;

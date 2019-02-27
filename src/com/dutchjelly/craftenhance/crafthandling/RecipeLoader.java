@@ -11,7 +11,7 @@ import org.bukkit.inventory.ShapelessRecipe;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.util.Recipe;
+import com.dutchjelly.craftenhance.util.CraftRecipe;
 
 public class RecipeLoader {
 	
@@ -29,10 +29,10 @@ public class RecipeLoader {
 			Debug.Send("The cusom recipes are disabled on the server.");
 			return;
 		}
-		List<Recipe> queue = new ArrayList<Recipe>();
+		List<CraftRecipe> queue = new ArrayList<CraftRecipe>();
 		org.bukkit.inventory.Recipe similar;
 		main.getServer().resetRecipes();
-		for(Recipe r : main.getFileManager().getRecipes()){
+		for(CraftRecipe r : main.getFileManager().getRecipes()){
 			resetIterator();
 			similar = getNextSimilar(r);
 			handleDefaults(r, similar);
@@ -43,13 +43,13 @@ public class RecipeLoader {
 		addAll(queue);
 	}
 	
-	private boolean needsLoading(Recipe r, org.bukkit.inventory.Recipe similar){
+	private boolean needsLoading(CraftRecipe r, org.bukkit.inventory.Recipe similar){
 		if(similar == null) return true;
 		return !areEqualTypes(similar.getResult(), r.getResult());
 	}
 	
 	//Er gaat iets mis als er geen similar recipes zijn.
-	private void handleDefaults(Recipe r, org.bukkit.inventory.Recipe similar){
+	private void handleDefaults(CraftRecipe r, org.bukkit.inventory.Recipe similar){
 		if(similar == null)
 			r.setDefaultResult(new ItemStack(Material.AIR));
 		else
@@ -60,13 +60,13 @@ public class RecipeLoader {
 		iterator = main.getServer().recipeIterator();
 	}
 	
-	private void addAll(List<Recipe> queue){
+	private void addAll(List<CraftRecipe> queue){
 		if(queue == null) return;
 		queue.forEach(x -> main.getServer().addRecipe(x.getShapedRecipe()));
 	}
 	
 	//Uses the iterator to find a recipe with equal content.
-	private org.bukkit.inventory.Recipe getNextSimilar(Recipe r){
+	private org.bukkit.inventory.Recipe getNextSimilar(CraftRecipe r){
 		org.bukkit.inventory.Recipe currentIteration;
 		while(iterator.hasNext()){
 			currentIteration = iterator.next();
@@ -76,17 +76,17 @@ public class RecipeLoader {
 		return null;
 	}
 	
-	private boolean isSimilarShapedRecipe(org.bukkit.inventory.Recipe serverRecipe, Recipe customRecipe){
+	private boolean isSimilarShapedRecipe(org.bukkit.inventory.Recipe serverRecipe, CraftRecipe customRecipe){
 		if(!(serverRecipe instanceof ShapedRecipe)) return false;
 		return contentsEqual(getShapedRecipeContent((ShapedRecipe) serverRecipe), customRecipe.getContents());
 	}
 	
-	private boolean isSimilarShapeLessRecipe(org.bukkit.inventory.Recipe serverRecipe, Recipe customRecipe){
+	private boolean isSimilarShapeLessRecipe(org.bukkit.inventory.Recipe serverRecipe, CraftRecipe customRecipe){
 		if(!(serverRecipe instanceof ShapelessRecipe)) return false;
 		return allMaterialsMatch((ShapelessRecipe) serverRecipe, customRecipe);
 	}
 	
-	private boolean allMaterialsMatch(ShapelessRecipe recipe, Recipe customRecipe){
+	private boolean allMaterialsMatch(ShapelessRecipe recipe, CraftRecipe customRecipe){
 		ItemStack[] content = customRecipe.getContents();
 		List<ItemStack> choices = new ArrayList<>();
 		choices.addAll(recipe.getIngredientList());

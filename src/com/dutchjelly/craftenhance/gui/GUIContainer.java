@@ -12,7 +12,7 @@ import org.bukkit.inventory.Inventory;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.util.Recipe;
+import com.dutchjelly.craftenhance.util.CraftRecipe;
 
 public class GUIContainer {
 	
@@ -56,12 +56,12 @@ public class GUIContainer {
 		openGUIElement(editor, player);
 	}
 	
-	public void openRecipeEditor(Recipe recipe, Player player){
+	public void openRecipeEditor(CraftRecipe recipe, Player player){
 		RecipeEditor editor = new RecipeEditor(this, recipe, null);
 		openGUIElement(editor, player);
 	}
 	
-	public void openRecipeEditor(Recipe recipe, Player player, GUIElement previous){
+	public void openRecipeEditor(CraftRecipe recipe, Player player, GUIElement previous){
 		RecipeEditor editor = new RecipeEditor(this, recipe, previous);
 		openGUIElement(editor, player);
 	}
@@ -71,7 +71,7 @@ public class GUIContainer {
 		openGUIElement(viewer, player);
 	}
 	
-	public void openRecipeViewer(Recipe recipe, Player player){
+	public void openRecipeViewer(CraftRecipe recipe, Player player){
 		
 		//TODO add the backpage (the recipes viewer) so nullpointers don't occur.
 		

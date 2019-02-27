@@ -13,15 +13,15 @@ import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.data.FileManager;
 
 @SerializableAs("Recipe")
-public class Recipe implements ConfigurationSerializable {
+public class CraftRecipe implements ConfigurationSerializable {
 	
 	private String key;
 	private String permission;
 	private ItemStack result;
 	private ItemStack defaultResult;
 	private ItemStack[] recipe;
-	private Recipe(){}
-	public Recipe(String perm, ItemStack result, ItemStack[] recipe){
+	private CraftRecipe(){}
+	public CraftRecipe(String perm, ItemStack result, ItemStack[] recipe){
 		permission = perm;
 		this.recipe = recipe;
 		this.result = result;
@@ -67,11 +67,11 @@ public class Recipe implements ConfigurationSerializable {
 	
 	
 	@SuppressWarnings("unchecked")
-	public static Recipe deserialize(Map<String,Object> args){
+	public static CraftRecipe deserialize(Map<String,Object> args){
 		FileManager fm = CraftEnhance.getPlugin(CraftEnhance.class).getFileManager();
 		
 		List<String> recipeKeys;
-		Recipe recipe = new Recipe();
+		CraftRecipe recipe = new CraftRecipe();
 		fm = CraftEnhance.getPlugin(CraftEnhance.class).getFileManager();
 		recipe.result = fm.getItem((String)args.get("result"));
 		recipe.permission = (String)args.get("permission");

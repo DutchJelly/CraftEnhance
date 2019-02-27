@@ -13,11 +13,11 @@ import org.bukkit.inventory.ItemStack;
 
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.util.GUIButtons;
-import com.dutchjelly.craftenhance.util.Recipe;
+import com.dutchjelly.craftenhance.util.CraftRecipe;
 
 public class RecipesViewer implements GUIElement{
 	
-	List<Recipe> showedRecipes;
+	List<CraftRecipe> showedRecipes;
 	private boolean showAll;
 	private GUIContainer container;
 	private Inventory[] inventories;
@@ -33,7 +33,7 @@ public class RecipesViewer implements GUIElement{
 	}
 	
 	private void generateInventory(){
-		Recipe add;
+		CraftRecipe add;
 		int getIndex;
 		inventories = new Inventory[getReqPageAmount()];
 		Debug.Send("The amount of pages in the new recipes viewer is " + inventories.length + ".");
@@ -59,9 +59,9 @@ public class RecipesViewer implements GUIElement{
 		inv.setItem(51, GUIButtons.next);
 	}
 	
-	private List<Recipe> getAvailableRecipes(Player player){
-		List<Recipe> recipes = new ArrayList<Recipe>();
-		for(Recipe recipe : container.getMain().getFileManager().getRecipes()){
+	private List<CraftRecipe> getAvailableRecipes(Player player){
+		List<CraftRecipe> recipes = new ArrayList<CraftRecipe>();
+		for(CraftRecipe recipe : container.getMain().getFileManager().getRecipes()){
 			if(showAll || player.hasPermission(recipe.getPerms())) recipes.add(recipe);
 		}
 		return recipes;
@@ -88,7 +88,7 @@ public class RecipesViewer implements GUIElement{
 		
 		
 		//TODO this can be done cleaner.. figure out how..
-		Recipe recipe;
+		CraftRecipe recipe;
 		if(!isEventTriggerer(e.getClickedInventory())){
 			recipe = findFirstMatchingRecipe((e.getCurrentItem()));
 			if(recipe == null) return;
@@ -116,15 +116,15 @@ public class RecipesViewer implements GUIElement{
 		return entity.hasPermission(container.getMain().getConfig().getString("perms.recipe-editor"));
 	}
 	
-	private Recipe findResultingRecipe(ItemStack result, int clickPos){
+	private CraftRecipe findResultingRecipe(ItemStack result, int clickPos){
 		if(clickPos > getInventory().getSize()-9) return null;
 		int translatedClickPos = currentPage * (getInventory().getSize()-9) + clickPos;
 		if(translatedClickPos >= showedRecipes.size()) return null;
 		return showedRecipes.get(translatedClickPos);
 	}
 	
-	private Recipe findFirstMatchingRecipe(ItemStack result){
-		for(Recipe recipe : showedRecipes){
+	private CraftRecipe findFirstMatchingRecipe(ItemStack result){
+		for(CraftRecipe recipe : showedRecipes){
 			if(recipe.getResult().equals(result)) 
 				return recipe;
 		}
