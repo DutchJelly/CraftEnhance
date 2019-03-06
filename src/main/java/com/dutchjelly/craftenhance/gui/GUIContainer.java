@@ -42,7 +42,9 @@ public class GUIContainer {
 		if(e instanceof InventoryClickEvent){
 			InventoryClickEvent clickEvent = (InventoryClickEvent)e;
 			if(assignHandler(clickEvent)) return;
-			clickEvent.setCancelled(cancelClick(clickEvent));
+			boolean ret = cancelClick(clickEvent);
+			if (!clickEvent.isCancelled())
+				clickEvent.setCancelled(ret);
 		}
 	}
 	
