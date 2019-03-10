@@ -1,4 +1,4 @@
-main: com.dutchjelly.craftenhance.CraftEnhance
+main: CraftEnhance
 name: CraftEnhance
 version: 2.2-SNAPSHOT
 commands:
