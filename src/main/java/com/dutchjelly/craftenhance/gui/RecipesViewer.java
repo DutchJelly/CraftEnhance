@@ -94,7 +94,7 @@ public class RecipesViewer implements GUIElement{
 			container.openRecipeViewer(recipe, player);
 			return;
 		}
-		recipe = findResultingRecipe(e.getCurrentItem(), e.getRawSlot());
+		recipe = findResultingRecipe(e.getRawSlot());
 		if(recipe != null){
 			if(e.getClick() == ClickType.MIDDLE && hasEditorPerms(player))
 				container.openRecipeEditor(recipe, player, this);
@@ -115,7 +115,7 @@ public class RecipesViewer implements GUIElement{
 		return entity.hasPermission(container.getMain().getConfig().getString("perms.recipe-editor"));
 	}
 	
-	private CraftRecipe findResultingRecipe(ItemStack result, int clickPos){
+	private CraftRecipe findResultingRecipe(int clickPos){
 		if(clickPos > getInventory().getSize()-9) return null;
 		int translatedClickPos = currentPage * (getInventory().getSize()-9) + clickPos;
 		if(translatedClickPos >= showedRecipes.size()) return null;
