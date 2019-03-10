@@ -35,5 +35,4 @@ public class DisplayNameCmd implements CmdInterface{
 	public void handleConsoleCommand(CommandSender sender, String[] args) {
 		handler.getMain().getMessenger().messageFromConfig("messages.commands.only-for-players", sender);
 	}
-
 }

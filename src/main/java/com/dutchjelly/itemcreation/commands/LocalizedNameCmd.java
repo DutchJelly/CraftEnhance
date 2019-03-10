@@ -26,7 +26,12 @@ public class LocalizedNameCmd implements CmdInterface{
 
 	@Override
 	public void handlePlayerCommand(Player p, String[] args) {
-		handler.getMain().getMessenger().message("This command is not supported in this version.", p);
+		handler.getMain().getMessenger().message("This command is not supported in this version of the plugin.");
+		/*
+		ItemCreator creator = new ItemCreator(p.getInventory().getItemInMainHand(), args);
+		ParseResult result = creator.setLocalizedName();
+		p.getInventory().setItemInMainHand(creator.getItem());
+		handler.getMain().getMessenger().message(result.getMessage(), p);*/
 	}
 
 	@Override

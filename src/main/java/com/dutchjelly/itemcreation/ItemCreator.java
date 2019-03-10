@@ -3,13 +3,11 @@ package com.dutchjelly.itemcreation;
 import java.util.ArrayList;
 import java.util.List;
 
-//import org.bukkit.NamespacedKey;
 import com.dutchjelly.itemcreation.util.ParseResult;
 import org.bukkit.enchantments.Enchantment;
-//import org.bukkit.enchantments.EnchantmentWrapper;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-//import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
@@ -33,11 +31,11 @@ public class ItemCreator {
 		if(args.length != 1) return ParseResult.NO_ARGS;
 		int durability = tryParse(args[0], -1);
 		if(durability < 0 || durability > 100) return ParseResult.NO_PERCENT;
-		
+
 		short maxDurability = item.getType().getMaxDurability();
 		item.setDurability((short) (maxDurability - (maxDurability * (double)durability/100)));
-		
-		/*
+
+        /*
 		Damageable meta = (Damageable)item.getItemMeta();
 		short maxDurability = item.getType().getMaxDurability();
 		meta.setDamage((int) (maxDurability - (maxDurability * (double)durability/100)));
@@ -70,7 +68,7 @@ public class ItemCreator {
 		item.setItemMeta(meta);
 		return ParseResult.SUCCESS;
 	}
-	/*
+    /*
 	public ParseResult setLocalizedName(){
 		if(item == null || item.getItemMeta() == null) return ParseResult.NULL_ITEM;
 		String name = ChatColor.translateAlternateColorCodes('&', joinRemaining(0));
