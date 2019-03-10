@@ -1,4 +1,4 @@
-package com.dutchjelly.updatechecking;
+package com.dutchjelly.craftenhance.updatechecking;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 
@@ -15,16 +15,19 @@ public class VersionChecker {
     public void runVersionCheck(){
         if(!plugin.getConfig().getBoolean("enable-updatechecker")) return;
 
+        plugin.getMessenger().message("Checking for newer versions...");
+
         GithubLoader loader = GithubLoader.init(this);
         loader.readVersion();
         String version = loader.getVersion();
         if(version == null) return;
         version = version.trim();
-        if(!isOutDated(version)) return;
-        plugin.getMessenger().message(
-                "There's a new version (" + version + ") of the plugin available.\n" +
-                "The version can be downloaded here https://dev.bukkit.org/projects/craftenhance/files."
-        );
+        if(!isOutDated(version)){
+            plugin.getMessenger().message("CraftEnhance is up to date.");
+        } else{
+            plugin.getMessenger().message("There's a new version (" + version + ") of the plugin available.");
+            plugin.getMessenger().message("This version can be downloaded at https://dev.bukkit.org/projects/craftenhance/files.");
+        }
     }
 
     public CraftEnhance getPlugin() {
@@ -33,6 +36,6 @@ public class VersionChecker {
 
     private boolean isOutDated(String version){
         String currentVersion = plugin.getDescription().getVersion();
-        return currentVersion != version;
+        return !version.equals(currentVersion);
     }
 }

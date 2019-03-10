@@ -1,4 +1,4 @@
-package com.dutchjelly.updatechecking;
+package com.dutchjelly.craftenhance.updatechecking;
 
 
 import java.io.ByteArrayOutputStream;
