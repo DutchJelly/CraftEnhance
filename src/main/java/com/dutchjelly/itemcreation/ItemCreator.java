@@ -70,7 +70,7 @@ public class ItemCreator {
 		item.setItemMeta(meta);
 		return ParseResult.SUCCESS;
 	}
-	
+	/*
 	public ParseResult setLocalizedName(){
 		if(item == null || item.getItemMeta() == null) return ParseResult.NULL_ITEM;
 		String name = ChatColor.translateAlternateColorCodes('&', joinRemaining(0));
@@ -78,13 +78,11 @@ public class ItemCreator {
 		meta.setLocalizedName(name);
 		item.setItemMeta(meta);
 		return ParseResult.SUCCESS;
-	}
+	}*/
 	
 	private void clearEnchants(){
 		ItemMeta meta = item.getItemMeta();
-		meta.getEnchants().keySet().forEach(x -> {
-			meta.removeEnchant(x);
-		});
+		meta.getEnchants().keySet().forEach(x -> meta.removeEnchant(x));
 		item.setItemMeta(meta);
 	}
 	

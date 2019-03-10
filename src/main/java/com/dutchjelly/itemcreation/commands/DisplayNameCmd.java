@@ -25,9 +25,9 @@ public class DisplayNameCmd implements CmdInterface{
 
 	@Override
 	public void handlePlayerCommand(Player p, String[] args) {
-		ItemCreator creator = new ItemCreator(p.getInventory().getItemInMainHand(), args);
+		ItemCreator creator = new ItemCreator(p.getInventory().getItemInHand(), args);
 		ParseResult result = creator.setDisplayName();
-		p.getInventory().setItemInMainHand(creator.getItem());
+		p.getInventory().setItemInHand(creator.getItem());
 		handler.getMain().getMessenger().message(result.getMessage(), p);
 	}
 

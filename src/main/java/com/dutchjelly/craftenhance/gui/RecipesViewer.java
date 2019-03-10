@@ -73,7 +73,7 @@ public class RecipesViewer implements GUIElement{
 
 	@Override
 	public boolean isEventTriggerer(Inventory inv) {
-		return inv.equals(getInventory());
+		return inv != null && inv.equals(getInventory());
 	}
 
 	@Override

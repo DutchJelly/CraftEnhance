@@ -26,10 +26,7 @@ public class LocalizedNameCmd implements CmdInterface{
 
 	@Override
 	public void handlePlayerCommand(Player p, String[] args) {
-		ItemCreator creator = new ItemCreator(p.getInventory().getItemInMainHand(), args);
-		ParseResult result = creator.setLocalizedName();
-		p.getInventory().setItemInMainHand(creator.getItem());
-		handler.getMain().getMessenger().message(result.getMessage(), p);
+		handler.getMain().getMessenger().message("This command is not supported in this version.", p);
 	}
 
 	@Override
