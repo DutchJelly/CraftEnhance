@@ -3,7 +3,6 @@ package com.dutchjelly.craftenhance;
 import java.util.Arrays;
 
 import com.dutchjelly.craftenhance.updatechecking.VersionChecker;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
@@ -38,21 +37,6 @@ public class CraftEnhance extends JavaPlugin{
 	//TODO Try to add categories.
 	//TODO Clean up redundant setcancelled in GUIs onclick event.
 	
-	//Can be used in the future to use 1.13 functions with reflection.
-	public static int getServerVersion(){
-		char[] version = Bukkit.getBukkitVersion().toCharArray();
-		int intVersion = 0;
-		for(int i = 0; i < version.length; i++){
-			if(version[i] == '-') break;
-			if(!Character.isDigit(version[i])) continue;
-			
-			intVersion *= 10;
-			intVersion += Character.getNumericValue(version[i]);
-		}
-		return intVersion;
-	}
-	
-	
 	private FileManager fm;
 	private RecipeLoader loader;
 	private GUIContainer guiContainer;
@@ -64,7 +48,8 @@ public class CraftEnhance extends JavaPlugin{
 	public void onEnable(){
 		
 		//The filemanager needs serialization, so firstly register the classes.
-		registerSerialization(); 
+		registerSerialization();
+
 		saveDefaultConfig();
 		Debug.init(this);
 		//Most other instances use the filemanager, so setup before everything.

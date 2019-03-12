@@ -143,7 +143,7 @@ public class CraftRecipe implements ConfigurationSerializable {
 		}
 	}
 	
-	private void shiftLeft(){
+	private void shiftLeft2(){
 		int left;
 		for(int i = 0; i <= 6; i+=3){
 			left = i;
@@ -154,7 +154,26 @@ public class CraftRecipe implements ConfigurationSerializable {
 			}
 		}
 	}
+
+	public void shiftLeft(){
+	    for(int i = 0; i < 3; i++){
+	        for(int j = i; j < 9; j+= 3){
+	            if(i != 2) recipe[j] = recipe[j+1];
+	            else recipe[j] = recipe[j+1];
+            }
+        }
+    }
+
 	private void shiftUp(){
+	    for(int i = 3; i < 9; i++){
+            recipe[i-3] = recipe[i];
+        }
+        for(int i = 5; i < 9; i++){
+	        recipe[i] = null;
+        }
+    }
+
+	private void shiftUp2(){
 		int up;
 		for(int j = 0; j < 3; j++){
 			up = j;
@@ -181,7 +200,7 @@ public class CraftRecipe implements ConfigurationSerializable {
 	
 	private boolean columnIsNull(int column){
 		int j = column;
-		while(j <= column + 6){
+		while(j < 9){
 			if(recipe[j] != null) return false;
 			j+=3;
 		} return true;

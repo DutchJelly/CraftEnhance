@@ -1,20 +1,20 @@
-########################################################################
-#                                                                      #
-# This is the config file of CraftEnhance. Created by DutchJelly.      #
-#                                                                      #
-########################################################################
+# ---------------------------------------- #
+# This is the config file of CraftEnhance. #
+# ---------------------------------------- #
 
 enable-debug: false
 enable-recipes: true
 
+# This update checker checks for new versions on the github page.
 enable-updatechecker: true
 
-#If this option is enabled, people can only see recipes that they have permissions to.
+# If this option is enabled, people can only see recipes that they have permissions to.
 only-show-available: false
 
 debug-prefix: "[DEBUG] "
 global-prefix: "&7[&bCraft&dEnhance&7] &r"
 
+# These permissions are used globally by all features of the plugin.
 perms:
   recipe-editor: "craftenhance.edit"
   recipe-viewer: "craftenhance.view"
