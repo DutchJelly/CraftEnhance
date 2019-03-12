@@ -2,6 +2,7 @@ package com.dutchjelly.craftenhance.crafthandling;
 
 import java.util.List;
 
+import com.dutchjelly.craftenhance.messaging.Debug;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
@@ -20,8 +21,8 @@ public class RecipeInjector {
 	public void injectResult(CraftingInventory inv){
 		List<CraftRecipe> recipes = fm.getRecipes();
 		if(recipes == null || recipes.isEmpty()) return;
-		ItemStack[] invContent = ensureDefaultSize(inv.getMatrix());
-		invContent = formattedContent(invContent);
+		ItemStack[] invContent = ensureDefaultSize(inv.getMatrix()).clone();
+		formatContent(invContent);
 		ItemStack result = getResult(invContent, recipes, inv.getViewers());
 		//If the result is null, getResult() didn't find any default results. If it's AIR, it found a default
 		//result of air which means the default version of the recipe doesn't exist on the server. If 
@@ -47,9 +48,13 @@ public class RecipeInjector {
 	private ItemStack getResult(ItemStack[] invContent, List<CraftRecipe> recipes, List<HumanEntity> viewers){
 		ItemStack defaultResult = null;
 		for(CraftRecipe r : recipes){
-			if(materialsMatch(r.getContents(), invContent)){
-				if(itemsMatch(r.getContents(), invContent) && viewersHavePermission(r,viewers))
-					return r.getResult();
+			ItemStack recipeContent[] = r.getContents().clone();
+			formatContent(recipeContent);
+			if(materialsMatch(recipeContent, invContent)){
+				if(itemsMatch(recipeContent, invContent) && viewersHavePermission(r,viewers)) {
+                    Debug.Send("A recipe matches with " + r.toString());
+                    return r.getResult();
+                }
 				else
 					defaultResult = r.getDefaultResult();
 			}
@@ -66,52 +71,22 @@ public class RecipeInjector {
 		}
 	}
 	
-	private ItemStack[] formattedContent(ItemStack[] content){
-		if(!isNullInventory(content)){
-			while(nullColumn(content)) content = shiftLeft(content);
-			while(nullRow(content)) content = shiftUp(content);
-		} return content;
+	private void formatContent(ItemStack[] content){
+		if(isNullArray(content)) return;
+
+		while(content[0] == null)
+			shiftLeft(content);
 	}
-	private boolean nullRow(ItemStack[] content){
-		int i = 0;
-		while(i < 3){
-			if(content[i] != null) return false;
-			i++;
-		} return true;
+
+	private void shiftLeft(ItemStack[] content){
+		for(int i = 0; i < content.length-1; i++){
+			content[i] = content[i+1];
+		}
+		content[content.length-1] = null;
 	}
-	
-	private boolean nullColumn(ItemStack[] content){
-		int j = 0;
-		while(j <= 6){
-			if(content[j] != null) return false;
-			j+=3;
-		} return true;
-	}
-	
-	private ItemStack[] shiftLeft(ItemStack[] content){
-		int left;
-		for(int i = 0; i <= 6; i+=3){
-			left = i;
-			for(int j = i+1; j < i+3; j++){
-				content[left] = content[j];
-				content[j] = null;
-				left = j;
-			}
-		}return content;
-	}
-	private ItemStack[] shiftUp(ItemStack[] content){
-		if(content == null) return null;
-		int up;
-		for(int j = 0; j < 3; j++){
-			up = j;
-			for(int i = j+3; i <= j+6; i+=3){
-				content[up] = content[i];
-				content[i] = null;
-				up = i;
-			}
-		} return content;
-	}
-	private boolean isNullInventory(ItemStack[] content){
+
+
+	private boolean isNullArray(ItemStack[] content){
 		for(int i = 0; i < content.length; i++){
 			if(content[i] != null) return false;
 		} return true;

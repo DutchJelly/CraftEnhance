@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
+import com.dutchjelly.craftenhance.messaging.Debug;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +26,7 @@ public class CraftRecipe implements ConfigurationSerializable {
 		permission = perm;
 		this.recipe = recipe;
 		this.result = result;
-		formatRecipeContent();
+		formatContentAmount();
 	}
 	
 	
@@ -58,7 +59,7 @@ public class CraftRecipe implements ConfigurationSerializable {
 	}
 	public void setContent(ItemStack[] content){
 		recipe = content;
-		formatRecipeContent();
+		formatContentAmount();
 	}
 	
 	public boolean resultMatches(ItemStack result){
@@ -80,11 +81,9 @@ public class CraftRecipe implements ConfigurationSerializable {
 		for(int i = 0; i < recipe.recipe.length; i++){
 			recipe.recipe[i] = fm.getItem(recipeKeys.get(i));
 		}
-		recipe.formatRecipeContent();
 		return recipe;
 	}
-	
-	//TODO make it so the item gets generated in fileconfig when it doesn't exist.
+
 	@Override
 	public Map<String, Object> serialize() {
 		FileManager fm = CraftEnhance.getPlugin(CraftEnhance.class).getFileManager();
@@ -109,6 +108,7 @@ public class CraftRecipe implements ConfigurationSerializable {
 		mapShapedIngredients(shapedRecipe);
 		return shapedRecipe;
 	}
+
 	private String[] getShape(){
 		String recipeShape[] = {"","",""};
 		for(int i = 0; i < 9; i++){
@@ -128,84 +128,12 @@ public class CraftRecipe implements ConfigurationSerializable {
 		}
 	}
 	
-	private void formatRecipeContent(){
-		if(!isNullRecipe()){
-			while(columnIsNull(0)) shiftLeft();
-			while(rowIsNull(0)) shiftUp();
-		}
-		formatContentAmount();
-	}
-	
 	private void formatContentAmount(){
 		for(ItemStack item : recipe){
 			if(item != null && item.getAmount() != 1)
 				item.setAmount(1);
 		}
 	}
-	
-	private void shiftLeft2(){
-		int left;
-		for(int i = 0; i <= 6; i+=3){
-			left = i;
-			for(int j = i+1; j < i+3; j++){
-				recipe[left] = recipe[j];
-				recipe[j] = null;
-				left = j;
-			}
-		}
-	}
-
-	public void shiftLeft(){
-	    for(int i = 0; i < 3; i++){
-	        for(int j = i; j < 9; j+= 3){
-	            if(i != 2) recipe[j] = recipe[j+1];
-	            else recipe[j] = recipe[j+1];
-            }
-        }
-    }
-
-	private void shiftUp(){
-	    for(int i = 3; i < 9; i++){
-            recipe[i-3] = recipe[i];
-        }
-        for(int i = 5; i < 9; i++){
-	        recipe[i] = null;
-        }
-    }
-
-	private void shiftUp2(){
-		int up;
-		for(int j = 0; j < 3; j++){
-			up = j;
-			for(int i = j+3; i <= j+6; i++){
-				recipe[up] = recipe[i];
-				recipe[i] = null;
-				up = i;
-			}
-		}
-	}
-	private boolean isNullRecipe(){
-		for(int i = 0; i < recipe.length; i++){
-			if(recipe[i] != null) return false;
-		} return true;
-	} 
-	
-	private boolean rowIsNull(int row){
-		int i = row;
-		while(i < row+3){
-			if(recipe[i] != null) return false;
-			i++;
-		} return true;
-	}
-	
-	private boolean columnIsNull(int column){
-		int j = column;
-		while(j < 9){
-			if(recipe[j] != null) return false;
-			j+=3;
-		} return true;
-	}
-	
 	
 	public String toString(){
 		return "Recipe of " + result != null ? result.getType().name() : "null" + " with key " + this.getKey() != null ? this.getKey() : "null";

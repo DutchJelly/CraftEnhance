@@ -26,7 +26,7 @@ public class RecipeLoader {
 	
 	public void loadRecipes(){
 		if(!main.getConfig().getBoolean("enable-recipes")){
-			Debug.Send("The cusom recipes are disabled on the server.");
+			Debug.Send("The custom recipes are disabled on the server.");
 			return;
 		}
 		List<CraftRecipe> queue = new ArrayList<CraftRecipe>();
