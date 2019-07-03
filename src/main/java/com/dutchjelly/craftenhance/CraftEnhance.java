@@ -36,6 +36,8 @@ public class CraftEnhance extends JavaPlugin{
 
 	//TODO Try to add categories.
 	//TODO Clean up redundant setcancelled in GUIs onclick event.
+	//TODO Fix the bug where you can't put the recipe in the left top.
+
 	
 	private FileManager fm;
 	private RecipeLoader loader;
@@ -62,6 +64,8 @@ public class CraftEnhance extends JavaPlugin{
 		setupListeners();
 		setupCommands();
 
+		getMessenger().message("CraftEnhance is managed and developed by DutchJelly.");
+		getMessenger().message("If you find a bug in the plugin, please report it to https://dev.bukkit.org/projects/craftenhance.");
 		VersionChecker.init(this).runVersionCheck();
 	}
 	

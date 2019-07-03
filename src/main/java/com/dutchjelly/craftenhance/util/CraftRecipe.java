@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.messaging.Debug;
+import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
@@ -14,30 +15,35 @@ import org.bukkit.inventory.ShapedRecipe;
 import com.dutchjelly.craftenhance.data.FileManager;
 
 @SerializableAs("Recipe")
-public class CraftRecipe implements ConfigurationSerializable {
+public class CraftRecipe implements ConfigurationSerializable{
 	
-	private String key;
+	private String configKey;
 	private String permission;
-	private ItemStack result;
 	private ItemStack defaultResult;
 	private ItemStack[] recipe;
-	private CraftRecipe(){}
+	private ItemStack result;
+
+	private CraftRecipe(){
+    }
 	public CraftRecipe(String perm, ItemStack result, ItemStack[] recipe){
 		permission = perm;
-		this.recipe = recipe;
-		this.result = result;
+		setContent(recipe);
 		formatContentAmount();
 	}
 	
 	
-	public String getKey(){
-		return key;
+	public String getConfigKey(){
+		return configKey;
 	}
+
+	//Still implemented because a lot of classes used this version.
+    // TODO abandon getConfigKey() to not have a redundant version of the function.
+	public String getKey(){
+	    return configKey;
+    }
+
 	public ItemStack[] getContents(){
 		return recipe;
-	}
-	public ItemStack getResult(){
-		return result;
 	}
 	public String getPerms(){
 		return permission;
@@ -46,7 +52,7 @@ public class CraftRecipe implements ConfigurationSerializable {
 		return defaultResult;
 	}
 	public void setKey(String key){
-		this.key = key;
+		this.configKey = key;
 	}
 	public void setPerms(String perms){
 		this.permission = perms;
@@ -57,6 +63,11 @@ public class CraftRecipe implements ConfigurationSerializable {
 	public void setResult(ItemStack result){
 		this.result = result;
 	}
+
+	public ItemStack getResult(){
+	    return result;
+    }
+
 	public void setContent(ItemStack[] content){
 		recipe = content;
 		formatContentAmount();
@@ -65,7 +76,6 @@ public class CraftRecipe implements ConfigurationSerializable {
 	public boolean resultMatches(ItemStack result){
 		return result != null && (result.equals(defaultResult) || result.equals(result));
 	}
-	
 	
 	@SuppressWarnings("unchecked")
 	public static CraftRecipe deserialize(Map<String,Object> args){
@@ -76,7 +86,7 @@ public class CraftRecipe implements ConfigurationSerializable {
 		fm = CraftEnhance.getPlugin(CraftEnhance.class).getFileManager();
 		recipe.result = fm.getItem((String)args.get("result"));
 		recipe.permission = (String)args.get("permission");
-		recipe.recipe = new ItemStack[9];
+		recipe.setContent(new ItemStack[9]);
 		recipeKeys = (List<String>)args.get("recipe");
 		for(int i = 0; i < recipe.recipe.length; i++){
 			recipe.recipe[i] = fm.getItem(recipeKeys.get(i));
@@ -98,35 +108,7 @@ public class CraftRecipe implements ConfigurationSerializable {
 		serialized.put("recipe", recipeKeys);
 		return serialized;
 	}
-	
-	
-	//Returns the shaped recipe if the crafting type is workbench.
-	public ShapedRecipe getShapedRecipe(){
-		@SuppressWarnings("deprecation")
-		ShapedRecipe shapedRecipe = new ShapedRecipe(result);
-		shapedRecipe.shape(getShape());
-		mapShapedIngredients(shapedRecipe);
-		return shapedRecipe;
-	}
 
-	private String[] getShape(){
-		String recipeShape[] = {"","",""};
-		for(int i = 0; i < 9; i++){
-			if(recipe[i] != null)
-				recipeShape[i/3] += (char)('A' + i);
-			else
-				recipeShape[i/3] += ' ';
-		}
-		return recipeShape;
-	}
-	
-	private void mapShapedIngredients(ShapedRecipe shapedRecipe){
-		for(int i = 0; i < 9; i++){
-			if(recipe[i] != null){
-				shapedRecipe.setIngredient((char) ('A' + i), recipe[i].getType());
-			}
-		}
-	}
 	
 	private void formatContentAmount(){
 		for(ItemStack item : recipe){
@@ -136,6 +118,6 @@ public class CraftRecipe implements ConfigurationSerializable {
 	}
 	
 	public String toString(){
-		return "Recipe of " + result != null ? result.getType().name() : "null" + " with key " + this.getKey() != null ? this.getKey() : "null";
+		return "Recipe of " + result != null ? result.getType().name() : "null" + " with key " + this.getConfigKey() != null ? this.getConfigKey() : "null";
 	}
 }

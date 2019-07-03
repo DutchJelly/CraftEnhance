@@ -23,12 +23,12 @@ public class GUIButtons {
 		save = makeItem("&6Save changes", Material.EMERALD_ORE);
 		reset = makeItem("&7Reset recipe", Material.REDSTONE);
 		back = makeItem("&7Back to previous page", Material.GLOWSTONE_DUST);
-//		filling = makeItem("", Material.GRAY_STAINED_GLASS_PANE);
-		filling = makeGlassColor(makeItem("", Material.STAINED_GLASS_PANE), (short)7);
-//		next = makeItem("&2Next", Material.LIGHT_BLUE_STAINED_GLASS_PANE);
-		next = makeGlassColor(makeItem("&2Next", Material.STAINED_GLASS_PANE), (short)3);
-//		previous = makeItem("&2Previous", Material.LIGHT_BLUE_STAINED_GLASS_PANE);
-		previous = makeGlassColor(makeItem("&2Previous", Material.STAINED_GLASS_PANE), (short)3);
+		filling = makeItem("", Material.GRAY_STAINED_GLASS_PANE);
+		//filling = makeGlassColor(makeItem("", Material.STAINED_GLASS_PANE), (short)7);
+		next = makeItem("&2Next", Material.LIGHT_BLUE_STAINED_GLASS_PANE);
+		//next = makeGlassColor(makeItem("&2Next", Material.STAINED_GLASS_PANE), (short)3);
+		previous = makeItem("&2Previous", Material.LIGHT_BLUE_STAINED_GLASS_PANE);
+		//previous = makeGlassColor(makeItem("&2Previous", Material.STAINED_GLASS_PANE), (short)3);
 		delete = makeItem("&4&lDELETE", Material.REDSTONE_BLOCK);
 	}
 	
@@ -49,11 +49,11 @@ public class GUIButtons {
 	
 	//for versions below 1.13. 
 
-	private static ItemStack makeGlassColor(ItemStack item, short color){
-		ItemMeta meta = item.getItemMeta();
-		ItemStack glass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)7);
-		glass.setItemMeta(meta);
-		return glass;
-	}
+//	private static ItemStack makeGlassColor(ItemStack item, short color){
+//		ItemMeta meta = item.getItemMeta();
+//		ItemStack glass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)7);
+//		glass.setItemMeta(meta);
+//		return glass;
+//	}
 
 }

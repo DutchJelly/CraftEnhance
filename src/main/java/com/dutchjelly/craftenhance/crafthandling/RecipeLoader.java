@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
+import com.dutchjelly.craftenhance.util.RecipeUtil;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -62,7 +63,7 @@ public class RecipeLoader {
 	
 	private void addAll(List<CraftRecipe> queue){
 		if(queue == null) return;
-		queue.forEach(x -> main.getServer().addRecipe(x.getShapedRecipe()));
+		queue.forEach(x -> main.getServer().addRecipe(RecipeUtil.ShapeRecipe(x)));
 	}
 	
 	//Uses the iterator to find a recipe with equal content.
