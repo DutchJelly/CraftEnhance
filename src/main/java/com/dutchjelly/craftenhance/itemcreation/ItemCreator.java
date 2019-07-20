@@ -1,9 +1,9 @@
-package com.dutchjelly.itemcreation;
+package com.dutchjelly.craftenhance.itemcreation;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dutchjelly.itemcreation.util.ParseResult;
+import com.dutchjelly.craftenhance.Util.EnchantmentUtil;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentWrapper;
@@ -18,7 +18,8 @@ public class ItemCreator {
 	
 	private ItemStack item;
 	private String[] args;
-	
+
+
 	public ItemCreator(ItemStack item, String[] args){
 		this.item = item;
 		this.args = args;
@@ -133,7 +134,8 @@ public class ItemCreator {
 	
 	private Enchantment getEnchantment(String arg){
 		try{
-			//return Enchantment.getByName(arg);
+		    Enchantment olderMethod = EnchantmentUtil.getByName(arg);
+		    if(olderMethod != null) return olderMethod;
 			return EnchantmentWrapper.getByKey(NamespacedKey.minecraft(arg));
 		}catch(Exception e){
 			return null;

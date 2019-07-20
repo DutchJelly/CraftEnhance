@@ -3,15 +3,13 @@ package com.dutchjelly.craftenhance.crafthandling;
 import java.util.List;
 
 import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.util.RecipeUtil;
-import org.bukkit.Material;
+import com.dutchjelly.craftenhance.Util.RecipeUtil;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
-import com.dutchjelly.craftenhance.data.FileManager;
-import com.dutchjelly.craftenhance.util.CraftRecipe;
-import org.bukkit.inventory.Recipe;
+import com.dutchjelly.craftenhance.files.FileManager;
+import com.dutchjelly.craftenhance.model.CraftRecipe;
 
 public class RecipeInjector {
 	
@@ -23,10 +21,14 @@ public class RecipeInjector {
 	
 	public void injectResult(CraftingInventory inv){
 		List<CraftRecipe> recipes = fm.getRecipes();
-		if(recipes == null || recipes.isEmpty()) return;
+		if(recipes == null || recipes.isEmpty()) {
+			Debug.Send("Stopping injecting because empty recipes. Config Error..");
+			return;
+		}
 		ItemStack[] invContent = RecipeUtil.EnsureDefaultSize(inv.getMatrix()).clone();
 		RecipeUtil.Format(invContent);
 		ItemStack result = getResult(invContent, recipes, inv.getViewers());
+		Debug.Send("Found result with type " + (result == null ? "null" : result.getType().toString()));
 		//If the result is null, getResult() didn't find any default results. If it's AIR, it found a default
 		//result of air which means the default version of the recipe doesn't exist on the server. If 
 		//multiple of the same recipes exist they'll both have the same default result, so this'll always
@@ -40,8 +42,8 @@ public class RecipeInjector {
 		for(CraftRecipe r : recipes){
 			ItemStack recipeContent[] = r.getContents().clone();
 			RecipeUtil.Format(recipeContent);
-			if(materialsMatch(recipeContent, invContent)){
-				if(itemsMatch(recipeContent, invContent) && viewersHavePermission(r,viewers)) {
+			if(RecipeUtil.AreEqualTypes(recipeContent, invContent)){
+				if(RecipeUtil.AreEqualItems(recipeContent, invContent) && viewersHavePermission(r,viewers)) {
                     Debug.Send("A recipe matches with " + r.toString());
                     return r.getResult();
                 }
@@ -51,7 +53,6 @@ public class RecipeInjector {
 		}
 		return defaultResult;
 	}
-	
 
 	private boolean viewersHavePermission(CraftRecipe recipe, List<HumanEntity> humans){
 		if(recipe.getPerms().equals("")) return true;
@@ -62,28 +63,8 @@ public class RecipeInjector {
 		return true;
 	}
 	
-	public boolean itemsMatch(ItemStack[] recipe, ItemStack[] content){
-		for(int i = 0; i < recipe.length; i++){
-			if(!areEqualItems(content[i], recipe[i])) return false;
-		}
-		return true;
-	}
 
-	
-	public boolean materialsMatch(ItemStack[] recipe, ItemStack[] content){
-		for(int i = 0; i < recipe.length; i++){
-			if(!areEqualTypes(content[i], recipe[i])) return false;
-		}
-		return true;
-	}
-	private boolean areEqualTypes(ItemStack content, ItemStack recipe){
-		return content == recipe || (content != null && recipe != null && 
-				recipe.getType().equals(content.getType()));
-	}
-	private boolean areEqualItems(ItemStack content, ItemStack recipe){
-		return content == recipe || (content != null && recipe != null &&
-				recipe.isSimilar(content));
-	}
+
 	
 	
 }

@@ -1,6 +1,7 @@
 package com.dutchjelly.craftenhance.messaging;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.logging.Logger;
 
@@ -37,5 +38,4 @@ public class Debug {
 		}
 		logger.info("");
 	}
-	
 }

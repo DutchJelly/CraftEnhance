@@ -1,4 +1,4 @@
-package com.dutchjelly.craftenhance.commands;
+package com.dutchjelly.craftenhance.commands.ceh;
 
 import com.dutchjelly.craftenhance.commandhandling.CmdInterface;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmd;

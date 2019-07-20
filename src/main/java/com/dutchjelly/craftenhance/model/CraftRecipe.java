@@ -1,18 +1,15 @@
-package com.dutchjelly.craftenhance.util;
+package com.dutchjelly.craftenhance.model;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
-import com.dutchjelly.craftenhance.messaging.Debug;
-import org.bukkit.Material;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
 
-import com.dutchjelly.craftenhance.data.FileManager;
+import com.dutchjelly.craftenhance.files.FileManager;
 
 @SerializableAs("Recipe")
 public class CraftRecipe implements ConfigurationSerializable{
@@ -118,6 +115,6 @@ public class CraftRecipe implements ConfigurationSerializable{
 	}
 	
 	public String toString(){
-		return "Recipe of " + result != null ? result.getType().name() : "null" + " with key " + this.getConfigKey() != null ? this.getConfigKey() : "null";
+		return "Recipe of " + (result != null ? result.getType().name() : "null") + " with key " + (this.getConfigKey() != null ? this.getConfigKey() : "null");
 	}
 }

@@ -1,4 +1,4 @@
-package com.dutchjelly.craftenhance.commands;
+package com.dutchjelly.craftenhance.commands.ceh;
 
 import com.dutchjelly.craftenhance.commandhandling.CmdInterface;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmd;
@@ -6,28 +6,29 @@ import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CustomCmd(cmdPath="ceh.cleanitemfile", perms="perms.recipe-editor")
-public class CleanItemFileCmd implements CmdInterface {
+@CustomCmd(cmdPath={"recipes","ceh.viewer"}, perms="perms.recipe-viewer")
+public class RecipesCmd implements CmdInterface {
 
 	private CustomCmdHandler handler;
 	
-	public CleanItemFileCmd(CustomCmdHandler handler){
+	public RecipesCmd(CustomCmdHandler handler){
 		this.handler = handler;
 	}
 
 	@Override
 	public String getDescription() {
-		return "Removes the unused items from the config. The usage is /ceh cleanitemfile.";
+		return "The view command opens an inventory that contains all available recipes for the sender of the command, unless it's configured to show all. The usage is /ceh view or /recipes";
 	}
 
 	@Override
 	public void handlePlayerCommand(Player p, String[] args) {
-		handler.getMain().getFileManager().cleanItemFile();
-		handler.getMain().getMessenger().message("Successfully cleared all unused items.", p);
+		handler.getMain().getGUIContainer().openRecipesViewer(p);
 	}
 
 	@Override
 	public void handleConsoleCommand(CommandSender sender, String[] args) {
 		handler.getMain().getMessenger().messageFromConfig("messages.commands.only-for-players", sender);
 	}
+	
+
 }

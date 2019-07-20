@@ -1,6 +1,6 @@
 main: com.dutchjelly.craftenhance.CraftEnhance
 name: CraftEnhance
-version: 2.3.1-BETA
+version: 2.3.2
 api-version: 1.13
 commands:
   recipes:
@@ -8,7 +8,7 @@ commands:
     usage: /recipes
   edititem:
     description: Edits the item in your hand. Try to tab complete to view all subcommands. To see what a subcommand does, do /edititem [subcommand] help.
-    usage: /edititem [lore,itemflag,enchant,durability,name,localizedname]
+    usage: /edititem [lore,itemflag,enchant,durability,name]
   ceh:
     description: Use /ceh and see tab completions. To see what a command does do /ceh [subcommand] help.
     usage: /ceh [viewer,changekey,createrecipe,cleanitemfile,recipeperm,setpermission,specs,orderrecipes]

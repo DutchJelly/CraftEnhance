@@ -1,4 +1,4 @@
-package com.dutchjelly.craftenhance.data;
+package com.dutchjelly.craftenhance.files;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 import org.bukkit.ChatColor;

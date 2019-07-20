@@ -1,7 +1,8 @@
-package com.dutchjelly.craftenhance.util;
+package com.dutchjelly.craftenhance.Util;
 
 
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -24,10 +25,14 @@ public class GUIButtons {
 		reset = makeItem("&7Reset recipe", Material.REDSTONE);
 		back = makeItem("&7Back to previous page", Material.GLOWSTONE_DUST);
 		filling = makeItem("", Material.GRAY_STAINED_GLASS_PANE);
+		//filling = makeItem("", new ItemStack(Material.STAINED_GLASS_PANE, 1, DyeColor.GRAY.getDyeData()));
 		//filling = makeGlassColor(makeItem("", Material.STAINED_GLASS_PANE), (short)7);
 		next = makeItem("&2Next", Material.LIGHT_BLUE_STAINED_GLASS_PANE);
+		//next = makeItem("&2Next", new ItemStack(Material.STAINED_GLASS_PANE, 1, DyeColor.LIGHT_BLUE.getDyeData()));
 		//next = makeGlassColor(makeItem("&2Next", Material.STAINED_GLASS_PANE), (short)3);
 		previous = makeItem("&2Previous", Material.LIGHT_BLUE_STAINED_GLASS_PANE);
+		//previous = makeItem("&2Previous", new ItemStack(Material.STAINED_GLASS_PANE, 1, DyeColor.LIGHT_BLUE.getDyeData()));
+
 		//previous = makeGlassColor(makeItem("&2Previous", Material.STAINED_GLASS_PANE), (short)3);
 		delete = makeItem("&4&lDELETE", Material.REDSTONE_BLOCK);
 	}
@@ -41,6 +46,10 @@ public class GUIButtons {
 	
 	private static ItemStack makeItem(String name, Material type){
 		ItemStack item = new ItemStack(type);
+		return makeItem(name, item);
+	}
+
+	private static ItemStack makeItem(String name, ItemStack item){
 		ItemMeta meta = item.getItemMeta();
 		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', name));
 		item.setItemMeta(setBasicMeta(meta));

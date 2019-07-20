@@ -1,8 +1,10 @@
 package com.dutchjelly.craftenhance.gui;
 
-import com.dutchjelly.craftenhance.util.CraftRecipe;
-import com.dutchjelly.craftenhance.util.GUIButtons;
+import com.dutchjelly.craftenhance.model.CraftRecipe;
+import com.dutchjelly.craftenhance.Util.GUIButtons;
+import com.dutchjelly.craftenhance.Util.RecipeUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -69,9 +71,13 @@ public class RecipeEditor implements GUIElement{
 		if(!(e.getWhoClicked() instanceof Player)) return;
 		boolean cancelEvent = true;
 		ItemStack currentItem = e.getCurrentItem();
+		if(RecipeUtil.IsNullElement(currentItem))
+		    return;
 		if(currentItem.equals(GUIButtons.save)){
-			saveRecipe();
-			container.getMain().getMessenger().message("Successfully saved the recipe.", e.getWhoClicked());
+			if(saveRecipe())
+				container.getMain().getMessenger().message("Successfully saved the recipe.", e.getWhoClicked());
+			else
+				container.getMain().getMessenger().message("Failed to save the recipe because it doesn't contain a result item or a recipe.", e.getWhoClicked());
 		} else if(currentItem.equals(GUIButtons.reset)){
 			resetInventory();
 		} else if(currentItem.equals(GUIButtons.back)){
@@ -97,15 +103,21 @@ public class RecipeEditor implements GUIElement{
 		container.getMain().getRecipeLoader().loadRecipes();
 	}
 	
-	private void saveRecipe() {
+	private boolean saveRecipe() {
 		ItemStack[] newContents = new ItemStack[9];
+		if(inventory.getItem(13) == null || inventory.getItem(13).getType() == Material.AIR){
+			return false;
+		}
 		for(int i = 0; i < 9; i++){
 			newContents[i] = inventory.getItem((i/3 * 9) + i%3);
 		}
+		if(RecipeUtil.IsNullArray(newContents))
+		    return false;
 		recipe.setContent(newContents);
 		recipe.setResult(inventory.getItem(13));
 		container.getMain().getFileManager().saveRecipe(recipe);
 		container.getMain().getRecipeLoader().loadRecipes();
+		return true;
 	}
 
 	@Override

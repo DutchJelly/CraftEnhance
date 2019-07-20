@@ -5,14 +5,14 @@ import java.util.Iterator;
 import java.util.List;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
-import com.dutchjelly.craftenhance.util.RecipeUtil;
+import com.dutchjelly.craftenhance.Util.RecipeUtil;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.util.CraftRecipe;
+import com.dutchjelly.craftenhance.model.CraftRecipe;
 
 public class RecipeLoader {
 	

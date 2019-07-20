@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.util.CraftRecipe;
+import com.dutchjelly.craftenhance.model.CraftRecipe;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -40,10 +40,17 @@ public class GUIContainer {
 		
 		if(e instanceof InventoryClickEvent){
 			InventoryClickEvent clickEvent = (InventoryClickEvent)e;
-			if(assignHandler(clickEvent)) return;
-			boolean ret = cancelClick(clickEvent);
-			if (!clickEvent.isCancelled())
-				clickEvent.setCancelled(ret);
+			boolean handlerAssigned = true; //We know that, if an exception occurs, that an assigned handler causes it.
+			try{
+				handlerAssigned = assignHandler(clickEvent);
+			}
+			finally { //Make sure that the click event gets cancelled when exceptions occur.
+				if(handlerAssigned){
+					boolean ret = cancelClick(clickEvent);
+					if (!clickEvent.isCancelled() && ret)
+						clickEvent.setCancelled(ret);
+				}
+			}
 		}
 	}
 	

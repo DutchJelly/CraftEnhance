@@ -1,4 +1,4 @@
-package com.dutchjelly.itemcreation.commands;
+package com.dutchjelly.craftenhance.commands.edititem;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -6,8 +6,8 @@ import org.bukkit.entity.Player;
 import com.dutchjelly.craftenhance.commandhandling.CmdInterface;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmd;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
-import com.dutchjelly.itemcreation.ItemCreator;
-import com.dutchjelly.itemcreation.util.ParseResult;
+import com.dutchjelly.craftenhance.itemcreation.ItemCreator;
+import com.dutchjelly.craftenhance.itemcreation.ParseResult;
 
 @CustomCmd(cmdPath="edititem.itemflag", perms="perms.item-editor")
 public class ItemFlagCmd implements CmdInterface{

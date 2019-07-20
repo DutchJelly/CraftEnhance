@@ -9,35 +9,33 @@ import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
-import com.dutchjelly.craftenhance.commands.ChangeKeyCmd;
-import com.dutchjelly.craftenhance.commands.CleanItemFileCmd;
-import com.dutchjelly.craftenhance.commands.CreateRecipeCmd;
-import com.dutchjelly.craftenhance.commands.OrderRecipesCmd;
-import com.dutchjelly.craftenhance.commands.RecipesCmd;
-import com.dutchjelly.craftenhance.commands.SetPermissionCmd;
-import com.dutchjelly.craftenhance.commands.SpecsCommand;
+import com.dutchjelly.craftenhance.commands.ceh.ChangeKeyCmd;
+import com.dutchjelly.craftenhance.commands.ceh.CleanItemFileCmd;
+import com.dutchjelly.craftenhance.commands.ceh.CreateRecipeCmd;
+import com.dutchjelly.craftenhance.commands.ceh.OrderRecipesCmd;
+import com.dutchjelly.craftenhance.commands.ceh.RecipesCmd;
+import com.dutchjelly.craftenhance.commands.ceh.SetPermissionCmd;
+import com.dutchjelly.craftenhance.commands.ceh.SpecsCommand;
 import com.dutchjelly.craftenhance.crafthandling.RecipeInjector;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
-import com.dutchjelly.craftenhance.data.ConfigFormatter;
-import com.dutchjelly.craftenhance.data.FileManager;
+import com.dutchjelly.craftenhance.files.ConfigFormatter;
+import com.dutchjelly.craftenhance.files.FileManager;
 import com.dutchjelly.craftenhance.gui.GUIContainer;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.messaging.Messenger;
-import com.dutchjelly.craftenhance.util.GUIButtons;
-import com.dutchjelly.craftenhance.util.CraftRecipe;
-import com.dutchjelly.itemcreation.commands.DisplayNameCmd;
-import com.dutchjelly.itemcreation.commands.DurabilityCmd;
-import com.dutchjelly.itemcreation.commands.EnchantCmd;
-import com.dutchjelly.itemcreation.commands.ItemFlagCmd;
-import com.dutchjelly.itemcreation.commands.LocalizedNameCmd;
-import com.dutchjelly.itemcreation.commands.LoreCmd;
+import com.dutchjelly.craftenhance.Util.GUIButtons;
+import com.dutchjelly.craftenhance.model.CraftRecipe;
+import com.dutchjelly.craftenhance.commands.edititem.DisplayNameCmd;
+import com.dutchjelly.craftenhance.commands.edititem.DurabilityCmd;
+import com.dutchjelly.craftenhance.commands.edititem.EnchantCmd;
+import com.dutchjelly.craftenhance.commands.edititem.ItemFlagCmd;
+import com.dutchjelly.craftenhance.commands.edititem.LocalizedNameCmd;
+import com.dutchjelly.craftenhance.commands.edititem.LoreCmd;
 
 public class CraftEnhance extends JavaPlugin{
 
 	//TODO Try to add categories.
 	//TODO Clean up redundant setcancelled in GUIs onclick event.
-	//TODO Fix the bug where you can't put the recipe in the left top.
-
 	
 	private FileManager fm;
 	private RecipeLoader loader;
@@ -76,6 +74,18 @@ public class CraftEnhance extends JavaPlugin{
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
+
+		//Make sure that the user doesn't get a whole stacktrace when using an unsupported server jar.
+		//Note that this error could only get caused by onEnable() not being called.
+		if(commandHandler == null){
+			getMessenger().message("Could not execute the command.", sender);
+			getMessenger().message("Something went wrong with initializing the commandHandler. Please make sure to use" +
+			" Spigot or Bukkit when using this plugin. If you are using Spigot or Bukkit and still experiencing this " +
+			"issue, please send a bug report here: https://dev.bukkit.org/projects/craftenhance.");
+			getMessenger().message("Disabling the plugin...");
+			getPluginLoader().disablePlugin(this);
+		}
+
 		commandHandler.handleCommand(sender, label, args);
 		return true;
 	}

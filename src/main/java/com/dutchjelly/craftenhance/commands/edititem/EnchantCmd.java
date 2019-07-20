@@ -1,4 +1,4 @@
-package com.dutchjelly.itemcreation.commands;
+package com.dutchjelly.craftenhance.commands.edititem;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -6,27 +6,28 @@ import org.bukkit.entity.Player;
 import com.dutchjelly.craftenhance.commandhandling.CmdInterface;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmd;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
-import com.dutchjelly.itemcreation.ItemCreator;
-import com.dutchjelly.itemcreation.util.ParseResult;
+import com.dutchjelly.craftenhance.itemcreation.ItemCreator;
+import com.dutchjelly.craftenhance.itemcreation.ParseResult;
 
-@CustomCmd(cmdPath = "edititem.name", perms = "perms.item-editor")
-public class DisplayNameCmd implements CmdInterface{
+@CustomCmd(cmdPath="edititem.enchant", perms="perms.item-editor")
+public class EnchantCmd implements CmdInterface{
 
+	
 	private CustomCmdHandler handler;
 	
-	public DisplayNameCmd(CustomCmdHandler handler){
+	public EnchantCmd(CustomCmdHandler handler){
 		this.handler = handler;
 	}
 	
 	@Override
 	public String getDescription() {
-		return "With this command the displayname of the held item can be set. Here's an example of the usage: &7/edititem name example name";
+		return "The enchant command allows users to efficiently enchant items with any enchantment with any level. On use this command will remove all enchantments currently on the held item and enchant it with all specified enchantments. An example of the usage is /edititem enchant protection 10 punch 10 unbreaking 3 fire_protection 4.";
 	}
 
 	@Override
 	public void handlePlayerCommand(Player p, String[] args) {
 		ItemCreator creator = new ItemCreator(p.getInventory().getItemInHand(), args);
-		ParseResult result = creator.setDisplayName();
+		ParseResult result = creator.enchant();
 		p.getInventory().setItemInHand(creator.getItem());
 		handler.getMain().getMessenger().message(result.getMessage(), p);
 	}
@@ -35,4 +36,6 @@ public class DisplayNameCmd implements CmdInterface{
 	public void handleConsoleCommand(CommandSender sender, String[] args) {
 		handler.getMain().getMessenger().messageFromConfig("messages.commands.only-for-players", sender);
 	}
+
 }
+

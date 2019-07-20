@@ -1,4 +1,4 @@
-package com.dutchjelly.itemcreation.util;
+package com.dutchjelly.craftenhance.itemcreation;
 
 public enum ParseResult {
 	SUCCESS("Successfully edited the item!"), 

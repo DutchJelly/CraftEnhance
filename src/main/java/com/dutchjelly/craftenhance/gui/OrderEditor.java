@@ -3,8 +3,9 @@ package com.dutchjelly.craftenhance.gui;
 import java.util.List;
 
 import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.util.CraftRecipe;
-import com.dutchjelly.craftenhance.util.GUIButtons;
+import com.dutchjelly.craftenhance.model.CraftRecipe;
+import com.dutchjelly.craftenhance.Util.GUIButtons;
+import com.dutchjelly.craftenhance.Util.RecipeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -69,7 +70,8 @@ public class OrderEditor implements GUIElement{
 		Player player = (Player) e.getWhoClicked();
 		
 		CraftRecipe recipe;
-		
+		if(RecipeUtil.IsNullElement(e.getCurrentItem()))
+			return;
 		recipe = findResultingRecipe(e.getCurrentItem(), e.getRawSlot());
 		if(recipe != null){
 			if(e.getClick() == ClickType.LEFT)

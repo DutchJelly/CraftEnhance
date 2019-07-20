@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.util.CraftRecipe;
-import com.dutchjelly.craftenhance.util.GUIButtons;
+import com.dutchjelly.craftenhance.model.CraftRecipe;
+import com.dutchjelly.craftenhance.Util.GUIButtons;
+import com.dutchjelly.craftenhance.Util.RecipeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -102,7 +103,10 @@ public class RecipesViewer implements GUIElement{
 				container.openRecipeViewer(recipe, player);
 			return;
 		}
-		
+
+		if(RecipeUtil.IsNullElement(e.getCurrentItem()))
+			return;
+
 		if(e.getCurrentItem().equals(GUIButtons.next)){
 			scroll(1);
 		} else if(e.getCurrentItem().equals(GUIButtons.previous)){

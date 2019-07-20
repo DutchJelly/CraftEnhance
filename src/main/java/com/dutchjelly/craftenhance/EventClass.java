@@ -1,5 +1,6 @@
 package com.dutchjelly.craftenhance;
 
+import com.dutchjelly.craftenhance.messaging.Debug;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -16,6 +17,7 @@ public class EventClass implements Listener{
 	
 	@EventHandler
 	public void onPrepareCraft(PrepareItemCraftEvent e){
+		Debug.Send("Noticed someone crafting...");
 		main.getRecipeInjector().injectResult(e.getInventory());
 	}
 	

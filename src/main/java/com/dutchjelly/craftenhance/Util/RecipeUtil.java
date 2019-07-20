@@ -1,8 +1,11 @@
-package com.dutchjelly.craftenhance.util;
+package com.dutchjelly.craftenhance.Util;
 
+import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.messaging.Debug;
+import com.dutchjelly.craftenhance.model.CraftRecipe;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -17,6 +20,8 @@ public class RecipeUtil {
     public RecipeUtil() {
         throw new NotImplementedException();
     }
+
+    private static List<String> UsedKeys = new ArrayList<>();
 
     //Formats content so that it's shifted to the left top.
     public static void Format(ItemStack[] content){
@@ -93,7 +98,16 @@ public class RecipeUtil {
     public static ShapedRecipe ShapeRecipe(CraftRecipe craftRecipe){
         ItemStack[] content = craftRecipe.getContents().clone();
         Format(content);
-        ShapedRecipe shaped = new ShapedRecipe(craftRecipe.getResult());
+        //A key and namespace of the recipe on the server.
+        String recipeKey = craftRecipe.getKey().toLowerCase().replaceAll("[^a-z0-9 ]", "");
+        while(UsedKeys.contains(recipeKey)) recipeKey += "A";
+        UsedKeys.add(recipeKey);
+        NamespacedKey key = new NamespacedKey(
+                CraftEnhance.getPlugin(CraftEnhance.class),
+                recipeKey
+        );
+        Debug.Send("Recipe added with Namespacedkey " + recipeKey);
+        ShapedRecipe shaped = new ShapedRecipe(key, craftRecipe.getResult());
         shaped.shape(GetShape(content));
         MapIngredients(shaped, content);
         return shaped;
@@ -134,5 +148,57 @@ public class RecipeUtil {
                 recipe.setIngredient((char) ('A' + i), content[i].getType());
             }
         }
+    }
+
+    //Looks for every index if the item in recipe has an equal type of the item in content.
+    public static boolean AreEqualTypes(ItemStack[] recipe, ItemStack[] content){
+        for(int i = 0; i < recipe.length; i++){
+            if(!RecipeUtil.AreEqualTypes(content[i], recipe[i])) return false;
+        }
+        return true;
+    }
+
+    //Looks if the types of content and recipe match.
+    public static boolean AreEqualTypes(ItemStack content, ItemStack recipe){
+        content = EnsureNullAir(content);
+        recipe = EnsureNullAir(recipe);
+        if(content == null){
+            return recipe == null;
+        }
+        return recipe != null && recipe.getType().equals(content.getType());
+    }
+
+    //Looks for every index if the item in recipe is equal to the item in content.
+    public static boolean AreEqualItems(ItemStack[] recipe, ItemStack[] content){
+        for(int i = 0; i < recipe.length; i++){
+            if(!RecipeUtil.AreEqualItems(content[i], recipe[i])){
+                Debug.Send("-------------------------------");
+                Debug.Send("Found two no equal items on index " + i + "...");
+                Debug.Send(content[i]);
+                Debug.Send(recipe[i]);
+                Debug.Send("-------------------------------");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //Looks if content and recipe are equal items.
+    public static boolean AreEqualItems(ItemStack content, ItemStack recipe){
+        content = EnsureNullAir(content);
+        recipe = EnsureNullAir(recipe);
+        if(content != null && recipe != null)
+            Debug.Send("Checking if the following are equal items: " + content.toString() + " and " + recipe.toString());
+        return content == recipe || (content != null && recipe != null &&
+                recipe.isSimilar(content));
+    }
+
+    //Used to counter changes in spigot versions: Inventories contain air instead of
+    //null items in versions below 1.14.
+    private static ItemStack EnsureNullAir(ItemStack item){
+        if(item == null) return item;
+        if(item.getType().equals(Material.AIR))
+            return null;
+        return item;
     }
 }

@@ -1,4 +1,4 @@
-package com.dutchjelly.craftenhance.commands;
+package com.dutchjelly.craftenhance.commands.ceh;
 
 import com.dutchjelly.craftenhance.commandhandling.CmdInterface;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmd;
@@ -6,29 +6,28 @@ import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CustomCmd(cmdPath={"recipes","ceh.viewer"}, perms="perms.recipe-viewer")
-public class RecipesCmd implements CmdInterface {
-
+@CustomCmd(cmdPath="ceh.orderrecipes", perms="perms.recipe-editor")
+public class OrderRecipesCmd implements CmdInterface {
+	
 	private CustomCmdHandler handler;
 	
-	public RecipesCmd(CustomCmdHandler handler){
+	public OrderRecipesCmd(CustomCmdHandler handler){
 		this.handler = handler;
 	}
-
+	
 	@Override
 	public String getDescription() {
-		return "The view command opens an inventory that contains all available recipes for the sender of the command, unless it's configured to show all. The usage is /ceh view or /recipes";
+		return "The orderrecipes command opens a gui to order recipes in the recipes viewer gui. Players with the permission of recipe editing can order the recipes by left- or rightclickign them. The clicked recipe will shift respectively to the left and right. To open the gui use /ceh orderrecipes.";
 	}
 
 	@Override
 	public void handlePlayerCommand(Player p, String[] args) {
-		handler.getMain().getGUIContainer().openRecipesViewer(p);
+		handler.getMain().getGUIContainer().openOrderEditor(p);
 	}
 
 	@Override
 	public void handleConsoleCommand(CommandSender sender, String[] args) {
 		handler.getMain().getMessenger().messageFromConfig("messages.commands.only-for-players", sender);
 	}
-	
 
 }

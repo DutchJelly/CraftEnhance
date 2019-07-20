@@ -1,7 +1,8 @@
 package com.dutchjelly.craftenhance.gui;
 
-import com.dutchjelly.craftenhance.util.CraftRecipe;
-import com.dutchjelly.craftenhance.util.GUIButtons;
+import com.dutchjelly.craftenhance.model.CraftRecipe;
+import com.dutchjelly.craftenhance.Util.GUIButtons;
+import com.dutchjelly.craftenhance.Util.RecipeUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -57,6 +58,8 @@ public class RecipeViewer implements GUIElement {
 		e.setCancelled(true);
 		//TODO add instanceof Player check to eventclass.
 		Player player = (Player) e.getWhoClicked();
+		if(RecipeUtil.IsNullElement(e.getCurrentItem()))
+			return;
 		if(e.getCurrentItem().equals(GUIButtons.back)){
 			container.openGUIElement(previousGUI, player);
 		} else if(e.getRawSlot() % 9 < 3){ 

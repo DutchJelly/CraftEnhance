@@ -1,4 +1,4 @@
-package com.dutchjelly.craftenhance.data;
+package com.dutchjelly.craftenhance.files;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.util.CraftRecipe;
+import com.dutchjelly.craftenhance.model.CraftRecipe;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
