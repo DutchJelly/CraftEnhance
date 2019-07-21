@@ -1,5 +1,6 @@
 package com.dutchjelly.craftenhance.Util;
 
+import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.model.CraftRecipe;
@@ -8,10 +9,14 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.material.MaterialData;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RecipeUtil {
 
@@ -102,12 +107,9 @@ public class RecipeUtil {
         String recipeKey = craftRecipe.getKey().toLowerCase().replaceAll("[^a-z0-9 ]", "");
         while(UsedKeys.contains(recipeKey)) recipeKey += "A";
         UsedKeys.add(recipeKey);
-        NamespacedKey key = new NamespacedKey(
-                CraftEnhance.getPlugin(CraftEnhance.class),
-                recipeKey
+        ShapedRecipe shaped = Adapter.GetShapedRecipe(
+                CraftEnhance.getPlugin(CraftEnhance.class), "ceh" + recipeKey, craftRecipe.getResult()
         );
-        Debug.Send("Recipe added with Namespacedkey " + recipeKey);
-        ShapedRecipe shaped = new ShapedRecipe(key, craftRecipe.getResult());
         shaped.shape(GetShape(content));
         MapIngredients(shaped, content);
         return shaped;
@@ -145,7 +147,8 @@ public class RecipeUtil {
     private static void MapIngredients(ShapedRecipe recipe, ItemStack[] content){
         for(int i = 0; i < 9; i++){
             if(content[i] != null){
-                recipe.setIngredient((char) ('A' + i), content[i].getType());
+                //recipe.setIngredient((char) ('A' + i), content[i].getType());
+                Adapter.SetIngredient(recipe, (char) ('A' + i), content[i]);
             }
         }
     }
@@ -172,11 +175,11 @@ public class RecipeUtil {
     public static boolean AreEqualItems(ItemStack[] recipe, ItemStack[] content){
         for(int i = 0; i < recipe.length; i++){
             if(!RecipeUtil.AreEqualItems(content[i], recipe[i])){
-                Debug.Send("-------------------------------");
-                Debug.Send("Found two no equal items on index " + i + "...");
-                Debug.Send(content[i]);
-                Debug.Send(recipe[i]);
-                Debug.Send("-------------------------------");
+//                Debug.Send("-------------------------------");
+//                Debug.Send("Found two no equal items on index " + i + "...");
+//                Debug.Send(content[i]);
+//                Debug.Send(recipe[i]);
+//                Debug.Send("-------------------------------");
                 return false;
             }
         }
@@ -187,8 +190,6 @@ public class RecipeUtil {
     public static boolean AreEqualItems(ItemStack content, ItemStack recipe){
         content = EnsureNullAir(content);
         recipe = EnsureNullAir(recipe);
-        if(content != null && recipe != null)
-            Debug.Send("Checking if the following are equal items: " + content.toString() + " and " + recipe.toString());
         return content == recipe || (content != null && recipe != null &&
                 recipe.isSimilar(content));
     }
@@ -201,4 +202,24 @@ public class RecipeUtil {
             return null;
         return item;
     }
+
+    //Mirrors the content verticly. The length of content has to be 9 and should
+    //represent a 3*3 crafting bench's content.
+    public static ItemStack[] MirrorVerticle(ItemStack[] content){
+        //012  ->  210
+        //345  ->  543
+        //678  ->  876
+        if(content == null || content.length != 9) return null;
+        ItemStack[] mirrored = new ItemStack[9];
+        for(int i = 0; i < 9; i+=3){
+            for(int j = 0; j < 3; j++){
+                //Reverses the row for every loop of i.
+                mirrored[i+2 - j] = content[i+j];
+            }
+        }
+        //To verify that the mirroring is working. I should write a unit test for this.
+        //Debug.Send("Mirrored \n" + String.join(", ", Arrays.asList(content).stream().map(x -> x == null ? "null" : x.toString()).collect(Collectors.toList())) + " to \n" + String.join(",", Arrays.asList(mirrored).stream().map(x -> x == null ? "null" : x.toString()).collect(Collectors.toList())));
+        return mirrored;
+    }
+
 }

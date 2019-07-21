@@ -1,6 +1,8 @@
 package com.dutchjelly.craftenhance.Util;
 
 
+import com.dutchjelly.bukkitadapter.AColor;
+import com.dutchjelly.bukkitadapter.Adapter;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -24,16 +26,9 @@ public class GUIButtons {
 		save = makeItem("&6Save changes", Material.EMERALD_ORE);
 		reset = makeItem("&7Reset recipe", Material.REDSTONE);
 		back = makeItem("&7Back to previous page", Material.GLOWSTONE_DUST);
-		filling = makeItem("", Material.GRAY_STAINED_GLASS_PANE);
-		//filling = makeItem("", new ItemStack(Material.STAINED_GLASS_PANE, 1, DyeColor.GRAY.getDyeData()));
-		//filling = makeGlassColor(makeItem("", Material.STAINED_GLASS_PANE), (short)7);
-		next = makeItem("&2Next", Material.LIGHT_BLUE_STAINED_GLASS_PANE);
-		//next = makeItem("&2Next", new ItemStack(Material.STAINED_GLASS_PANE, 1, DyeColor.LIGHT_BLUE.getDyeData()));
-		//next = makeGlassColor(makeItem("&2Next", Material.STAINED_GLASS_PANE), (short)3);
-		previous = makeItem("&2Previous", Material.LIGHT_BLUE_STAINED_GLASS_PANE);
-		//previous = makeItem("&2Previous", new ItemStack(Material.STAINED_GLASS_PANE, 1, DyeColor.LIGHT_BLUE.getDyeData()));
-
-		//previous = makeGlassColor(makeItem("&2Previous", Material.STAINED_GLASS_PANE), (short)3);
+		filling = makeItem("", Adapter.GetStainedGlassPane(AColor.GRAY));
+		next = makeItem("&2Next", Adapter.GetStainedGlassPane(AColor.LIGHT_BLUE));
+		previous = makeItem("&2Previous", Adapter.GetStainedGlassPane(AColor.LIGHT_BLUE));
 		delete = makeItem("&4&lDELETE", Material.REDSTONE_BLOCK);
 	}
 	
@@ -55,14 +50,5 @@ public class GUIButtons {
 		item.setItemMeta(setBasicMeta(meta));
 		return item;
 	}
-	
-	//for versions below 1.13. 
-
-//	private static ItemStack makeGlassColor(ItemStack item, short color){
-//		ItemMeta meta = item.getItemMeta();
-//		ItemStack glass = new ItemStack(Material.STAINED_GLASS_PANE, 1, (short)7);
-//		glass.setItemMeta(meta);
-//		return glass;
-//	}
 
 }

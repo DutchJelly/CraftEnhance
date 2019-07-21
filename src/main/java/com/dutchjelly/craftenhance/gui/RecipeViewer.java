@@ -4,9 +4,17 @@ import com.dutchjelly.craftenhance.model.CraftRecipe;
 import com.dutchjelly.craftenhance.Util.GUIButtons;
 import com.dutchjelly.craftenhance.Util.RecipeUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemFlag;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.Arrays;
 
 public class RecipeViewer implements GUIElement {
 	
@@ -32,6 +40,16 @@ public class RecipeViewer implements GUIElement {
 		for(int i = 0; i < 27; i++){
 			if((i%9) / 3 > 0) inventory.setItem(i, GUIButtons.filling);
 		}
+		ItemStack craftShower = new ItemStack(Material.WORKBENCH);
+		ItemMeta meta = craftShower.getItemMeta();
+		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&5Workbench Recipe"));
+		meta.setLore(Arrays.asList(
+				ChatColor.translateAlternateColorCodes('&', "&f<-- &eRecipe &f| &2Result &f-->")
+		));
+		meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
+		meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+		craftShower.setItemMeta(meta);
+		inventory.setItem(12, craftShower);
 	}
 	private void addRecipe(){
 		for(int i = 0; i < 9; i++){

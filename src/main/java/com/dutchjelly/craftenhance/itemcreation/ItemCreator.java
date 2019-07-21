@@ -3,13 +3,11 @@ package com.dutchjelly.craftenhance.itemcreation;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.Util.EnchantmentUtil;
-import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
@@ -34,13 +32,8 @@ public class ItemCreator {
 		if(args.length != 1) return ParseResult.NO_ARGS;
 		int durability = tryParse(args[0], -1);
 		if(durability < 0 || durability > 100) return ParseResult.NO_PERCENT;
-
-//		short maxDurability = item.getType().getMaxDurability();
-//		item.setDurability((short) (maxDurability - (maxDurability * (double)durability/100)));
-		Damageable meta = (Damageable)item.getItemMeta();
 		short maxDurability = item.getType().getMaxDurability();
-		meta.setDamage((int) (maxDurability - (maxDurability * (double)durability/100)));
-		item.setItemMeta((ItemMeta)meta);
+		item = Adapter.SetDurability(item,(int) (maxDurability - (maxDurability * (double)durability/100)));
 		return ParseResult.SUCCESS;
 	}
 	
@@ -135,8 +128,8 @@ public class ItemCreator {
 	private Enchantment getEnchantment(String arg){
 		try{
 		    Enchantment olderMethod = EnchantmentUtil.getByName(arg);
-		    if(olderMethod != null) return olderMethod;
-			return EnchantmentWrapper.getByKey(NamespacedKey.minecraft(arg));
+		    return olderMethod;
+			//return EnchantmentWrapper.getByKey(NamespacedKey.minecraft(arg));
 		}catch(Exception e){
 			return null;
 		}

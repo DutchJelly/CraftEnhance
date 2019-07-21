@@ -99,7 +99,7 @@ public class FileManager {
 	public String getItemKey(ItemStack item){
 		if(item == null) return null;
 		for(String key : items.keySet()){
-			if(item.isSimilar(items.get(key)))
+			if(item.equals(items.get(key)))
 				return key;
 		}
 		String uniqueKey = getUniqueItemKey(item);

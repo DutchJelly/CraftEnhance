@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.Util.RecipeUtil;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
@@ -28,27 +29,43 @@ public class RecipeInjector {
 		ItemStack[] invContent = RecipeUtil.EnsureDefaultSize(inv.getMatrix()).clone();
 		RecipeUtil.Format(invContent);
 		ItemStack result = getResult(invContent, recipes, inv.getViewers());
-		Debug.Send("Found result with type " + (result == null ? "null" : result.getType().toString()));
 		//If the result is null, getResult() didn't find any default results. If it's AIR, it found a default
 		//result of air which means the default version of the recipe doesn't exist on the server. If 
 		//multiple of the same recipes exist they'll both have the same default result, so this'll always
 		//be the case.
-		if(result != null) inv.setResult(result);
+		if(result != null) {
+		    Debug.Send("Injected " + result);
+		    inv.setResult(result);
+        }
 	}
 
 	
 	private ItemStack getResult(ItemStack[] invContent, List<CraftRecipe> recipes, List<HumanEntity> viewers){
-		ItemStack defaultResult = null;
+	    ItemStack defaultResult = null;
+
+	    //Shaped recipes can be mirrored verticly, think of the recipe of a bow.
+        ItemStack[] mirroredInventoryContent = RecipeUtil.MirrorVerticle(invContent);
+        RecipeUtil.Format(mirroredInventoryContent); //Make sure the mirrored version is also formatted for comparison.
+
+        if(mirroredInventoryContent == null) return null;
 		for(CraftRecipe r : recipes){
 			ItemStack recipeContent[] = r.getContents().clone();
 			RecipeUtil.Format(recipeContent);
-			if(RecipeUtil.AreEqualTypes(recipeContent, invContent)){
-				if(RecipeUtil.AreEqualItems(recipeContent, invContent) && viewersHavePermission(r,viewers)) {
-                    Debug.Send("A recipe matches with " + r.toString());
+
+			//Check if the type of the items in the recipe matches with the inventory or mirrored inventory.
+			if((RecipeUtil.AreEqualTypes(recipeContent, invContent))
+                || RecipeUtil.AreEqualTypes(recipeContent, mirroredInventoryContent)){
+
+			    //Check if the recipe is equal to the normal version or mirrored version of the inventory
+                //and if the player has permissions for the recipe.
+				if((RecipeUtil.AreEqualItems(recipeContent, invContent)
+                        || RecipeUtil.AreEqualItems(mirroredInventoryContent, recipeContent))
+                        && viewersHavePermission(r,viewers)) {
                     return r.getResult();
                 }
 				else
 					defaultResult = r.getDefaultResult();
+
 			}
 		}
 		return defaultResult;

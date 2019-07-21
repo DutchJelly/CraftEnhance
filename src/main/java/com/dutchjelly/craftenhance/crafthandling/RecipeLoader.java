@@ -46,7 +46,7 @@ public class RecipeLoader {
 	
 	private boolean needsLoading(CraftRecipe r, org.bukkit.inventory.Recipe similar){
 		if(similar == null) return true;
-		return !areEqualTypes(similar.getResult(), r.getResult());
+		return !RecipeUtil.AreEqualTypes(similar.getResult(), r.getResult());
 	}
 	
 	//Er gaat iets mis als er geen similar recipes zijn.
@@ -63,7 +63,10 @@ public class RecipeLoader {
 	
 	private void addAll(List<CraftRecipe> queue){
 		if(queue == null) return;
-		queue.forEach(x -> main.getServer().addRecipe(RecipeUtil.ShapeRecipe(x)));
+		queue.forEach(x -> {
+		    Debug.Send("Adding " + x.toString() + " with shape " + String.join(",", RecipeUtil.ShapeRecipe(x).getShape()) + " to server recipes...");
+		    main.getServer().addRecipe(RecipeUtil.ShapeRecipe(x));
+        });
 	}
 	
 	//Uses the iterator to find a recipe with equal content.
@@ -92,7 +95,7 @@ public class RecipeLoader {
 		List<ItemStack> choices = new ArrayList<>();
 		choices.addAll(recipe.getIngredientList());
 		for(ItemStack item : content){
-			if(item == null || item.getType().equals(Material.AIR)) continue;
+			if(RecipeUtil.IsNullElement(item)) continue;
 			//This system works differently in 1.13.2
 			if(!choices.contains(item)) return false;
 			choices.remove(item);
@@ -127,17 +130,9 @@ public class RecipeLoader {
 	private boolean contentsEqual(ItemStack[] one, ItemStack[] two){
 		if(one.length != two.length) return false;
 		for(int i = 0; i < one.length; i++){
-			if(!areEqualItems(one[i], two[i]))
+			if(!RecipeUtil.AreEqualItems(one[i], two[i]))
 				return false;
 		}
 		return true;
-	}
-	
-	private boolean areEqualItems(ItemStack one, ItemStack two){
-		return one == two || (one != null && two != null && areEqualTypes(one,two));
-	}
-	
-	private boolean areEqualTypes(ItemStack a, ItemStack b){
-		return a.getType().equals(b.getType());
 	}
 }

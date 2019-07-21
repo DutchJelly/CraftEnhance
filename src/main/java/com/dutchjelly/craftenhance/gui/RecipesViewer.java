@@ -62,7 +62,8 @@ public class RecipesViewer implements GUIElement{
 	private List<CraftRecipe> getAvailableRecipes(Player player){
 		List<CraftRecipe> recipes = new ArrayList<CraftRecipe>();
 		for(CraftRecipe recipe : container.getMain().getFileManager().getRecipes()){
-			if(showAll || player.hasPermission(recipe.getPerms())) recipes.add(recipe);
+			if(showAll || recipe.getPerms().equals("") || player.hasPermission(recipe.getPerms()))
+				recipes.add(recipe);
 		}
 		return recipes;
 	}
