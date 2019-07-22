@@ -5,6 +5,8 @@ import org.bukkit.Material;
 
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
+//import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.bukkit.DyeColor;
@@ -36,7 +38,7 @@ public class Adapter {
 //        }
 //        return null;
 //    }
-//
+
     public static List<String> CompatibleVersions(){
         return Arrays.asList("1.12");
         //return Arrays.asList("1.13", "1.14", "1.15");
@@ -44,7 +46,7 @@ public class Adapter {
     }
 
 
-    //1.12 and lower
+    //1.12 and up
     public static ShapedRecipe GetShapedRecipe(JavaPlugin plugin, String key, ItemStack result) {
         return new ShapedRecipe(new NamespacedKey(plugin, key),result);
     }
@@ -74,12 +76,17 @@ public class Adapter {
     //1.13 and up
 //    public static ItemStack SetDurability(ItemStack item, int damage){
 //        Damageable meta = (Damageable)item.getItemMeta();
-//        short maxDurability = item.getType().getMaxDurability();
 //        meta.setDamage(damage);
 //        item.setItemMeta((ItemMeta)meta);
+//        return item;
 //    }
 
-     //1.13 and up
+    public static Material GetWorkBench(){
+        //return Material.CRAFTING_TABLE;
+        return Material.WORKBENCH;
+    }
+
+      //1.11 and lower
 //    public static ShapedRecipe GetShapedRecipe(JavaPlugin plugin, String key, ItemStack result) {
 //        return new ShapedRecipe(result);
 //    }

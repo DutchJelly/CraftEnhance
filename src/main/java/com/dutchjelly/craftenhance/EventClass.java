@@ -17,8 +17,10 @@ public class EventClass implements Listener{
 	
 	@EventHandler
 	public void onPrepareCraft(PrepareItemCraftEvent e){
-	    if(main.getConfig().getBoolean("enable-recipes"))
+
+        if(main.getConfig().getBoolean("enable-recipes") && e.getRecipe() != null)
 		    main.getRecipeInjector().injectResult(e.getInventory());
+
 	}
 	
 	@EventHandler

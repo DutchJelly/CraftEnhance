@@ -31,7 +31,7 @@ public class VersionChecker {
     public void runVersionCheck(){
         String serverVersion = plugin.getServer().getBukkitVersion();
         for(String version : Adapter.CompatibleVersions()){
-            if(serverVersion.startsWith(version)){
+            if(serverVersion.contains(version)){
                 return;
             }
         }

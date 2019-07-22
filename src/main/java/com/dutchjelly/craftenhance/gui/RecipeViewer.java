@@ -1,5 +1,6 @@
 package com.dutchjelly.craftenhance.gui;
 
+import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.model.CraftRecipe;
 import com.dutchjelly.craftenhance.Util.GUIButtons;
 import com.dutchjelly.craftenhance.Util.RecipeUtil;
@@ -40,7 +41,7 @@ public class RecipeViewer implements GUIElement {
 		for(int i = 0; i < 27; i++){
 			if((i%9) / 3 > 0) inventory.setItem(i, GUIButtons.filling);
 		}
-		ItemStack craftShower = new ItemStack(Material.WORKBENCH);
+		ItemStack craftShower = new ItemStack(Adapter.GetWorkBench());
 		ItemMeta meta = craftShower.getItemMeta();
 		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', "&5Workbench Recipe"));
 		meta.setLore(Arrays.asList(

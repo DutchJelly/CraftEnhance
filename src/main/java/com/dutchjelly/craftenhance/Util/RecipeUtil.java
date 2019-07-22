@@ -2,21 +2,15 @@ package com.dutchjelly.craftenhance.Util;
 
 import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.CraftEnhance;
-import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.model.CraftRecipe;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.material.MaterialData;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RecipeUtil {
 

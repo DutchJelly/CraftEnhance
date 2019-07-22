@@ -42,7 +42,7 @@ public class RecipeInjector {
 		//result of air which means the default version of the recipe doesn't exist on the server. If 
 		//multiple of the same recipes exist they'll both have the same default result, so this'll always
 		//be the case.
-		if(result != null) {
+		if(result != null && !RecipeUtil.AreEqualItems(result, inv.getResult())) {
 		    Debug.Send("Injected " + result);
 		    inv.setResult(result);
         }
