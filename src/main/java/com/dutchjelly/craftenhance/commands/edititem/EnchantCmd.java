@@ -1,16 +1,24 @@
 package com.dutchjelly.craftenhance.commands.edititem;
 
+import com.dutchjelly.craftenhance.commandhandling.ICompletionProvider;
+import com.sun.tools.javac.code.Attribute;
 import org.bukkit.command.CommandSender;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 
-import com.dutchjelly.craftenhance.commandhandling.CmdInterface;
-import com.dutchjelly.craftenhance.commandhandling.CustomCmd;
+import com.dutchjelly.craftenhance.commandhandling.ICommand;
+import com.dutchjelly.craftenhance.commandhandling.CommandRoute;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
 import com.dutchjelly.craftenhance.itemcreation.ItemCreator;
 import com.dutchjelly.craftenhance.itemcreation.ParseResult;
 
-@CustomCmd(cmdPath="edititem.enchant", perms="perms.item-editor")
-public class EnchantCmd implements CmdInterface{
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@CommandRoute(cmdPath="edititem.enchant", perms="perms.item-editor")
+public class EnchantCmd implements ICommand, ICompletionProvider {
 
 	
 	private CustomCmdHandler handler;
@@ -37,5 +45,23 @@ public class EnchantCmd implements CmdInterface{
 		handler.getMain().getMessenger().messageFromConfig("messages.commands.only-for-players", sender);
 	}
 
+	@Override
+	public List<String> getCompletions(String[] args) {
+		if(args == null)
+			args = new String[0];
+		//ceh enchant unbreaki[tab]
+		boolean provideEnchantment = (args.length % 2) != 0;
+		String toComplete = args[args.length-1];
+		if(!provideEnchantment){
+            return Arrays.asList("1","2","3","4","5");
+        }
+        List<Enchantment> enchants = Arrays.asList(Enchantment.values());
+        List<String> completions = new ArrayList<>();
+        enchants.stream().filter(x ->
+                x.getName().toLowerCase().startsWith(toComplete.toLowerCase()))
+                .collect(Collectors.toList())
+                .forEach(x -> completions.add(x.getName()));
+        return completions;
+	}
 }
 

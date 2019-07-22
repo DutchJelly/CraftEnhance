@@ -1,15 +1,15 @@
 package com.dutchjelly.craftenhance.commands.ceh;
 
-import com.dutchjelly.craftenhance.commandhandling.CmdInterface;
-import com.dutchjelly.craftenhance.commandhandling.CustomCmd;
+import com.dutchjelly.craftenhance.commandhandling.ICommand;
+import com.dutchjelly.craftenhance.commandhandling.CommandRoute;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.dutchjelly.craftenhance.model.CraftRecipe;
 
-@CustomCmd(cmdPath="ceh.changekey", perms="perms.recipe-editor")
-public class ChangeKeyCmd implements CmdInterface {
+@CommandRoute(cmdPath="ceh.changekey", perms="perms.recipe-editor")
+public class ChangeKeyCmd implements ICommand {
 
 	private CustomCmdHandler handler;
 	
@@ -33,7 +33,9 @@ public class ChangeKeyCmd implements CmdInterface {
 			handler.getMain().getMessenger().message("That recipe key doesn't exist", p);
 			return;
 		}
-		handler.getMain().getFileManager().changeKey(recipe, args[1]);
+		handler.getMain().getFileManager().removeRecipe(recipe);
+		recipe.setKey(args[1]);
+		handler.getMain().getFileManager().saveRecipe(recipe);
 		handler.getMain().getMessenger().message("The key has been changed to " + args[1] + ".", p);
 	}
 
@@ -48,7 +50,9 @@ public class ChangeKeyCmd implements CmdInterface {
 			handler.getMain().getMessenger().message("That recipe key doesn't exist", sender);
 			return;
 		}
-		handler.getMain().getFileManager().changeKey(recipe, args[1]);
+        handler.getMain().getFileManager().removeRecipe(recipe);
+        recipe.setKey(args[1]);
+        handler.getMain().getFileManager().saveRecipe(recipe);
 		handler.getMain().getMessenger().message("The key has been changed to " + args[1] + ".", sender);
 	}
 }

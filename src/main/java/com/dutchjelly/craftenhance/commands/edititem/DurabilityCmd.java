@@ -3,14 +3,14 @@ package com.dutchjelly.craftenhance.commands.edititem;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.dutchjelly.craftenhance.commandhandling.CmdInterface;
-import com.dutchjelly.craftenhance.commandhandling.CustomCmd;
+import com.dutchjelly.craftenhance.commandhandling.ICommand;
+import com.dutchjelly.craftenhance.commandhandling.CommandRoute;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
 import com.dutchjelly.craftenhance.itemcreation.ItemCreator;
 import com.dutchjelly.craftenhance.itemcreation.ParseResult;
 
-@CustomCmd(cmdPath="edititem.durability", perms="perms.item-editor")
-public class DurabilityCmd implements CmdInterface{
+@CommandRoute(cmdPath="edititem.durability", perms="perms.item-editor")
+public class DurabilityCmd implements ICommand {
 
 	
 	private CustomCmdHandler handler;

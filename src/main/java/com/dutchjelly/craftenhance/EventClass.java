@@ -17,8 +17,8 @@ public class EventClass implements Listener{
 	
 	@EventHandler
 	public void onPrepareCraft(PrepareItemCraftEvent e){
-		Debug.Send("Noticed someone crafting...");
-		main.getRecipeInjector().injectResult(e.getInventory());
+	    if(main.getConfig().getBoolean("enable-recipes"))
+		    main.getRecipeInjector().injectResult(e.getInventory());
 	}
 	
 	@EventHandler

@@ -17,7 +17,7 @@ import com.dutchjelly.craftenhance.messaging.Debug;
 public class CustomCmdHandler implements TabCompleter{
 	
 	
-	private Map<CmdInterface, CustomCmd> commandClasses;
+	private Map<ICommand, CommandRoute> commandClasses;
 	//private static final String cmdPackagePath = "com.dutchjelly.craftenhance.commands";
 	
 	private CraftEnhance main;
@@ -32,19 +32,19 @@ public class CustomCmdHandler implements TabCompleter{
 	}
 	
 	//Load all command classes in baseClasses so they can handle commands.
-	public void loadCommandClasses(List<CmdInterface> baseClasses){
+	public void loadCommandClasses(List<ICommand> baseClasses){
 		if(baseClasses == null) return;
 		baseClasses.forEach(x -> loadCommandClass(x));
 	}
 	
 	//Load the command class baseClass by finding the annotation and 
 	//storing it in the commandClasses map.
-	public void loadCommandClass(CmdInterface baseClass){
+	public void loadCommandClass(ICommand baseClass){
 		if(baseClass == null) return;
-		CustomCmd annotation = null;
+		CommandRoute annotation = null;
 		for(Annotation annotationItem : baseClass.getClass().getAnnotations()){
-			if(annotationItem instanceof CustomCmd){
-				annotation = (CustomCmd) annotationItem;
+			if(annotationItem instanceof CommandRoute){
+				annotation = (CommandRoute) annotationItem;
 				break;
 			}
 		}
@@ -63,7 +63,7 @@ public class CustomCmdHandler implements TabCompleter{
 	
 	//Assign command to a class and check for permissions.
 	public boolean handleCommand(CommandSender sender, String label, String[] args){
-		CmdInterface executor;
+		ICommand executor;
 		args = pushLabelArg(label, args);
 		
 		executor = getExecutor(args);
@@ -72,7 +72,7 @@ public class CustomCmdHandler implements TabCompleter{
 			return true;
 		}
 		
-		CustomCmd annotation = commandClasses.get(executor);
+		CommandRoute annotation = commandClasses.get(executor);
 		if(!hasPermission(sender, annotation)){
 			main.getMessenger().messageFromConfig("messages.global.no-perms", sender);
 			return true;
@@ -118,7 +118,13 @@ public class CustomCmdHandler implements TabCompleter{
 	//Handle tab completion by returning all tab completions.
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-		return this.getTabCompleteMatches(pushLabelArg(label, args));
+		String[] completeArgs = pushLabelArg(label, args);
+		List<String> tabCompletion = new ArrayList<>();
+//		ICommand suitableExecutor = getExecutor(args);
+//		if(suitableExecutor != null && suitableExecutor instanceof ICompletionProvider)
+//			tabCompletion.addAll(((ICompletionProvider)suitableExecutor).getCompletions(args));
+		tabCompletion.addAll(getTabCompleteMatches(pushLabelArg(label, args)));
+		return tabCompletion;
 	}
 	
 	//Pop amount arguments recursively from args.
@@ -132,11 +138,11 @@ public class CustomCmdHandler implements TabCompleter{
 	}
 	
 	//Get the executor object from given args.
-	public CmdInterface getExecutor(String[] args){
+	public ICommand getExecutor(String[] args){
 		int maxMatching = -1, currentMatch;
-		CmdInterface bestMatch = null;
-		for(CmdInterface cmdClass : commandClasses.keySet()){
-			CustomCmd annotation = commandClasses.get(cmdClass);
+		ICommand bestMatch = null;
+		for(ICommand cmdClass : commandClasses.keySet()){
+			CommandRoute annotation = commandClasses.get(cmdClass);
 			String matchingPath = getMatchingPath(args, annotation);
 			if(matchingPath == null) continue;
 			currentMatch = matchingPath.split("\\.").length;
@@ -149,7 +155,7 @@ public class CustomCmdHandler implements TabCompleter{
 	}
 	
 	//Get the best matching path with args of all paths in the annotation.
-	private String getMatchingPath(String [] args, CustomCmd annotation){
+	private String getMatchingPath(String [] args, CommandRoute annotation){
 		int bestMatch = -1, currentMatch;
 		String bestMatchingPath = null;
 		for(String path : annotation.cmdPath()){
@@ -180,7 +186,7 @@ public class CustomCmdHandler implements TabCompleter{
 	*/
 	
 	//Returns if the sender has permission for command class with annotation.
-	private boolean hasPermission(CommandSender sender, CustomCmd annotation){
+	private boolean hasPermission(CommandSender sender, CommandRoute annotation){
 		return annotation.perms().equals("") || annotation.perms() == null || sender.hasPermission(main.getConfig().getString(annotation.perms()));
 	}
 	
@@ -188,8 +194,8 @@ public class CustomCmdHandler implements TabCompleter{
 	private List<String> getTabCompleteMatches(String[] args){
 		List<String> completions = new ArrayList<String>();
 		String completion;
-		for(CmdInterface cmdClass : commandClasses.keySet()){
-			CustomCmd annotation = commandClasses.get(cmdClass);
+		for(ICommand cmdClass : commandClasses.keySet()){
+			CommandRoute annotation = commandClasses.get(cmdClass);
 			for(String path : annotation.cmdPath()){
 				completion = getCompletion(args, path);
 				if(completion == null) continue;

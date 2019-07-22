@@ -3,7 +3,7 @@ package com.dutchjelly.craftenhance.commandhandling;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public interface CmdInterface {
+public interface ICommand {
 	
 	public String getDescription();
 	

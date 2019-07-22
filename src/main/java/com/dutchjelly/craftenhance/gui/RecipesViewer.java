@@ -3,11 +3,13 @@ package com.dutchjelly.craftenhance.gui;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dutchjelly.craftenhance.Util.ItemUtil;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.model.CraftRecipe;
 import com.dutchjelly.craftenhance.Util.GUIButtons;
 import com.dutchjelly.craftenhance.Util.RecipeUtil;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -58,6 +60,14 @@ public class RecipesViewer implements GUIElement{
 		inv.setItem(47, GUIButtons.previous);
 		inv.setItem(51, GUIButtons.next);
 	}
+
+//	private void addInfoTag(Inventory inv){
+//		ItemStack info = new ItemStack(Material.NAME_TAG);
+//		ItemUtil.AddGlow(info);
+//		ItemUtil.SetDisplayName(info, "&eInfo");
+//		ItemUtil.AddLore(info, "&fClick the items to see the recipe for it.");
+//		ItemUtil.AddLore(info, "&f")
+//	}
 	
 	private List<CraftRecipe> getAvailableRecipes(Player player){
 		List<CraftRecipe> recipes = new ArrayList<CraftRecipe>();

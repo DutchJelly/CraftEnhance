@@ -1,15 +1,15 @@
 package com.dutchjelly.craftenhance.commands.ceh;
 
-import com.dutchjelly.craftenhance.commandhandling.CmdInterface;
-import com.dutchjelly.craftenhance.commandhandling.CustomCmd;
+import com.dutchjelly.craftenhance.commandhandling.ICommand;
+import com.dutchjelly.craftenhance.commandhandling.CommandRoute;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.dutchjelly.craftenhance.model.CraftRecipe;
 
-@CustomCmd(cmdPath="ceh.setpermission", perms="perms.recipe-editor")
-public class SetPermissionCmd implements CmdInterface {
+@CommandRoute(cmdPath="ceh.setpermission", perms="perms.recipe-editor")
+public class SetPermissionCmd implements ICommand {
 
 	private CustomCmdHandler handler;
 	
@@ -34,6 +34,7 @@ public class SetPermissionCmd implements CmdInterface {
 			return;
 		}
 		recipe.setPerms(args[1]);
+		handler.getMain().getFileManager().saveRecipe(recipe);
 		handler.getMain().getMessenger().message("Successfully set the permissions of the recipe to " + args[1] + ".", p);
 	}
 

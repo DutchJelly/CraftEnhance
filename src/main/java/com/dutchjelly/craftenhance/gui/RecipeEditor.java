@@ -53,10 +53,13 @@ public class RecipeEditor implements GUIElement{
         ItemMeta meta = dataTag.getItemMeta();
         meta.setDisplayName(ChatColor.translateAlternateColorCodes('&',
                 "&5Recipe Info"));
+        String defaultResult = (recipe.getDefaultResult() == null) ? "none" :
+                recipe.getDefaultResult().getType().toString().toLowerCase().replace('_', ' ');
         meta.setLore(Arrays.asList(
                 ChatColor.translateAlternateColorCodes('&', "&fKey: &e" + recipe.getKey()),
-                ChatColor.translateAlternateColorCodes('&', "&fPermission: &e" + recipe.getPerms())
-        ));
+                ChatColor.translateAlternateColorCodes('&', "&fPermission: &e" + recipe.getPerms()),
+        		ChatColor.translateAlternateColorCodes('&', "&fDefault result: &e" + defaultResult)
+		));
         meta.addEnchant(Enchantment.ARROW_DAMAGE, 1, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         dataTag.setItemMeta(meta);

@@ -155,6 +155,8 @@ public class RecipeUtil {
 
     //Looks for every index if the item in recipe has an equal type of the item in content.
     public static boolean AreEqualTypes(ItemStack[] recipe, ItemStack[] content){
+        if(recipe == null || content == null || recipe.length != content.length)
+            return false;
         for(int i = 0; i < recipe.length; i++){
             if(!RecipeUtil.AreEqualTypes(content[i], recipe[i])) return false;
         }
@@ -169,10 +171,13 @@ public class RecipeUtil {
             return recipe == null;
         }
         return recipe != null && recipe.getType().equals(content.getType());
+        //return recipe != null && Adapter.AreEqualTypes(recipe, content);
     }
 
     //Looks for every index if the item in recipe is equal to the item in content.
     public static boolean AreEqualItems(ItemStack[] recipe, ItemStack[] content){
+        if(recipe == null || content == null || recipe.length != content.length)
+            return false;
         for(int i = 0; i < recipe.length; i++){
             if(!RecipeUtil.AreEqualItems(content[i], recipe[i])){
 //                Debug.Send("-------------------------------");

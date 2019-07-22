@@ -1,15 +1,15 @@
 package com.dutchjelly.craftenhance.commands.ceh;
 
-import com.dutchjelly.craftenhance.commandhandling.CmdInterface;
-import com.dutchjelly.craftenhance.commandhandling.CustomCmd;
+import com.dutchjelly.craftenhance.commandhandling.ICommand;
+import com.dutchjelly.craftenhance.commandhandling.CommandRoute;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.dutchjelly.craftenhance.model.CraftRecipe;
 
-@CustomCmd(cmdPath="ceh.specs", perms="perms.recipe-editor")
-public class SpecsCommand implements CmdInterface {
+@CommandRoute(cmdPath="ceh.specs", perms="perms.recipe-editor")
+public class SpecsCommand implements ICommand {
 
 	private CustomCmdHandler handler;
 	

@@ -1,9 +1,15 @@
 package com.dutchjelly.craftenhance.crafthandling;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.List;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.Util.RecipeUtil;
+
 import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.inventory.CraftingInventory;
@@ -21,11 +27,14 @@ public class RecipeInjector {
 	}
 	
 	public void injectResult(CraftingInventory inv){
+        LocalDateTime start = LocalDateTime.now();
 		List<CraftRecipe> recipes = fm.getRecipes();
 		if(recipes == null || recipes.isEmpty()) {
 			Debug.Send("Stopping injecting because empty recipes. Config Error..");
 			return;
 		}
+
+
 		ItemStack[] invContent = RecipeUtil.EnsureDefaultSize(inv.getMatrix()).clone();
 		RecipeUtil.Format(invContent);
 		ItemStack result = getResult(invContent, recipes, inv.getViewers());
@@ -37,6 +46,9 @@ public class RecipeInjector {
 		    Debug.Send("Injected " + result);
 		    inv.setResult(result);
         }
+        LocalDateTime end = LocalDateTime.now();
+        Duration duration = Duration.between(start, end);
+        Debug.Send("Injecting took " + duration.toNanos() + " nanoseconds.");
 	}
 
 	

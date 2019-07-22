@@ -3,6 +3,7 @@ package com.dutchjelly.craftenhance.crafthandling;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.Util.RecipeUtil;
@@ -48,8 +49,7 @@ public class RecipeLoader {
 		if(similar == null) return true;
 		return !RecipeUtil.AreEqualTypes(similar.getResult(), r.getResult());
 	}
-	
-	//Er gaat iets mis als er geen similar recipes zijn.
+
 	private void handleDefaults(CraftRecipe r, org.bukkit.inventory.Recipe similar){
 		if(similar == null)
 			r.setDefaultResult(new ItemStack(Material.AIR));
@@ -82,7 +82,8 @@ public class RecipeLoader {
 	
 	private boolean isSimilarShapedRecipe(org.bukkit.inventory.Recipe serverRecipe, CraftRecipe customRecipe){
 		if(!(serverRecipe instanceof ShapedRecipe)) return false;
-		return contentsEqual(getShapedRecipeContent((ShapedRecipe) serverRecipe), customRecipe.getContents());
+		return RecipeUtil.AreEqualTypes(getShapedRecipeContent((ShapedRecipe) serverRecipe), customRecipe.getContents());
+		//return contentsEqual(getShapedRecipeContent((ShapedRecipe) serverRecipe), customRecipe.getContents());
 	}
 	
 	private boolean isSimilarShapeLessRecipe(org.bukkit.inventory.Recipe serverRecipe, CraftRecipe customRecipe){
@@ -98,6 +99,10 @@ public class RecipeLoader {
 			if(RecipeUtil.IsNullElement(item)) continue;
 			//This system works differently in 1.13.2
 			if(!choices.contains(item)) return false;
+
+			//Check if choices contains an element with the same type.
+			if(choices.stream().filter(x -> RecipeUtil.AreEqualTypes(x, item)).collect(Collectors.toList()).isEmpty())
+			    return false;
 			choices.remove(item);
 		}
 		return true;
@@ -125,14 +130,5 @@ public class RecipeLoader {
 			}
 		}
 		return content;
-	}
-	
-	private boolean contentsEqual(ItemStack[] one, ItemStack[] two){
-		if(one.length != two.length) return false;
-		for(int i = 0; i < one.length; i++){
-			if(!RecipeUtil.AreEqualItems(one[i], two[i]))
-				return false;
-		}
-		return true;
 	}
 }
