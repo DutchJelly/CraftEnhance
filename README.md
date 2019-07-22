@@ -27,13 +27,13 @@ These are some of the TODO's including future features. Any help in doing those 
 
 ### Changelog
 
-#####2.3.3
+##### 2.3.3
 ```diff
 + Now supports crafting with dye's in versions below 1.13.
 + Checks for mirrored recipes, think of bows that you can craft in two ways.
 + Added version checker so people don't use the wrong version.
 + Now shows an info tag in the recipe editor with the permission, key and default result.
-[BUGFIX] Made items actually save even when they are similar to other items.
-[BUGFIX] Made sure that the command /ceh setpermission actually saves the permission.
++ [BUGFIX] Made items actually save even when they are similar to other items.
++ [BUGFIX] Made sure that the command /ceh setpermission actually saves the permission.
 ```
 
