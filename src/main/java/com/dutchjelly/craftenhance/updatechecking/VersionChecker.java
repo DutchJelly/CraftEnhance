@@ -28,22 +28,26 @@ public class VersionChecker {
         }
     }
 
-    public void runVersionCheck(){
+    public boolean runVersionCheck(){
         String serverVersion = plugin.getServer().getBukkitVersion();
+        plugin.getMessenger().message("Running a version check to check that the server is compatible with game version " + String.join(", ", Adapter.CompatibleVersions()) + ".");
         for(String version : Adapter.CompatibleVersions()){
             if(serverVersion.contains(version)){
-                return;
+                plugin.getMessenger().message("The correct version is installed.");
+                return true;
             }
         }
         plugin.getMessenger().message("");
         plugin.getMessenger().message("!! Incompatibility found !!");
-        plugin.getMessenger().message("Your installed CraftEnhance version is not compatible with your Bukkit or Spigot version \"" + serverVersion + "\".");
-        plugin.getMessenger().message("The installed version of CraftEnhance only supports the following versions: " + String.join(", ", Adapter.CompatibleVersions()) + ".");
+        plugin.getMessenger().message("The installed version of CraftEnhance only supports spigot/bukkit versions \"" + String.join(", ", Adapter.CompatibleVersions()) + "\"");
+        plugin.getMessenger().message("while your server is running " + serverVersion + ".");
         plugin.getMessenger().message("The correct version can be installed here: https://dev.bukkit.org/projects/craftenhance/files");
-        plugin.getMessenger().message("When installing, look at the \"Game Version\" column and pick one that matches your Spigot or Bukkit jar version that runs the server.");
+        plugin.getMessenger().message("When installing the plugin make sure that the game version matches your bukkit or spigot version.");
         plugin.getMessenger().message("Please note that this incompatibility could cause duping glitches.");
-        plugin.getMessenger().message("");
+        plugin.getMessenger().message("So because the incorrect plugin version is being used, the plugin has to be disabled.");
+        return false;
     }
+
 
     public CraftEnhance getPlugin() {
         return plugin;

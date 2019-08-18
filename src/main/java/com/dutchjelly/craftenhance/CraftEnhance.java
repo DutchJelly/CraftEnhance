@@ -65,8 +65,11 @@ public class CraftEnhance extends JavaPlugin{
 		getMessenger().message("CraftEnhance is managed and developed by DutchJelly.");
 		getMessenger().message("If you find a bug in the plugin, please report it to https://dev.bukkit.org/projects/craftenhance.");
 		VersionChecker checker = VersionChecker.init(this);
-        checker.runUpdateCheck();
-		checker.runVersionCheck();
+		if(!checker.runVersionCheck()){
+		    getPluginLoader().disablePlugin(this);
+		    return;
+        }
+		checker.runUpdateCheck();
 	}
 	
 	@Override
