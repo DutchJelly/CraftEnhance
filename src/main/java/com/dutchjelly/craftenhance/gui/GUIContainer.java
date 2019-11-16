@@ -40,16 +40,12 @@ public class GUIContainer {
 		
 		if(e instanceof InventoryClickEvent){
 			InventoryClickEvent clickEvent = (InventoryClickEvent)e;
-			boolean handlerAssigned = true; //We know that, if an exception occurs, that an assigned handler causes it.
 			try{
-				handlerAssigned = assignHandler(clickEvent);
+				assignHandler(clickEvent);
 			}
-			finally { //Make sure that the click event gets cancelled when exceptions occur.
-				if(handlerAssigned){
-					boolean ret = cancelClick(clickEvent);
-					if (!clickEvent.isCancelled() && ret)
-						clickEvent.setCancelled(ret);
-				}
+			finally { //Make sure that the click event gets cancelled when exceptions occurs
+				if (!clickEvent.isCancelled() && cancelClick(clickEvent))
+					clickEvent.setCancelled(true);
 			}
 		}
 	}
