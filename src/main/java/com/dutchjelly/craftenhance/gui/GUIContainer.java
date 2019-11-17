@@ -112,6 +112,7 @@ public class GUIContainer {
 	}
 	
 	private GUIElement getGUI(Inventory inv){
+		if(inv == null) return null;
 		for(GUIElement openGUI : openGUIs.values()){
 			if(openGUI.isEventTriggerer(inv))
 				return openGUI;
