@@ -17,7 +17,6 @@ import com.dutchjelly.craftenhance.commands.ceh.RecipesCmd;
 import com.dutchjelly.craftenhance.commands.ceh.SetPermissionCmd;
 import com.dutchjelly.craftenhance.commands.ceh.SpecsCommand;
 import com.dutchjelly.craftenhance.crafthandling.RecipeInjector;
-import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
 import com.dutchjelly.craftenhance.files.ConfigFormatter;
 import com.dutchjelly.craftenhance.files.FileManager;
 import com.dutchjelly.craftenhance.gui.GUIContainer;
@@ -34,9 +33,11 @@ import com.dutchjelly.craftenhance.commands.edititem.LoreCmd;
 
 public class CraftEnhance extends JavaPlugin{
 
-	//TODO Try to add categories.
-	//TODO Clean up redundant setcancelled in GUIs onclick event.
-	
+    private static CraftEnhance plugin;
+	public static CraftEnhance self(){
+	    return plugin;
+    }
+
 	private FileManager fm;
 	private RecipeLoader loader;
 	private GUIContainer guiContainer;
@@ -70,6 +71,7 @@ public class CraftEnhance extends JavaPlugin{
 		    return;
         }
 		checker.runUpdateCheck();
+		plugin = this;
 	}
 	
 	@Override

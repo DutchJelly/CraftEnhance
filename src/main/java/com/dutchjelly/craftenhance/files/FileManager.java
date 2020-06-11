@@ -77,7 +77,6 @@ public class FileManager {
 			keyValue.setKey(key);
 			recipes.add(keyValue);
 		}
-			
 	}
 	
 	public void cacheItems(){
