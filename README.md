@@ -49,3 +49,31 @@ These are some of the TODO's including future features. Any help in doing those 
 + [BUGFIX] Made sure that the command /ceh setpermission actually saves the permission.
 ```
 
+
+### API
+Listening to custom recipes being injected:
+```java
+private void example(){
+  //register the listener that should implement CustomCraftListener
+  CraftEnhanceAPI.registerListener(this::handleCraft);
+}
+
+public boolean handleCraft(IEnhancedRecipe r, Player p, Inventory inv, RecipeGroup alternatives){
+  //You can basically do anything with this! This function will get called when a recipe matches and the user
+  //has permissions for it. The alternatives are recipes that could also match, but are not yet checked or 
+  //don't match completely.
+  
+  //return true to cancel the event
+  return false;
+}
+```
+
+Loading a recipe:
+```java
+private void loadRecipe(IEnhancedRecipe r){
+   RecipeLoader.getInstance().loadRecipe(r);
+}
+```
+
+There are countless options to hook into the plugin. I'm not going to document them all. Just open an issue if you want something to be documented.
+
