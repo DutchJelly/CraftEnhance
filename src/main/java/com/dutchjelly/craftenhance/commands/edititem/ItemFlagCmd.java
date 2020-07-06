@@ -1,5 +1,6 @@
 package com.dutchjelly.craftenhance.commands.edititem;
 
+import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -29,12 +30,12 @@ public class ItemFlagCmd implements ICommand {
 		ItemCreator creator = new ItemCreator(p.getInventory().getItemInHand(), args);
 		ParseResult result = creator.setItemFlags();
 		p.getInventory().setItemInHand(creator.getItem());
-		handler.getMain().getMessenger().message(result.getMessage(), p);
+		Messenger.Message(result.getMessage(), p);
 	}
 
 	@Override
 	public void handleConsoleCommand(CommandSender sender, String[] args) {
-		handler.getMain().getMessenger().messageFromConfig("messages.commands.only-for-players", sender);
+		Messenger.MessageFromConfig("messages.commands.only-for-players", sender);
 	}
 
 }

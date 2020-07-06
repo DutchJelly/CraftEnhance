@@ -22,6 +22,19 @@ These are some of the TODO's including future features. Any help in doing those 
 
 ### Changelog
 
+##### 2.4.0-Beta
+```diff
++ Ability to customize gui's
++ Ability to customize position of recipe in the viewer
++ More efficient reworked crafting checking
++ API added to hook into crafting events
++ Shaped/shapeless crafting support
++ Meta/Type crafting support
++ Much better error-handling for invalid states in the plugin
++ Using Lombok for getters and setters
+- Removed ordereditor because it was clunky and not modulair
+```
+
 ##### 2.3.4
 ```diff
 + Plugin now disables when an incompatible version is used.

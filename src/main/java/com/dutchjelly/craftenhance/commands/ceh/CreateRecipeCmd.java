@@ -3,8 +3,12 @@ package com.dutchjelly.craftenhance.commands.ceh;
 import com.dutchjelly.craftenhance.commandhandling.ICommand;
 import com.dutchjelly.craftenhance.commandhandling.CommandRoute;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
+import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
+import com.dutchjelly.craftenhance.gui.guis.WBRecipeEditor;
+import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 @CommandRoute(cmdPath="ceh.createrecipe", perms="perms.recipe-editor")
 public class CreateRecipeCmd implements ICommand {
@@ -17,7 +21,7 @@ public class CreateRecipeCmd implements ICommand {
 	
 	@Override
 	public String getDescription() {
-		return "The createrecipe command allows users to create a recipe and open the editor of it. The usage is /ceh createrecipe [key] [permission]. You can leave both parameters empty. However, if you do want to customise recipe keys and permissions: the key has to be unique, and the permission can be empty to not have any permission. An example: /ceh createrecipe army_chest ceh.army-chest. The now created recipe has a key of army_chest and a permission of ceh.army-chest.";
+		return "The create recipe command allows users to create a recipe and open the editor of it. The usage is /ceh createrecipe [key] [permission]. You can leave both parameters empty. However, if you do want to customise recipe keys and permissions: the key has to be unique, and the permission can be empty to not have any permission. An example: /ceh createrecipe army_chest ceh.army-chest. The now created recipe has a key of army_chest and a permission of ceh.army-chest.";
 	}
 	@Override
 	public void handlePlayerCommand(Player p, String[] args) {
@@ -25,9 +29,12 @@ public class CreateRecipeCmd implements ICommand {
         //Fill in a unique key and empty permission for the user.
 	    if(args.length == 0){
 	        int uniqueKeyIndex = 1;
-	        while(!handler.getMain().getFileManager().isUniqueRecipeKey("recipe" + uniqueKeyIndex))
+	        while(!handler.getMain().getFm().isUniqueRecipeKey("recipe" + uniqueKeyIndex))
                 uniqueKeyIndex++;
-            handler.getMain().getGUIContainer().openRecipeCreator("recipe" + uniqueKeyIndex, "", p);
+            WBRecipe newRecipe = new WBRecipe(null, null, new ItemStack[9]);
+            newRecipe.setKey("recipe" + uniqueKeyIndex);
+            WBRecipeEditor gui = new WBRecipeEditor(handler.getMain().getGuiManager(), handler.getMain().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class), null, p, newRecipe);
+            handler.getMain().getGuiManager().openGUI(p, gui);
 	        return;
         }
 
@@ -36,20 +43,23 @@ public class CreateRecipeCmd implements ICommand {
 			args = addEmptyString(args);
 		}
 		else if(args.length != 2){
-			handler.getMain().getMessenger().messageFromConfig("messages.commands.few-arguments", p, "2");
+			Messenger.MessageFromConfig("messages.commands.few-arguments", p, "2");
 			return;
 		}
 		
-		if(!handler.getMain().getFileManager().isUniqueRecipeKey(args[0])){
-			handler.getMain().getMessenger().message("The specified recipe key isn't unique.", p);
+		if(!handler.getMain().getFm().isUniqueRecipeKey(args[0])){
+            Messenger.Message("The specified recipe key isn't unique.", p);
 			return;
 		}
-		handler.getMain().getGUIContainer().openRecipeCreator(args[0], args[1], p);
+        WBRecipe newRecipe = new WBRecipe(args[1], null, new ItemStack[9]);
+	    newRecipe.setKey(args[0]);
+        WBRecipeEditor gui = new WBRecipeEditor(handler.getMain().getGuiManager(), handler.getMain().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class), null, p, newRecipe);
+		handler.getMain().getGuiManager().openGUI(p, gui);
 	}
 
 	@Override
 	public void handleConsoleCommand(CommandSender sender, String[] args) {
-		handler.getMain().getMessenger().messageFromConfig("messages.commands.only-for-players", sender);
+        Messenger.MessageFromConfig("messages.commands.only-for-players", sender);
 	}
 	
 	//Create a new array object so return that.

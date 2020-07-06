@@ -2,6 +2,9 @@ package com.dutchjelly.craftenhance.updatechecking;
 
 import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.CraftEnhance;
+import com.dutchjelly.craftenhance.messaging.Messenger;
+
+import java.util.Arrays;
 
 public class VersionChecker {
 
@@ -22,29 +25,29 @@ public class VersionChecker {
         if(version == null) return;
         version = version.trim();
         if(!isOutDated(version)){
-            plugin.getMessenger().message("CraftEnhance is up to date.");
+            Messenger.Message("CraftEnhance is up to date.");
         } else{
-            plugin.getMessenger().message("There's a new version (" + version + ") of the plugin available on https://dev.bukkit.org/projects/craftenhance/files.");
+            Messenger.Message("There's a new version (" + version + ") of the plugin available on https://dev.bukkit.org/projects/craftenhance/files.");
         }
     }
 
     public boolean runVersionCheck(){
         String serverVersion = plugin.getServer().getBukkitVersion();
-        plugin.getMessenger().message("Running a version check to check that the server is compatible with game version " + String.join(", ", Adapter.CompatibleVersions()) + ".");
+        Messenger.Message("Running a version check to check that the server is compatible with game version " + String.join(", ", Adapter.CompatibleVersions()) + ".");
         for(String version : Adapter.CompatibleVersions()){
             if(serverVersion.contains(version)){
-                plugin.getMessenger().message("The correct version is installed.");
+                Messenger.Message("The correct version is installed.");
                 return true;
             }
         }
-        plugin.getMessenger().message("");
-        plugin.getMessenger().message("!! Incompatibility found !!");
-        plugin.getMessenger().message("The installed version of CraftEnhance only supports spigot/bukkit versions \"" + String.join(", ", Adapter.CompatibleVersions()) + "\"");
-        plugin.getMessenger().message("while your server is running " + serverVersion + ".");
-        plugin.getMessenger().message("The correct version can be installed here: https://dev.bukkit.org/projects/craftenhance/files");
-        plugin.getMessenger().message("When installing the plugin make sure that the game version matches your bukkit or spigot version.");
-        plugin.getMessenger().message("Please note that this incompatibility could cause duping glitches.");
-        plugin.getMessenger().message("So because the incorrect plugin version is being used, the plugin has to be disabled.");
+        Messenger.Message("");
+        Messenger.Message("!! Incompatibility found !!");
+        Messenger.Message("The installed version of CraftEnhance only supports spigot/bukkit versions \"" + String.join(", ", Adapter.CompatibleVersions()) + "\"");
+        Messenger.Message("while your server is running " + serverVersion + ".");
+        Messenger.Message("The correct version can be installed here: https://dev.bukkit.org/projects/craftenhance/files");
+        Messenger.Message("When installing the plugin make sure that the game version matches your bukkit or spigot version.");
+        Messenger.Message("Please note that this incompatibility could cause duping glitches.");
+        Messenger.Message("So because the incorrect plugin version is being used, the plugin has to be disabled.");
         return false;
     }
 
@@ -55,6 +58,6 @@ public class VersionChecker {
 
     private boolean isOutDated(String version){
         String currentVersion = plugin.getDescription().getVersion();
-        return !version.equals(currentVersion);
+        return !Arrays.stream(version.split("\n")).anyMatch(x -> x.equalsIgnoreCase(currentVersion));
     }
 }

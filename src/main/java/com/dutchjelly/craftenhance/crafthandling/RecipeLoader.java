@@ -1,134 +1,175 @@
 package com.dutchjelly.craftenhance.crafthandling;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import com.dutchjelly.craftenhance.CraftEnhance;
-import com.dutchjelly.craftenhance.Util.RecipeUtil;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
-
+import com.dutchjelly.craftenhance.IEnhancedRecipe;
 import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.model.CraftRecipe;
+import lombok.Getter;
+import lombok.NonNull;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.Server;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+
+import java.util.*;
+import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class RecipeLoader {
-	
-	
-	private CraftEnhance main;
-	private Iterator<org.bukkit.inventory.Recipe> iterator;
 
-	
-	public RecipeLoader(CraftEnhance main){
-		this.main = main;
-	}
-	
-	public void loadRecipes(){
-		if(!main.getConfig().getBoolean("enable-recipes")){
-			Debug.Send("The custom recipes are disabled on the server.");
-			return;
-		}
-		List<CraftRecipe> queue = new ArrayList<CraftRecipe>();
-		org.bukkit.inventory.Recipe similar;
-		main.getServer().resetRecipes();
-		for(CraftRecipe r : main.getFileManager().getRecipes()){
-			resetIterator();
-			similar = getNextSimilar(r);
-			handleDefaults(r, similar);
-			if(needsLoading(r, similar)){
-				queue.add(r);
-			}
-		}
-		addAll(queue);
-	}
-	
-	private boolean needsLoading(CraftRecipe r, org.bukkit.inventory.Recipe similar){
-		if(similar == null) return true;
-		return !RecipeUtil.AreEqualTypes(similar.getResult(), r.getResult());
-	}
+    //Ensure one instance
+    private static RecipeLoader instance = null;
+    public static RecipeLoader getInstance(){
+        return instance == null ? instance = new RecipeLoader(Bukkit.getServer()) : instance;
+    }
 
-	private void handleDefaults(CraftRecipe r, org.bukkit.inventory.Recipe similar){
-		if(similar == null)
-			r.setDefaultResult(new ItemStack(Material.AIR));
-		else
-			r.setDefaultResult(similar.getResult());
-	}
-	
-	private void resetIterator(){
-		iterator = main.getServer().recipeIterator();
-	}
-	
-	private void addAll(List<CraftRecipe> queue){
-		if(queue == null) return;
-		queue.forEach(x -> {
-		    Debug.Send("Adding " + x.toString() + " with shape " + String.join(",", RecipeUtil.ShapeRecipe(x).getShape()) + " to server recipes...");
-		    main.getServer().addRecipe(RecipeUtil.ShapeRecipe(x));
-        });
-	}
-	
-	//Uses the iterator to find a recipe with equal content.
-	private org.bukkit.inventory.Recipe getNextSimilar(CraftRecipe r){
-		org.bukkit.inventory.Recipe currentIteration;
-		while(iterator.hasNext()){
-			currentIteration = iterator.next();
-			if(isSimilarShapedRecipe(currentIteration, r)) return currentIteration;
-			if(isSimilarShapeLessRecipe(currentIteration, r)) return currentIteration;
-		}
-		return null;
-	}
-	
-	private boolean isSimilarShapedRecipe(org.bukkit.inventory.Recipe serverRecipe, CraftRecipe customRecipe){
-		if(!(serverRecipe instanceof ShapedRecipe)) return false;
-		return RecipeUtil.AreEqualTypes(getShapedRecipeContent((ShapedRecipe) serverRecipe), customRecipe.getContents());
-		//return contentsEqual(getShapedRecipeContent((ShapedRecipe) serverRecipe), customRecipe.getContents());
-	}
-	
-	private boolean isSimilarShapeLessRecipe(org.bukkit.inventory.Recipe serverRecipe, CraftRecipe customRecipe){
-		if(!(serverRecipe instanceof ShapelessRecipe)) return false;
-		return allMaterialsMatch((ShapelessRecipe) serverRecipe, customRecipe);
-	}
-	
-	private boolean allMaterialsMatch(ShapelessRecipe recipe, CraftRecipe customRecipe){
-		ItemStack[] content = customRecipe.getContents();
-		List<ItemStack> choices = new ArrayList<>();
-		choices.addAll(recipe.getIngredientList());
-		for(ItemStack item : content){
-			if(RecipeUtil.IsNullElement(item)) continue;
-			//This system works differently in 1.13.2
-			if(!choices.contains(item)) return false;
 
-			//Check if choices contains an element with the same type.
-			if(choices.stream().filter(x -> RecipeUtil.AreEqualTypes(x, item)).collect(Collectors.toList()).isEmpty())
-			    return false;
-			choices.remove(item);
-		}
-		return true;
-	}
-	
-	
-	@SuppressWarnings("unused")
-	private void printContent(ItemStack[] content){
-		
-		for(int i = 0; i < content.length; i++){
-			if(content[i] == null) System.out.println(i + ": null");
-			else System.out.println(i + ": " + content[i].getType());
-		}
-	}
-	
-	private ItemStack[] getShapedRecipeContent(ShapedRecipe r){
-		ItemStack[] content = new ItemStack[9];
-		String[] shape = r.getShape();
-		int columnIndex;
-		for(int i = 0; i < shape.length; i++){
-			columnIndex = 0;
-			for(char c : shape[i].toCharArray()){
-				content[(i*3) + columnIndex] = r.getIngredientMap().get(c);
-				columnIndex++;
-			}
-		}
-		return content;
-	}
+    private List<Recipe> serverRecipes = new ArrayList<>();
+    private Map<String, Recipe> loaded = new HashMap<>();
+    private Server server;
+
+
+    //Recipes are grouped in groups of 'similar' recipes. A server can contain multiple recipes with the same
+    //recipe with different results. Think of a diamond chestplate recipe vs a custom diamond chestplate recipe
+    //with custom diamonds. Or think of a shapeless recipe of a block of diamond vs a shaped recipe of the block of
+    //diamond.
+    @NonNull @Getter
+    private List<RecipeGroup> groupedRecipes = new ArrayList<>();
+
+    private RecipeLoader(Server server){
+        this.server = server;
+        server.recipeIterator().forEachRemaining(serverRecipes::add);
+    }
+
+    //Adds or merges group with existing group.
+    private RecipeGroup addGroup(RecipeGroup newGroup){
+
+        if(newGroup == null) return null;
+
+//        if(!newGroup.getServerRecipes().isEmpty()){
+//            //look for merge
+//            for(RecipeGroup group : groupedRecipes){
+//                Debug.Send("Looking if two enhanced recipes are similar for merge.");
+//                if(newGroup.getEnhancedRecipes().stream().anyMatch(x -> group.getEnhancedRecipes().stream().anyMatch(x::isSimilar))){
+//                    return group.mergeWith(newGroup);
+//                }
+//            }
+//        }
+
+        for(RecipeGroup group : groupedRecipes){
+//            Debug.Send("Looking if two enhanced recipes are similar for merge.");
+            if(newGroup.getEnhancedRecipes().stream().anyMatch(x -> group.getEnhancedRecipes().stream().anyMatch(x::isSimilar))){
+                return group.mergeWith(newGroup);
+            }
+        }
+
+        groupedRecipes.add(newGroup);
+        return newGroup;
+    }
+
+    public RecipeGroup findGroup(IEnhancedRecipe recipe){
+        return groupedRecipes.stream().filter(x -> x.getEnhancedRecipes().contains(recipe)).findFirst().orElse(null);
+    }
+
+    //Find groups that contain at least one recipe that maps to result.
+    public List<RecipeGroup> findGroupsByResult(ItemStack result){
+        List<RecipeGroup> originGroups = new ArrayList<>();
+        for(RecipeGroup group : groupedRecipes){
+            if(group.getEnhancedRecipes().stream().anyMatch(x -> result.equals(x.getResult())))
+                originGroups.add(group);
+            else if(group.getServerRecipes().stream().anyMatch(x -> result.equals(x.getResult())))
+                originGroups.add(group);
+        }
+        return originGroups;
+    }
+
+    public boolean isLoadedAsServerRecipe(IEnhancedRecipe recipe){
+        return loaded.containsKey(recipe.getKey());
+    }
+
+    private void syncServerRecipeState(){
+        server.clearRecipes();
+        serverRecipes.forEach(server::addRecipe);
+        loaded.values().forEach(server::addRecipe);
+    }
+
+    public void unloadAll(){
+        groupedRecipes.clear();
+        serverRecipes.clear();
+        loaded.clear();
+        server.resetRecipes();
+    }
+
+    public void unloadRecipe(IEnhancedRecipe recipe){
+        RecipeGroup group = findGroup(recipe);
+        if(group == null) {
+            printGroupsDebugInfo();
+            Bukkit.getLogger().log(Level.SEVERE, "Could not unload recipe from groups because it doesn't exist.");
+            return;
+        }
+        Recipe serverRecipe = loaded.get(recipe.getKey());
+
+        //Only unload from server if there are no similar server recipes.
+        if(serverRecipe != null){
+            //We can't remove recipes with the iterator because it's immutable.
+            loaded.remove(recipe.getKey());
+            syncServerRecipeState();
+        }
+
+        //TODO update grouping. This is not a priority because the injector compares the recipes either way.
+        //Remove entire recipe group if it's the last enhanced recipe, or remove a single recipe from the group.
+        if(group.getEnhancedRecipes().size() == 1)
+            groupedRecipes.removeIf(x -> x.getEnhancedRecipes().contains(recipe));
+        else group.getEnhancedRecipes().remove(recipe);
+        Debug.Send("unloaded a recipe");
+        printGroupsDebugInfo();
+    }
+
+    public void loadRecipe(@NonNull IEnhancedRecipe recipe){
+
+        if(loaded.containsKey(recipe.getKey()))
+            unloadRecipe(recipe);
+
+        List<Recipe> similarServerRecipes = new ArrayList<>();
+        for(Recipe r : serverRecipes){
+            if(recipe.isSimilar(r)){
+                similarServerRecipes.add(r);
+            }
+        }
+        Recipe alwaysSimilar = null;
+        for(Recipe r : similarServerRecipes){
+            if(recipe.isAlwaysSimilar(r)){
+                alwaysSimilar = r;
+                break;
+            }
+        }
+        //Only load the recipe if there is not a server recipe that's always similar.
+        if(alwaysSimilar == null){
+            Recipe serverRecipe = recipe.getServerRecipe();
+            server.addRecipe(serverRecipe);
+            Debug.Send("Added server recipe for " + serverRecipe.getResult().toString());
+            loaded.put(recipe.getKey(), serverRecipe);
+        }else{
+            Debug.Send("Didn't add server recipe for " + recipe.getKey() + " because a similar one was already loaded: " + alwaysSimilar.toString() + " with the result " + alwaysSimilar.getResult().toString());
+        }
+
+        RecipeGroup group = new RecipeGroup();
+        group.setEnhancedRecipes(Arrays.asList(recipe));
+        group.setServerRecipes(similarServerRecipes);
+        addGroup(group);
+    }
+
+    public List<IEnhancedRecipe> getLoadedRecipes(){
+        return groupedRecipes.stream().flatMap(x -> x.getEnhancedRecipes().stream()).distinct().collect(Collectors.toList());
+    }
+
+    public void printGroupsDebugInfo(){
+        for(RecipeGroup group : groupedRecipes){
+            Debug.Send("group of grouped recipes:");
+            Debug.Send("   enhanced recipes: " + group.getEnhancedRecipes().stream().filter(x -> x != null).map(x -> x.getResult().toString()).collect(Collectors.joining(", ")));
+            Debug.Send("   server recipes: " + group.getServerRecipes().stream().filter(x -> x != null).map(x -> x.getResult().toString()).collect(Collectors.joining(", ")));
+        }
+    }
+
 }

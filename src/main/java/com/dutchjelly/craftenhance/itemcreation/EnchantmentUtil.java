@@ -1,4 +1,4 @@
-package com.dutchjelly.craftenhance.Util;
+package com.dutchjelly.craftenhance.itemcreation;
 
 import java.util.HashMap;
 import java.util.Locale;

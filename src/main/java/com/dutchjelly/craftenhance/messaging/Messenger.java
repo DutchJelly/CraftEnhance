@@ -4,45 +4,51 @@ import com.dutchjelly.craftenhance.CraftEnhance;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class Messenger {
 	
-	private CraftEnhance plugin;
-	private String prefix;
-	
-	
-	public Messenger(CraftEnhance main){
-		this.plugin = main;
-		this.prefix = ChatColor.translateAlternateColorCodes('&', main.getConfig().getString("global-prefix"));
+	private static CraftEnhance plugin;
+	private static String prefix;
+
+	public static void Init(CraftEnhance plugin){
+		Messenger.plugin = plugin;
+		Messenger.prefix = ChatColor.translateAlternateColorCodes('&', plugin.getConfig().getString("global-prefix"));
 	}
 
-
-	public void message(String message){
-        Bukkit.getConsoleSender().sendMessage(prefix + message);
+	public static void Message(String message){
+        Bukkit.getConsoleSender().sendMessage(prefix + ChatColor.translateAlternateColorCodes('&', message));
     }
 
-	public void message(String message, CommandSender sender) {
+	public static void Message(String message, CommandSender sender) {
+		if(sender == null) {
+		    Message(message);
+		    return;
+        }
         message = ChatColor.translateAlternateColorCodes('&', message);
         message = prefix + message;
-        sendMessage(message, sender);
+        SendMessage(message, sender);
     }
 
-
-	public void messageFromConfig(String path, CommandSender sender, String placeHolder){
+	public static void MessageFromConfig(String path, CommandSender sender, String placeHolder){
 		if(path == null || sender == null || placeHolder == null) return;
 		String message = plugin.getConfig().getString(path).replace("[PLACEHOLDER]", placeHolder);
-		sendMessage(message, sender);
+		SendMessage(message, sender);
 	}
 	
-	public void messageFromConfig(String path, CommandSender sender){
+	public static void MessageFromConfig(String path, CommandSender sender){
 		if(path == null || sender == null) return;
 		String message = plugin.getConfig().getString(path);
-		sendMessage(message, sender);
+		SendMessage(message, sender);
 	}
 	
-	private void sendMessage(String s, CommandSender sender){
+	private static void SendMessage(String s, CommandSender sender){
 		if(s == null) s = "";
 		sender.sendMessage(s);
 	}
-	
+
+	public static void Error(String error){
+		Message("&4&lError&r -- " + error);
+	}
+
 }
