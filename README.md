@@ -5,8 +5,8 @@ This is the repository of CraftEnhance.
 The basic idea of the plugin is that it allows users to make custom recipes on minecraft servers that run on the bukkit/spigot API. One thing that this plugin is unique in is that it allows items in recipes to have metadata like enchantments or custom names. It also features full GUI support, which makes in-game recipe editing/creation possible.
  
 These are some of the TODO's including future features. Any help in doing those will be appreciated.
- - TODO: Add optional category property to the Recipe class.
- - TODO: Add "hide" property to Recipe class. Useful for recipes that don't need to be shown, maybe useful for the lore upgrade feature. 
+ - [ ] Add categories
+ - [ ] Option to hide or unlock recipes 
 
 
 ### Changelog
