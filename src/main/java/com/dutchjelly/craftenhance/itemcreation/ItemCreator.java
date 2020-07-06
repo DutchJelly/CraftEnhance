@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dutchjelly.bukkitadapter.Adapter;
-import com.dutchjelly.craftenhance.Util.EnchantmentUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;

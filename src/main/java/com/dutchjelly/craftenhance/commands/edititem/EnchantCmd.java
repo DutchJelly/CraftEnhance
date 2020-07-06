@@ -1,6 +1,8 @@
 package com.dutchjelly.craftenhance.commands.edititem;
 
+import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.commandhandling.ICompletionProvider;
+import com.dutchjelly.craftenhance.messaging.Messenger;
 import com.sun.tools.javac.code.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
@@ -37,12 +39,12 @@ public class EnchantCmd implements ICommand, ICompletionProvider {
 		ItemCreator creator = new ItemCreator(p.getInventory().getItemInHand(), args);
 		ParseResult result = creator.enchant();
 		p.getInventory().setItemInHand(creator.getItem());
-		handler.getMain().getMessenger().message(result.getMessage(), p);
+		Messenger.Message(result.getMessage(), p);
 	}
 
 	@Override
 	public void handleConsoleCommand(CommandSender sender, String[] args) {
-		handler.getMain().getMessenger().messageFromConfig("messages.commands.only-for-players", sender);
+		Messenger.MessageFromConfig("messages.commands.only-for-players", sender);
 	}
 
 	@Override

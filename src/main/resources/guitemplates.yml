@@ -1,0 +1,129 @@
+RecipesViewer:
+  name: "recipes viewer"
+  fill-space: "21-23"
+  button-mapping:
+    48: PrvPage
+    49: Back
+    50: NxtPage
+  template:
+    48:
+      color: LIGHT_BLUE
+      material: STAINED_GLASS_PANE
+      name: "Previous Page"
+      lore:
+      - "Go to the previous page"
+      glow: true
+    49:
+      material: GLOWSTONE_DUST
+      name: "Back"
+      lore:
+      - "Go back to the previous GUI"
+      glow: true
+    50:
+      color: LIGHT_BLUE
+      material: STAINED_GLASS_PANE
+      name: "Next Page"
+      lore:
+      - "Go to the next page"
+      glow: true
+
+WBRecipeViewer:
+  name: "recipe viewer"
+  fill-space: "0-2,9-11,18-20,13"
+  button-mapping:
+    26: Back
+  template:
+    3-8,14-17,21-25:
+      color: GRAY
+      material: STAINED_GLASS_PANE
+      name: ""
+      lore:
+      - ""
+      glow: false
+    26:
+      material: GLOWSTONE_DUST
+      name: "Back"
+      lore:
+      - "Go back to the previous GUI"
+      glow: true
+    12:
+      material: WORKBENCH
+      name: "&6Enhanced crafting table recipe"
+      lore:
+      - "&fThe recipe is &3[shaped]&f"
+      - "&fThe ingredients need &3[match meta]"
+      glow: true
+WBRecipeEditor:
+  name: "recipe editor"
+  fill-space: "0-2,9-11,18-20,13"
+  button-mapping:
+    7: SwitchShaped
+    16: SwitchMatchMeta
+    8: DeleteRecipe
+    17: ResetRecipe
+    25: SaveRecipe
+    26: Back
+    6: SetPosition
+#    15: ChangeCategory
+  template:
+    3-5,14-15,21-24:
+      color: GRAY
+      material: STAINED_GLASS_PANE
+      name: ""
+      lore:
+      - ""
+      glow: false
+    26:
+      material: GLOWSTONE_DUST
+      name: "Back"
+      lore:
+      - "Go back to the previous GUI"
+      glow: true
+    12:
+      material: WORKBENCH
+      name: "&6Enhanced crafting table recipe"
+      lore:
+      - "&fThe recipe is &3[shaped]&f"
+      - "&fThe ingredients need &3[match meta]"
+      - "&fThe key of the recipe is &3[key]"
+      - "&fThe permission of the recipe is &3[permission]"
+      glow: true
+    25:
+      material: EMERALD
+      name: "&aSave &fthe recipe"
+      lore:
+      - ""
+      glow: true
+    8:
+      material: REDSTONE
+      name: "&cDelete &fthe recipe"
+      lore:
+      - "&7&oNote that there's no going back"
+      - "&7&oonce you delete your recipe."
+      glow: true
+    17:
+      material: STONE
+      name: "&7Reset &fthe recipe"
+      lore:
+      - ""
+      glow: true
+    16:
+      material: ENCHANTED_BOOK
+      name: "&fClick to change: &e[match meta]"
+      lore:
+      - ""
+      glow: true
+    7:
+      material: WEB
+      name: "&fClick to change: &e[shaped]"
+      lore:
+      - ""
+      glow: true
+    6:
+      material: PAPER
+      name: "&fClick to set the position"
+      lore:
+      - "&fCurrent position"
+      - "&fSlot &3[slot]"
+      - "&fPage &3[page]"
+      glow: true

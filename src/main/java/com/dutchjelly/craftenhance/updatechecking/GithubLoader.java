@@ -1,6 +1,8 @@
 package com.dutchjelly.craftenhance.updatechecking;
 
 
+import com.dutchjelly.craftenhance.messaging.Messenger;
+
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.URL;
@@ -38,7 +40,7 @@ public class GithubLoader {
                 outputStream.write(buffer, 0, i);
             version = new String(outputStream.toByteArray(), "UTF-8");
         } catch (Exception e) {
-            checker.getPlugin().getMessenger().message("(fatal) The update checker could not extract the version from the url connection.");
+            Messenger.Message("(fatal) The update checker could not extract the version from the url connection.");
         }
     }
 
@@ -46,7 +48,7 @@ public class GithubLoader {
         try {
             connection = (new URL(rawUrl)).openConnection();
         } catch (Exception e) {
-            checker.getPlugin().getMessenger().message("(fatal) The update checker could not open URL connection.");
+            Messenger.Message("(fatal) The update checker could not open URL connection.");
             return false;
         }
         return true;

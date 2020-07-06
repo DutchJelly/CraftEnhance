@@ -1,7 +1,7 @@
 author: DutchJelly
 main: com.dutchjelly.craftenhance.CraftEnhance
 name: CraftEnhance
-version: 2.3.4
+version: 2.4.0-Beta
 api-version: 1.13
 commands:
   recipes:

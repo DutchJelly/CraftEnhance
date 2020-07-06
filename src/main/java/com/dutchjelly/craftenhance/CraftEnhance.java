@@ -1,29 +1,26 @@
 package com.dutchjelly.craftenhance;
 
+import java.io.File;
 import java.util.Arrays;
 
+import com.dutchjelly.craftenhance.commands.ceh.*;
+import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
+import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
+import com.dutchjelly.craftenhance.files.GuiTemplatesFile;
 import com.dutchjelly.craftenhance.updatechecking.VersionChecker;
+import lombok.Getter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
-import com.dutchjelly.craftenhance.commands.ceh.ChangeKeyCmd;
-import com.dutchjelly.craftenhance.commands.ceh.CleanItemFileCmd;
-import com.dutchjelly.craftenhance.commands.ceh.CreateRecipeCmd;
-import com.dutchjelly.craftenhance.commands.ceh.OrderRecipesCmd;
-import com.dutchjelly.craftenhance.commands.ceh.RecipesCmd;
-import com.dutchjelly.craftenhance.commands.ceh.SetPermissionCmd;
-import com.dutchjelly.craftenhance.commands.ceh.SpecsCommand;
 import com.dutchjelly.craftenhance.crafthandling.RecipeInjector;
 import com.dutchjelly.craftenhance.files.ConfigFormatter;
 import com.dutchjelly.craftenhance.files.FileManager;
-import com.dutchjelly.craftenhance.gui.GUIContainer;
+import com.dutchjelly.craftenhance.gui.GuiManager;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.messaging.Messenger;
-import com.dutchjelly.craftenhance.Util.GUIButtons;
-import com.dutchjelly.craftenhance.model.CraftRecipe;
 import com.dutchjelly.craftenhance.commands.edititem.DisplayNameCmd;
 import com.dutchjelly.craftenhance.commands.edititem.DurabilityCmd;
 import com.dutchjelly.craftenhance.commands.edititem.EnchantCmd;
@@ -38,45 +35,74 @@ public class CraftEnhance extends JavaPlugin{
 	    return plugin;
     }
 
+    @Getter
 	private FileManager fm;
-	private RecipeLoader loader;
-	private GUIContainer guiContainer;
-	private RecipeInjector injector;
+
+	@Getter
+	private GuiManager guiManager;
+
+	@Getter
+	private GuiTemplatesFile guiTemplatesFile;
+
 	private CustomCmdHandler commandHandler;
-	private Messenger messenger;
-	
+
 	@Override
 	public void onEnable(){
-		
-		//The filemanager needs serialization, so firstly register the classes.
+
+	    plugin = this;
+		//The file manager needs serialization, so firstly register the classes.
 		registerSerialization();
 
 		saveDefaultConfig();
 		Debug.init(this);
-		//Most other instances use the filemanager, so setup before everything.
+		//Most other instances use the file manager, so setup before everything.
+        Debug.Send("Setting up the file manager for recipes.");
 		setupFileManager();
-		
-		GUIButtons.init();
+
+		Debug.Send("Coloring config messages.");
 		ConfigFormatter.init(this).formatConfigMessages();
-		createInstances();
-		loader.loadRecipes();
+        Messenger.Init(this);
+
+        Debug.Send("Loading recipes");
+        RecipeLoader loader = RecipeLoader.getInstance();
+		fm.getRecipes().forEach(loader::loadRecipe);
+		loader.printGroupsDebugInfo();
+
+		Debug.Send("Loading gui templates");
+		guiTemplatesFile = new GuiTemplatesFile(this);
+		guiTemplatesFile.load();
+
+		Debug.Send("Setting up listeners and commands");
 		setupListeners();
 		setupCommands();
 
-		getMessenger().message("CraftEnhance is managed and developed by DutchJelly.");
-		getMessenger().message("If you find a bug in the plugin, please report it to https://dev.bukkit.org/projects/craftenhance.");
+		Messenger.Message("CraftEnhance is managed and developed by DutchJelly.");
+		Messenger.Message("If you find a bug in the plugin, please report it to https://dev.bukkit.org/projects/craftenhance.");
 		VersionChecker checker = VersionChecker.init(this);
 		if(!checker.runVersionCheck()){
 		    getPluginLoader().disablePlugin(this);
 		    return;
         }
 		checker.runUpdateCheck();
-		plugin = this;
+	}
+
+
+	public void reload(){
+	    saveDefaultConfig();
+	    fm = FileManager.init(this);
+		fm.cacheItems();
+		fm.cacheRecipes();
+		RecipeLoader loader = RecipeLoader.getInstance();
+		loader.unloadAll();
+        fm.getRecipes().forEach(loader::loadRecipe);
+        guiTemplatesFile.load();
+        reloadConfig();
+        ConfigFormatter.init(this).formatConfigMessages();
 	}
 	
 	@Override
 	public void onDisable(){
-		guiContainer.closeAll();
+		guiManager.closeAll();
 	}
 	
 	@Override
@@ -85,11 +111,11 @@ public class CraftEnhance extends JavaPlugin{
 		//Make sure that the user doesn't get a whole stacktrace when using an unsupported server jar.
 		//Note that this error could only get caused by onEnable() not being called.
 		if(commandHandler == null){
-			getMessenger().message("Could not execute the command.", sender);
-			getMessenger().message("Something went wrong with initializing the commandHandler. Please make sure to use" +
+			Messenger.Message("Could not execute the command.", sender);
+			Messenger.Message("Something went wrong with initializing the commandHandler. Please make sure to use" +
 			" Spigot or Bukkit when using this plugin. If you are using Spigot or Bukkit and still experiencing this " +
 			"issue, please send a bug report here: https://dev.bukkit.org/projects/craftenhance.");
-			getMessenger().message("Disabling the plugin...");
+			Messenger.Message("Disabling the plugin...");
 			getPluginLoader().disablePlugin(this);
 		}
 
@@ -99,15 +125,8 @@ public class CraftEnhance extends JavaPlugin{
 	
 	//Registers the classes that extend ConfigurationSerializable.
 	private void registerSerialization(){
-		ConfigurationSerialization.registerClass(CraftRecipe.class, "Recipe");
-	}
-	
-	//Create basic instances where order doesn't matter.
-	private void createInstances(){
-		loader = new RecipeLoader(this);
-		guiContainer = new GUIContainer(this);
-		injector = new RecipeInjector(fm);
-		messenger = new Messenger(this);
+		ConfigurationSerialization.registerClass(WBRecipe.class, "WBRecipe");
+        ConfigurationSerialization.registerClass(WBRecipe.class, "Recipe");
 	}
 	
 	//Assigns executor classes for the commands.
@@ -118,15 +137,18 @@ public class CraftEnhance extends JavaPlugin{
 				new EnchantCmd(commandHandler), new ItemFlagCmd(commandHandler), new LocalizedNameCmd(commandHandler), 
 				new LoreCmd(commandHandler)));
 		//All command with the base /ceh
-		commandHandler.loadCommandClasses(Arrays.asList(new CreateRecipeCmd(commandHandler), new OrderRecipesCmd(commandHandler),
+		commandHandler.loadCommandClasses(Arrays.asList(new CreateRecipeCmd(commandHandler),
 				new RecipesCmd(commandHandler), new SpecsCommand(commandHandler), new ChangeKeyCmd(commandHandler), 
-				new CleanItemFileCmd(commandHandler), new SetPermissionCmd(commandHandler)));
-		
+				new CleanItemFileCmd(commandHandler), new SetPermissionCmd(commandHandler), new ReloadCmd()));
+
+		//commandHandler.loadCommandClass(new Test());
 	}
 	
 	//Registers the listener class to the server.
 	private void setupListeners(){
-		getServer().getPluginManager().registerEvents(new EventClass(this), this);
+        guiManager = new GuiManager(this);
+		getServer().getPluginManager().registerEvents(new RecipeInjector(this), this);
+		getServer().getPluginManager().registerEvents(guiManager, this);
 	}
 	
 	private void setupFileManager(){
@@ -134,22 +156,5 @@ public class CraftEnhance extends JavaPlugin{
 		fm.cacheItems();
 		fm.cacheRecipes();
 	}
-	
-	public FileManager getFileManager(){
-		return fm;
-	}
-	public RecipeLoader getRecipeLoader(){
-		return loader;
-	}
-	public GUIContainer getGUIContainer(){
-		return guiContainer;
-	}
-	public RecipeInjector getRecipeInjector(){
-		return injector;
-	}
-	public Messenger getMessenger(){
-		return messenger;
-	}
-	
 	
 }

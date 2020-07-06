@@ -3,6 +3,7 @@ package com.dutchjelly.craftenhance.commands.ceh;
 import com.dutchjelly.craftenhance.commandhandling.ICommand;
 import com.dutchjelly.craftenhance.commandhandling.CommandRoute;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
+import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,12 +23,12 @@ public class CleanItemFileCmd implements ICommand {
 
 	@Override
 	public void handlePlayerCommand(Player p, String[] args) {
-		handler.getMain().getFileManager().cleanItemFile();
-		handler.getMain().getMessenger().message("Successfully cleared all unused items.", p);
+		handler.getMain().getFm().cleanItemFile();
+		Messenger.Message("Successfully cleared all unused items.", p);
 	}
 
 	@Override
 	public void handleConsoleCommand(CommandSender sender, String[] args) {
-		handler.getMain().getMessenger().messageFromConfig("messages.commands.only-for-players", sender);
+		Messenger.MessageFromConfig("messages.commands.only-for-players", sender);
 	}
 }

@@ -1,5 +1,6 @@
 package com.dutchjelly.craftenhance.commands.edititem;
 
+import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,7 +25,7 @@ public class LocalizedNameCmd implements ICommand {
 
 	@Override
 	public void handlePlayerCommand(Player p, String[] args) {
-		handler.getMain().getMessenger().message("This command is not supported in this version of the plugin.");
+		Messenger.Message("This command is not supported in this version of the plugin.");
 		/*
 		ItemCreator creator = new ItemCreator(p.getInventory().getItemInMainHand(), args);
 		ParseResult result = creator.setLocalizedName();
@@ -34,7 +35,7 @@ public class LocalizedNameCmd implements ICommand {
 
 	@Override
 	public void handleConsoleCommand(CommandSender sender, String[] args) {
-		handler.getMain().getMessenger().messageFromConfig("messages.commands.only-for-players", sender);
+		Messenger.MessageFromConfig("messages.commands.only-for-players", sender);
 	}
 
 }

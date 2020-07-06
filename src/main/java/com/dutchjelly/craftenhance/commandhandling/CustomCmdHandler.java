@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
+import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
@@ -74,7 +75,7 @@ public class CustomCmdHandler implements TabCompleter{
 		
 		CommandRoute annotation = commandClasses.get(executor);
 		if(!hasPermission(sender, annotation)){
-			main.getMessenger().messageFromConfig("messages.global.no-perms", sender);
+			Messenger.MessageFromConfig("messages.global.no-perms", sender);
 			return true;
 		}
 		
@@ -82,7 +83,7 @@ public class CustomCmdHandler implements TabCompleter{
 		args = popArguments(commandLabels.length, args);
 		
 		if(args.length > 0 && args[0].equalsIgnoreCase("help")){
-			main.getMessenger().message(executor.getDescription(), sender);
+			Messenger.Message(executor.getDescription(), sender);
 			return true;
 		}
 		
@@ -96,14 +97,16 @@ public class CustomCmdHandler implements TabCompleter{
 	//Send options that could complete the given arguments to sender.
 	private void sendOptions(String[] args, CommandSender sender){
 		String[] emptyLast = new String[args.length+1];
-		for(int i = 0; i < args.length; i++) emptyLast[i] = args[i];
+		for(int i = 0; i < args.length; i++) {
+			emptyLast[i] = args[i];
+		}
 		emptyLast[args.length] = "";
 		String completions = String.join(", ", getTabCompleteMatches(emptyLast));
 		if(completions.equals("")) {
-			main.getMessenger().message("That is not a command.", sender);
+			Messenger.Message("That is not a command.", sender);
 			return;
 		}
-		main.getMessenger().messageFromConfig("messages.commands.show-options", sender, completions);;
+		Messenger.MessageFromConfig("messages.commands.show-options", sender, completions);;
 	}
 	
 	//Push the label argument to index 0 of the array of arguments.
@@ -187,7 +190,7 @@ public class CustomCmdHandler implements TabCompleter{
 	
 	//Returns if the sender has permission for command class with annotation.
 	private boolean hasPermission(CommandSender sender, CommandRoute annotation){
-		return annotation.perms().equals("") || annotation.perms() == null || sender.hasPermission(main.getConfig().getString(annotation.perms()));
+		return annotation.perms().equals("") || annotation.perms() == null || sender.hasPermission(main.getConfig().getString(annotation.perms()) + "");
 	}
 	
 	//Find all possible tab completions for args.

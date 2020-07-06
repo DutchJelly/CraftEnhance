@@ -9,10 +9,14 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
+import com.dutchjelly.craftenhance.IEnhancedRecipe;
+import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.model.CraftRecipe;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.serialization.ConfigurationSerializable;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.inventory.ItemStack;
 
 public class FileManager {
@@ -22,19 +26,14 @@ public class FileManager {
 	private File recipesFile;
 	private FileConfiguration recipesConfig;
 	private FileConfiguration itemsConfig;
-	private String seperator;
 	private Logger logger;
-	
 	private Map<String, ItemStack> items;
-	private List<CraftRecipe> recipes;
-	private List<CraftRecipe> bin;
+	private List<IEnhancedRecipe> recipes;
 
 	public static FileManager init(CraftEnhance main){
 		FileManager fm = new FileManager();
-		fm.seperator = File.separator;
-		fm.items = new HashMap<String, ItemStack>();
-		fm.recipes = new ArrayList<CraftRecipe>();
-		fm.bin = new ArrayList<CraftRecipe>();
+		fm.items = new HashMap<>();
+		fm.recipes = new ArrayList<>();
 		fm.logger = main.getLogger();
 		fm.dataFolder = main.getDataFolder();
 		fm.dataFolder.mkdir();
@@ -42,7 +41,7 @@ public class FileManager {
 		fm.recipesFile = fm.getFile("recipes.yml");
 		return fm;
 	}
-	
+
 	private File ensureCreated(File file){
 		if(!file.exists()){
 			logger.info(file.getName() + " doesn't exist... creating it.");
@@ -57,7 +56,7 @@ public class FileManager {
 	}
 	
 	private File getFile(String name){
-		File file = new File(dataFolder.getPath() + seperator + name);
+		File file = new File(dataFolder, name);
 		ensureCreated(file);
 		return file;
 	}
@@ -67,13 +66,13 @@ public class FileManager {
 	}
 	
 	public void cacheRecipes(){
-		Debug.Send("The filemanageer is caching recipes...");
-		CraftRecipe keyValue;
+		Debug.Send("The file manager is caching recipes...");
+		IEnhancedRecipe keyValue;
 		recipesConfig = getYamlConfig(recipesFile);
 		recipes.clear();
 		for(String key : recipesConfig.getKeys(false)){
 			Debug.Send("Caching recipe with key " + key);
-			keyValue = (CraftRecipe)recipesConfig.get(key);
+			keyValue = (IEnhancedRecipe)recipesConfig.get(key);
 			keyValue.setKey(key);
 			recipes.add(keyValue);
 		}
@@ -117,12 +116,12 @@ public class FileManager {
 		return unique;
 	}
 	
-	public List<CraftRecipe> getRecipes(){
+	public List<IEnhancedRecipe> getRecipes(){
 		return recipes;
 	}
 	
-	public CraftRecipe getRecipe(String key){
-		for(CraftRecipe recipe : recipes){
+	public IEnhancedRecipe getRecipe(String key){
+		for(IEnhancedRecipe recipe : recipes){
 			if(recipe.getKey().equals(key))
 				return recipe;
 		}
@@ -148,7 +147,7 @@ public class FileManager {
 		return false;
 	}
 	
-	public void saveRecipe(CraftRecipe recipe){
+	public void saveRecipe(IEnhancedRecipe recipe){
 		Debug.Send("Saving recipe " + recipe.toString() + " with key " + recipe.getKey());
 		recipesConfig = getYamlConfig(recipesFile);
 		recipesConfig.set(recipe.getKey(), recipe);
@@ -162,12 +161,11 @@ public class FileManager {
 		}
 	}
 	
-	public void removeRecipe(CraftRecipe recipe){
+	public void removeRecipe(IEnhancedRecipe recipe){
 		Debug.Send("Removing recipe " + recipe.toString() + " with key " + recipe.getKey());
 		recipesConfig = getYamlConfig(recipesFile);
 		recipesConfig.set(recipe.getKey(), null);
 		recipes.remove(recipe);
-		bin.add(recipe);
 		try{
 			recipesConfig.save(recipesFile);
 		} catch(IOException e){
@@ -175,14 +173,9 @@ public class FileManager {
 		}
 	}
 	
-	public void changeKey(CraftRecipe recipe, String newKey){
-		recipe.setKey(newKey);
-		overrideSave();
-	}
-	
 	public void overrideSave(){
 		Debug.Send("Overriding saved recipes with new list..");
-		List<CraftRecipe> cloned = new ArrayList<CraftRecipe>();
+		List<IEnhancedRecipe> cloned = new ArrayList<>();
 		recipes.forEach(x -> cloned.add(x));
 		removeAllRecipes();
 		cloned.forEach(x -> saveRecipe(x));
@@ -212,11 +205,12 @@ public class FileManager {
 	}
 	
 	private boolean isItemInUse(ItemStack item){
-		for(CraftRecipe r : recipes){
+		for(IEnhancedRecipe r : recipes){
 			if(r.getResult().equals(item)) return true;
-			for(ItemStack inRecipe : r.getContents()){
-				if(inRecipe != null && inRecipe.equals(item)) return true;
-			}
+            for(ItemStack inRecipe : r.getContent()){
+                if(inRecipe != null && inRecipe.equals(item)) return true;
+            }
+
 		}
 		return false;
 	}

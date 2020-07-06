@@ -4,6 +4,7 @@ package com.dutchjelly.craftenhance.crafthandling.util;
 import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
+import com.dutchjelly.craftenhance.messaging.Debug;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
@@ -11,9 +12,11 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 public class ServerRecipeTranslator {
 
@@ -22,10 +25,12 @@ public class ServerRecipeTranslator {
     private static List<String> UsedKeys = new ArrayList<>();
 
     public static ShapedRecipe translateShapedEnhancedRecipe(ItemStack[] content, ItemStack result, String key){
+        if(!Arrays.asList(content).stream().anyMatch(x -> x != null))
+            return null;
         Random r = new Random();
         String recipeKey = key.toLowerCase().replaceAll("[^a-z0-9 ]", "");
         recipeKey = recipeKey.trim();
-//        while(UsedKeys.contains(recipeKey)) recipeKey += String.valueOf(r.nextInt(10));
+        while(UsedKeys.contains(recipeKey)) recipeKey += String.valueOf(r.nextInt(10));
         if(!UsedKeys.contains(recipeKey))
             UsedKeys.add(recipeKey);
         ShapedRecipe shaped = Adapter.GetShapedRecipe(
@@ -43,8 +48,21 @@ public class ServerRecipeTranslator {
 
 
     public static ShapelessRecipe translateShapelessEnhancedRecipe(ItemStack[] content, ItemStack result, String key){
-        Bukkit.getLogger().log(Level.SEVERE, "shapeless recipe are not implemented yet");
-        return null;
+        List<ItemStack> ingredients = Arrays.stream(content).filter(x -> x != null).collect(Collectors.toList());
+        if(ingredients.size() == 0)
+            return null;
+
+        Random r = new Random();
+        String recipeKey = key.toLowerCase().replaceAll("[^a-z0-9 ]", "");
+        recipeKey = recipeKey.trim();
+        while(UsedKeys.contains(recipeKey)) recipeKey += String.valueOf(r.nextInt(10));
+        if(!UsedKeys.contains(recipeKey))
+            UsedKeys.add(recipeKey);
+        ShapelessRecipe shapeless = Adapter.GetShapelessRecipe(
+                CraftEnhance.getPlugin(CraftEnhance.class), KeyPrefix + recipeKey, result
+        );
+        ingredients.forEach(x -> Adapter.AddIngredient(shapeless, x));
+        return shapeless;
     }
 
     public static ShapelessRecipe translateShapelessEnhancedRecipe(WBRecipe recipe){
@@ -68,7 +86,7 @@ public class ServerRecipeTranslator {
 
     public static ItemStack[] translateShapelessRecipe(ShapelessRecipe recipe){
         if(recipe == null || recipe.getIngredientList() == null) return null;
-        return recipe.getIngredientList().toArray(new ItemStack[recipe.getIngredientList().size()]);
+        return recipe.getIngredientList().stream().toArray(ItemStack[]::new);
     }
 
 
@@ -86,25 +104,39 @@ public class ServerRecipeTranslator {
 
     //Trims the shape so that there are no redundant spaces or elements in shape.
     private static String[] TrimShape(String[] shape){
-        List<String> TrimmedShape = new ArrayList<>();
-        int maxLength = 0;
-        int temp;
-        for(int i = 0; i < shape.length; i++){
-            temp = StringUtils.stripEnd(shape[i], " ").length();
-            if(temp > maxLength)
-                maxLength = temp;
+        if(shape.length == 0) return shape;
+
+        //Trim the start and end of the list
+        List<String> trimmed = Arrays.asList(shape);
+        while(!trimmed.isEmpty() && (trimmed.get(0).trim().equals("")
+                ||trimmed.get(trimmed.size()-1).trim().equals(""))){
+            if(trimmed.get(0).trim().equals(""))
+                trimmed = trimmed.subList(1, trimmed.size());
+            else trimmed = trimmed.subList(0, trimmed.size()-1);
         }
-        for(int i = 0; i < shape.length; i++){
-            shape[i] = shape[i].substring(0, maxLength);
-            if(shape[i].trim().length() > 0) TrimmedShape.add(shape[i]);
+
+        if(trimmed.isEmpty())
+            throw new IllegalStateException("empty shape is not allowed");
+
+        //Find the first and last indexes of the total shape.
+        int firstIndex = trimmed.get(0).length();
+        int lastIndex = 0;
+
+        for(String line : trimmed){
+            int firstChar = 0;
+            while(firstChar < line.length() && line.charAt(firstChar) == ' ') firstChar++;
+            firstIndex = Math.min(firstChar, firstIndex);
+            lastIndex = Math.max(lastIndex, StringUtils.stripEnd(line, " ").length());
         }
-        return TrimmedShape.toArray(new String[0]);
+
+        //Trim the shape with the first and last indexes.
+        final int first = firstIndex, last = lastIndex;
+        return trimmed.stream().map(x -> x.substring(first, last)).toArray(String[]::new);
     }
 
     private static void MapIngredients(ShapedRecipe recipe, ItemStack[] content){
         for(int i = 0; i < 9; i++){
             if(content[i] != null){
-                //recipe.setIngredient((char) ('A' + i), content[i].getType());
                 Adapter.SetIngredient(recipe, (char) ('A' + i), content[i]);
             }
         }
