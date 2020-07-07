@@ -1,6 +1,6 @@
 package com.dutchjelly.craftenhance.gui.guis;
 
-import com.dutchjelly.craftenhance.ConfigError;
+import com.dutchjelly.craftenhance.exceptions.ConfigError;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.gui.GuiManager;
@@ -198,7 +198,7 @@ public class WBRecipeEditor extends GUIElement {
 	        if(item == null) return null;
 	        if(item.getAmount() != 1) {
 	            Messenger.Message("WBRecipes only support amounts of 1 in the recipe.", getPlayer());
-	            item.setAmount(1);
+//	            item.setAmount(1);
             }
             return item;
         }).toArray(ItemStack[]::new);

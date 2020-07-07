@@ -2,6 +2,7 @@ package com.dutchjelly.craftenhance.crafthandling.util;
 
 import com.dutchjelly.craftenhance.messaging.Debug;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemMatchers{
@@ -23,6 +24,15 @@ public class ItemMatchers{
         return a.getType().equals(b.getType());
     }
 
+    //Looks if amount of a is <= amount of b in addition to checking type.
+    public static boolean matchTypeAndAmount(ItemStack a, ItemStack b){
+        return matchType(a,b) && (a == null || a.getAmount() <= b.getAmount());
+    }
+
+    //Looks if amount of a is <= amount of b in addition to checking meta.
+    public static boolean matchMetaAndAmount(ItemStack a, ItemStack b){
+        return matchMeta(a,b) && (a == null || a.getAmount() <= b.getAmount());
+    }
 
     public static boolean matchTypeData(ItemStack a, ItemStack b){
         if(a == null || b == null) return a == null && b == null;

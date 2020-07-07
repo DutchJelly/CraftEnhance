@@ -1,24 +1,21 @@
 package com.dutchjelly.bukkitadapter;
 
 
-import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.Material;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
+
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.bukkit.DyeColor;
-import org.bukkit.NamespacedKey;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Adapter {
 
@@ -62,7 +59,13 @@ public class Adapter {
 //    }
 //
 //    public static ShapedRecipe GetShapedRecipe(JavaPlugin plugin, String key, ItemStack result) {
+//           if(result == null) return null;
 //        return new ShapedRecipe(result);
+//    }
+//
+//    public static ShapelessRecipe GetShapelessRecipe(JavaPlugin plugin, String key, ItemStack result){
+//           if(result == null) return null;
+//        return new ShapelessRecipe(result);
 //    }
 //
 //    public static ItemStack SetDurability(ItemStack item, int damage){
@@ -74,6 +77,11 @@ public class Adapter {
 //    public static void SetIngredient(ShapedRecipe recipe, char key, ItemStack ingredient){
 //        recipe.setIngredient(key, ingredient.getData());
 //    }
+//    public static void AddIngredient(ShapelessRecipe recipe, ItemStack ingredient){
+//        recipe.addIngredient(ingredient.getData());
+//    }
+
+
 
     /**
      * section for 1.12
@@ -84,10 +92,12 @@ public class Adapter {
 //    }
 //
 //    public static ShapedRecipe GetShapedRecipe(JavaPlugin plugin, String key, ItemStack result) {
+//        if(result == null) return null;
 //        return new ShapedRecipe(new NamespacedKey(plugin, key),result);
 //    }
 //
 //    public static ShapelessRecipe GetShapelessRecipe(JavaPlugin plugin, String key, ItemStack result){
+//        if(result == null) return null;
 //        return new ShapelessRecipe(new NamespacedKey(plugin, key), result);
 //    }
 //
@@ -116,10 +126,12 @@ public class Adapter {
     }
 
     public static ShapedRecipe GetShapedRecipe(JavaPlugin plugin, String key, ItemStack result) {
+        if(result == null) return null;
         return new ShapedRecipe(new NamespacedKey(plugin, key),result);
     }
 
     public static ShapelessRecipe GetShapelessRecipe(JavaPlugin plugin, String key, ItemStack result){
+         if(result == null) return null;
         return new ShapelessRecipe(new NamespacedKey(plugin, key), result);
     }
 
@@ -137,8 +149,6 @@ public class Adapter {
     public static void SetIngredient(ShapedRecipe recipe, char key, ItemStack ingredient){
         recipe.setIngredient(key, ingredient.getType());
     }
-
-
 
 
 }

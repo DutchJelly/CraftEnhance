@@ -5,6 +5,7 @@ import com.dutchjelly.craftenhance.IEnhancedRecipe;
 import com.dutchjelly.craftenhance.crafthandling.util.ItemMatchers;
 import com.dutchjelly.craftenhance.crafthandling.util.ServerRecipeTranslator;
 import com.dutchjelly.craftenhance.crafthandling.util.WBRecipeComparer;
+import com.dutchjelly.craftenhance.exceptions.RecipeError;
 import com.dutchjelly.craftenhance.files.FileManager;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Getter;
@@ -64,6 +65,7 @@ public class WBRecipe implements IEnhancedRecipe {
 
     @Override
     public Recipe getServerRecipe() {
+
         if(shapeless)
             return ServerRecipeTranslator.translateShapelessEnhancedRecipe(this);
         return ServerRecipeTranslator.translateShapedEnhancedRecipe(this);

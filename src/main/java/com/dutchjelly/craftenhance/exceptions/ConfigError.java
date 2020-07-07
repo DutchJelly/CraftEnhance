@@ -1,4 +1,4 @@
-package com.dutchjelly.craftenhance;
+package com.dutchjelly.craftenhance.exceptions;
 
 import com.dutchjelly.craftenhance.messaging.Messenger;
 

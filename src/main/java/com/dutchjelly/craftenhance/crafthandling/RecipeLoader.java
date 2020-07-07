@@ -1,7 +1,9 @@
 package com.dutchjelly.craftenhance.crafthandling;
 
 import com.dutchjelly.craftenhance.IEnhancedRecipe;
+import com.dutchjelly.craftenhance.exceptions.RecipeError;
 import com.dutchjelly.craftenhance.messaging.Debug;
+import com.dutchjelly.craftenhance.messaging.Messenger;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -146,10 +148,16 @@ public class RecipeLoader {
         }
         //Only load the recipe if there is not a server recipe that's always similar.
         if(alwaysSimilar == null){
+
             Recipe serverRecipe = recipe.getServerRecipe();
+            if(serverRecipe == null){
+                Messenger.Error("Could not get server recipe of " + recipe.getKey() + ". This is likely due to a null result.");
+                return;
+            }
             server.addRecipe(serverRecipe);
             Debug.Send("Added server recipe for " + serverRecipe.getResult().toString());
             loaded.put(recipe.getKey(), serverRecipe);
+
         }else{
             Debug.Send("Didn't add server recipe for " + recipe.getKey() + " because a similar one was already loaded: " + alwaysSimilar.toString() + " with the result " + alwaysSimilar.getResult().toString());
         }
