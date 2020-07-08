@@ -190,7 +190,11 @@ public class CustomCmdHandler implements TabCompleter{
 	
 	//Returns if the sender has permission for command class with annotation.
 	private boolean hasPermission(CommandSender sender, CommandRoute annotation){
-		return annotation.perms().equals("") || annotation.perms() == null || sender.hasPermission(main.getConfig().getString(annotation.perms()) + "");
+		if(annotation.perms().equals("") || annotation.perms() == null)
+			return true;
+		String perms = main.getConfig().getString(annotation.perms()) + "";
+		if(perms.trim() == "") return true;
+		return sender.hasPermission(perms);
 	}
 	
 	//Find all possible tab completions for args.
