@@ -128,15 +128,15 @@ public class RecipesViewer extends GUIElement {
 
 	private void handleRecipeClick(IEnhancedRecipe clickedRecipe, ClickType clickType){
 	    Debug.Send("handling recipe click..");
-	    if(clickType == ClickType.MIDDLE && getPlayer().hasPermission(PermissionTypes.Edit.getPerm())){
+	    if((clickType == ClickType.MIDDLE || clickType == ClickType.RIGHT) && getPlayer().hasPermission(PermissionTypes.Edit.getPerm())){
 	        if(clickedRecipe instanceof WBRecipe)
                 getManager().openGUI(getPlayer(), new WBRecipeEditor(getManager(),getManager().getMain().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class), this, getPlayer(), (WBRecipe)clickedRecipe));
             else Debug.Send("Could not find the class of a clicked recipe.");
-	    }else{
-	        if(clickedRecipe instanceof WBRecipe)
-                getManager().openGUI(getPlayer(), new WBRecipeViewer(getManager(),getManager().getMain().getGuiTemplatesFile().getTemplate(WBRecipeViewer.class), this, getPlayer(), (WBRecipe)clickedRecipe));
-            else Debug.Send("Could not find the class of a clicked recipe.");
-        }
+            return;
+	    }
+        if(clickedRecipe instanceof WBRecipe)
+            getManager().openGUI(getPlayer(), new WBRecipeViewer(getManager(),getManager().getMain().getGuiTemplatesFile().getTemplate(WBRecipeViewer.class), this, getPlayer(), (WBRecipe)clickedRecipe));
+        else Debug.Send("Could not find the class of a clicked recipe.");
     }
 
 	@Override
