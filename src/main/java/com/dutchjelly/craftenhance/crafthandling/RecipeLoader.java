@@ -1,5 +1,6 @@
 package com.dutchjelly.craftenhance.crafthandling;
 
+import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.IEnhancedRecipe;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import lombok.Getter;
@@ -7,6 +8,9 @@ import lombok.NonNull;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Server;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
@@ -16,7 +20,7 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class RecipeLoader {
+public class RecipeLoader implements Listener {
 
     //Ensure one instance
     private static RecipeLoader instance = null;
@@ -170,6 +174,11 @@ public class RecipeLoader {
             Debug.Send("   enhanced recipes: " + group.getEnhancedRecipes().stream().filter(x -> x != null).map(x -> x.getResult().toString()).collect(Collectors.joining(", ")));
             Debug.Send("   server recipes: " + group.getServerRecipes().stream().filter(x -> x != null).map(x -> x.getResult().toString()).collect(Collectors.joining(", ")));
         }
+    }
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e){
+        Adapter.DiscoverRecipes(e.getPlayer(), new ArrayList<>(loaded.values()));
     }
 
 }

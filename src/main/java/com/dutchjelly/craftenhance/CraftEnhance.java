@@ -149,6 +149,7 @@ public class CraftEnhance extends JavaPlugin{
         guiManager = new GuiManager(this);
 		getServer().getPluginManager().registerEvents(new RecipeInjector(this), this);
 		getServer().getPluginManager().registerEvents(guiManager, this);
+		getServer().getPluginManager().registerEvents(RecipeLoader.getInstance(), this);
 	}
 	
 	private void setupFileManager(){

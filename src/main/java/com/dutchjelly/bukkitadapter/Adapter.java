@@ -5,7 +5,9 @@ import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.Material;
 
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.Damageable;
@@ -74,6 +76,9 @@ public class Adapter {
 //    public static void SetIngredient(ShapedRecipe recipe, char key, ItemStack ingredient){
 //        recipe.setIngredient(key, ingredient.getData());
 //    }
+//    public static void DiscoverRecipes(Player player, List<Recipe> recipes){
+//        return;
+//    }
 
     /**
      * section for 1.12
@@ -104,6 +109,9 @@ public class Adapter {
 //        short maxDurability = item.getType().getMaxDurability();
 //        item.setDurability((short)damage);
 //        return item;
+//    }
+//    public static void DiscoverRecipes(Player player, List<Recipe> recipes){
+//        return;
 //    }
 
     /**
@@ -138,7 +146,17 @@ public class Adapter {
         recipe.setIngredient(key, ingredient.getType());
     }
 
-
+    public static void DiscoverRecipes(Player player, List<Recipe> recipes){
+        for (Recipe recipe : recipes) {
+            if(recipe instanceof ShapedRecipe){
+                ShapedRecipe shaped = (ShapedRecipe) recipe;
+                player.discoverRecipe(shaped.getKey());
+            }else if(recipe instanceof ShapelessRecipe){
+                ShapelessRecipe shapeless = (ShapelessRecipe) recipe;
+                player.discoverRecipe(shapeless.getKey());
+            }
+        }
+    }
 
 
 }
