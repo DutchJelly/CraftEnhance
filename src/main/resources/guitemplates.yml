@@ -1,6 +1,6 @@
 RecipesViewer:
   name: "recipes viewer"
-  fill-space: "21-23"
+  fill-space: "0-45"
   button-mapping:
     48: PrvPage
     49: Back
