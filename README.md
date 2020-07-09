@@ -24,9 +24,10 @@ These are some of the TODO's including future features. Any help in doing those 
 
 ##### 2.4.0
 ```diff
-+ Fixed a bug where recipe editor would get opened instead of recipe viewer
++ Fixed a bug where recipe editor would get opened instead of recipe viewer.
 + Allowed users to set empty permissions in "perms.recipe-viewer" in config.yml to specify that viewing requires no permissions.
 + Improved error handling on recipes with an empty result.
++ You can now also right click instead of middle click to open the editor of a clicked recipe.
 ```
 
 ##### 2.4.0-Beta
