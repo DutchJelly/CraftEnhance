@@ -86,7 +86,7 @@ public class WBRecipeViewer extends GUIElement {
             if (clickedItemRecipe == null || clickedItemRecipe.equals(recipe)) return;
 
             if (clickedItemRecipe instanceof WBRecipe)
-                getManager().openGUI(getPlayer(), new WBRecipeEditor(getManager(), getTemplate(), this, getPlayer(), (WBRecipe) clickedItemRecipe));
+                getManager().openGUI(getPlayer(), new WBRecipeViewer(getManager(), getTemplate(), this, getPlayer(), (WBRecipe) clickedItemRecipe));
         }
     }
 

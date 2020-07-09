@@ -1,8 +1,10 @@
 package com.dutchjelly.craftenhance.gui;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.Pair;
@@ -12,11 +14,13 @@ import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.permissions.Permissible;
 
 import javax.swing.plaf.DimensionUIResource;
 
@@ -50,9 +54,11 @@ public class GuiManager implements Listener {
 
 	@EventHandler
 	public void onClick(InventoryClickEvent clickEvent){
-        GUIElement openGUI = openGUIs.values().stream().filter(x -> clickEvent.getView().getTopInventory().equals(x.getInventory())).findFirst().orElse(null);
+
+	    GUIElement openGUI = openGUIs.values().stream().filter(x -> clickEvent.getView().getTopInventory().equals(x.getInventory())).findFirst().orElse(null);
         if(openGUI == null) return;
         if(clickEvent.getClickedInventory() == null) return;
+
 
         try{
 
@@ -111,6 +117,7 @@ public class GuiManager implements Listener {
             gui = gui.getPreviousGui();
             counter++;
         }
+
         return counter;
     }
 
