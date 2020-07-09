@@ -147,6 +147,10 @@ public class WBRecipe implements IEnhancedRecipe {
         for(int i = 0; i < recipe.content.length; i++){
             recipe.content[i] = fm.getItem(recipeKeys.get(i));
         }
+
+        if(recipe.result == null)
+            throw new IllegalStateException("recipe cannot have null result");
+
         return recipe;
     }
 
