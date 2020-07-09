@@ -1,6 +1,7 @@
 package com.dutchjelly.craftenhance.crafthandling;
 
 import com.dutchjelly.bukkitadapter.Adapter;
+import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.IEnhancedRecipe;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import lombok.Getter;
@@ -22,12 +23,16 @@ import java.util.stream.Stream;
 
 public class RecipeLoader implements Listener {
 
+    @EventHandler
+    public void onJoin(PlayerJoinEvent e){
+        Adapter.DiscoverRecipes(e.getPlayer(), getLoadedServerRecipes());
+    }
+
     //Ensure one instance
     private static RecipeLoader instance = null;
     public static RecipeLoader getInstance(){
         return instance == null ? instance = new RecipeLoader(Bukkit.getServer()) : instance;
     }
-
 
     private List<Recipe> serverRecipes = new ArrayList<>();
     private Map<String, Recipe> loaded = new HashMap<>();
@@ -154,6 +159,7 @@ public class RecipeLoader implements Listener {
             server.addRecipe(serverRecipe);
             Debug.Send("Added server recipe for " + serverRecipe.getResult().toString());
             loaded.put(recipe.getKey(), serverRecipe);
+            Bukkit.getServer().getOnlinePlayers().forEach(x -> Adapter.DiscoverRecipes(x, Arrays.asList(serverRecipe)));
         }else{
             Debug.Send("Didn't add server recipe for " + recipe.getKey() + " because a similar one was already loaded: " + alwaysSimilar.toString() + " with the result " + alwaysSimilar.getResult().toString());
         }
@@ -168,6 +174,10 @@ public class RecipeLoader implements Listener {
         return groupedRecipes.stream().flatMap(x -> x.getEnhancedRecipes().stream()).distinct().collect(Collectors.toList());
     }
 
+    public List<Recipe> getLoadedServerRecipes(){
+        return new ArrayList<>(loaded.values());
+    }
+
     public void printGroupsDebugInfo(){
         for(RecipeGroup group : groupedRecipes){
             Debug.Send("group of grouped recipes:");
@@ -176,9 +186,6 @@ public class RecipeLoader implements Listener {
         }
     }
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e){
-        Adapter.DiscoverRecipes(e.getPlayer(), new ArrayList<>(loaded.values()));
-    }
+
 
 }
