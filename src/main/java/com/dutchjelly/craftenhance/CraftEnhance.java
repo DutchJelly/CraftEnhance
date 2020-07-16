@@ -7,11 +7,13 @@ import com.dutchjelly.craftenhance.commands.ceh.*;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.files.GuiTemplatesFile;
+import com.dutchjelly.craftenhance.gui.guis.CustomCraftingTable;
 import com.dutchjelly.craftenhance.updatechecking.VersionChecker;
 import lombok.Getter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
@@ -156,6 +158,10 @@ public class CraftEnhance extends JavaPlugin{
 		fm = FileManager.init(this);
 		fm.cacheItems();
 		fm.cacheRecipes();
+	}
+
+	public void openEnhancedCraftingTable(Player p){
+        CustomCraftingTable table = new CustomCraftingTable(getGuiManager(), guiTemplatesFile.getTemplate(CustomCraftingTable.class), null, p);
 	}
 	
 }

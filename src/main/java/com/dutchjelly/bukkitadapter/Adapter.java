@@ -5,6 +5,7 @@ import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.Material;
 
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -15,7 +16,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.bukkit.DyeColor;
-import org.bukkit.NamespacedKey;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -67,6 +67,10 @@ public class Adapter {
 //        return new ShapedRecipe(result);
 //    }
 //
+//    public static ShapelessRecipe GetShapelessRecipe(JavaPlugin plugin, String key, ItemStack result){
+//        return new ShapelessRecipe(result);
+//    }
+//
 //    public static ItemStack SetDurability(ItemStack item, int damage){
 //        short maxDurability = item.getType().getMaxDurability();
 //        item.setDurability((short)damage);
@@ -76,6 +80,11 @@ public class Adapter {
 //    public static void SetIngredient(ShapedRecipe recipe, char key, ItemStack ingredient){
 //        recipe.setIngredient(key, ingredient.getData());
 //    }
+//
+//    public static void AddIngredient(ShapelessRecipe recipe, ItemStack ingredient){
+//        recipe.addIngredient(ingredient.getData());
+//    }
+//
 //    public static void DiscoverRecipes(Player player, List<Recipe> recipes){
 //        return;
 //    }
@@ -110,6 +119,7 @@ public class Adapter {
 //        item.setDurability((short)damage);
 //        return item;
 //    }
+//
 //    public static void DiscoverRecipes(Player player, List<Recipe> recipes){
 //        return;
 //    }

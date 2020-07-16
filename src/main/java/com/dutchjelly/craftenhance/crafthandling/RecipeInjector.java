@@ -9,9 +9,11 @@ import com.dutchjelly.craftenhance.IEnhancedRecipe;
 
 import com.dutchjelly.craftenhance.api.CraftEnhanceAPI;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
+import com.dutchjelly.craftenhance.crafthandling.util.CustomPrepareCraftEvent;
 import com.dutchjelly.craftenhance.crafthandling.util.ItemMatchers;
 import com.dutchjelly.craftenhance.crafthandling.util.ServerRecipeTranslator;
 import com.dutchjelly.craftenhance.crafthandling.util.WBRecipeComparer;
+import com.dutchjelly.craftenhance.gui.guis.CustomCraftingTable;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
@@ -101,7 +103,42 @@ public class RecipeInjector implements Listener{
         }
         inv.setResult(null); //We found similar custom recipes, but none matched exactly. So set result to null.
     }
-	
+
+    @EventHandler
+    public void onCustomCraft(CustomPrepareCraftEvent e){
+        CustomCraftingTable table = e.getTable();
+	    RecipeLoader.getInstance().getLoadedRecipes().forEach(x -> {
+	        if(!(x instanceof WBRecipe)) return;
+	        WBRecipe wbRecipe = (WBRecipe)x;
+	        if(wbRecipe.isShapeless() && WBRecipeComparer.ingredientsMatch(table.getMatrix(), wbRecipe.getContent(), wbRecipe.isMatchMeta() ? ItemMatchers::matchMeta : ItemMatchers::matchType)){
+                table.setResult(wbRecipe.getResult());
+                return;
+            }
+            if(!wbRecipe.isShapeless() && WBRecipeComparer.shapeMatches(table.getMatrix(), wbRecipe.getContent(), wbRecipe.isMatchMeta() ? ItemMatchers::matchMeta : ItemMatchers::matchType)){
+                table.setResult(wbRecipe.getResult());
+                return;
+            }
+        });
+
+	    List<Recipe> defaultRecipes = RecipeLoader.getInstance().getServerRecipes();
+        for(Recipe sRecipe : defaultRecipes){
+            if(sRecipe instanceof ShapedRecipe){
+                ItemStack[] content = ServerRecipeTranslator.translateShapedRecipe((ShapedRecipe)sRecipe);
+                if(WBRecipeComparer.shapeMatches(content, table.getMatrix(), ItemMatchers::matchType)){
+                    table.setResult(sRecipe.getResult());
+                    return;
+                }
+            }else if(sRecipe instanceof ShapelessRecipe){
+                ItemStack[] ingredients = ServerRecipeTranslator.translateShapelessRecipe((ShapelessRecipe)sRecipe);
+                if(WBRecipeComparer.ingredientsMatch(ingredients, table.getMatrix(), ItemMatchers::matchType)){
+                    table.setResult(sRecipe.getResult());
+                    return;
+                }
+            }else continue;
+        }
+
+    }
+
 
     private boolean entityCanCraft(HumanEntity entity, IEnhancedRecipe recipe){
 	    return recipe.getPermissions() == null || recipe.getPermissions() == ""

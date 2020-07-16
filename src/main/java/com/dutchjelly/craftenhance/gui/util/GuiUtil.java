@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -68,5 +69,34 @@ public class GuiUtil {
         meta.setLore(lore);
         item.setItemMeta(meta);
         return item;
+    }
+
+    //Finds the destination for item in inv, in format <slot, amount>. Sets non-fitting amount in slot -1.
+    public static Map<Integer, Integer> findDestination(ItemStack item, Inventory inv){
+        if(item == null)
+            return new HashMap<>();
+        if(inv == null)
+            throw new RuntimeException("cannot try to fit item into null inventory");
+
+        ItemStack[] storage = inv.getStorageContents();
+        Map<Integer,Integer> destination = new HashMap<>();
+        int remainingItemQuantity = item.getAmount();
+        for(int i = 0; i < storage.length; i++){
+            if(storage[i] == null){
+                destination.put(i, remainingItemQuantity);
+                return destination;
+            }
+            if(storage[i].getAmount() < storage[i].getMaxStackSize() && storage[i].isSimilar(item)){
+                int room = Math.min(remainingItemQuantity, storage[i].getMaxStackSize()-storage[i].getAmount());
+                destination.put(i, room);
+                remainingItemQuantity -= room;
+            }
+
+            if(remainingItemQuantity == 0)
+                return destination;
+        }
+        if(remainingItemQuantity > 0)
+            destination.put(-1, remainingItemQuantity);
+        return destination;
     }
 }

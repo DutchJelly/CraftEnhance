@@ -34,7 +34,10 @@ public class RecipeLoader implements Listener {
         return instance == null ? instance = new RecipeLoader(Bukkit.getServer()) : instance;
     }
 
+    @Getter
     private List<Recipe> serverRecipes = new ArrayList<>();
+
+
     private Map<String, Recipe> loaded = new HashMap<>();
     private Server server;
 
@@ -177,6 +180,16 @@ public class RecipeLoader implements Listener {
     public List<Recipe> getLoadedServerRecipes(){
         return new ArrayList<>(loaded.values());
     }
+
+//    public <T extends Recipe> List<T> getDefaultServerRecipes(){
+//        return serverRecipes.stream().map(x -> {
+//            try{
+//                return (T)x;
+//            }catch(Exception e){
+//                return null;
+//            }
+//        }).filter(x -> x != null).collect(Collectors.toList());
+//    }
 
     public void printGroupsDebugInfo(){
         for(RecipeGroup group : groupedRecipes){

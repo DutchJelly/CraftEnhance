@@ -65,6 +65,8 @@ public class GuiManager implements Listener {
 
             if(clickEvent.getClickedInventory().equals(openGUI.getInventory()))
                 openGUI.handleEvent(clickEvent);
+            else openGUI.handleOutsideClick(clickEvent);
+
             if(!openGUI.isCancelResponsible() && !clickEvent.isCancelled())
                 clickEvent.setCancelled(true);
 

@@ -68,6 +68,10 @@ public abstract class GUIElement implements InventoryHolder{
         handleEventRest(e);
     }
 
+    public void handleOutsideClick(InventoryClickEvent e){
+        if(!(e.getWhoClicked() instanceof Player)) return;
+    }
+
     public void addBtnListener(ButtonType type, IButtonHandler listener){
         if(buttonClickHandlers.containsKey(type)){
             buttonClickHandlers.get(type).add(listener);
