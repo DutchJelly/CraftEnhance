@@ -8,6 +8,7 @@ import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.files.GuiTemplatesFile;
 import com.dutchjelly.craftenhance.gui.guis.CustomCraftingTable;
+import com.dutchjelly.craftenhance.gui.guis.WBRecipeViewer;
 import com.dutchjelly.craftenhance.updatechecking.VersionChecker;
 import lombok.Getter;
 import org.bukkit.command.Command;
@@ -141,7 +142,7 @@ public class CraftEnhance extends JavaPlugin{
 		//All command with the base /ceh
 		commandHandler.loadCommandClasses(Arrays.asList(new CreateRecipeCmd(commandHandler),
 				new RecipesCmd(commandHandler), new SpecsCommand(commandHandler), new ChangeKeyCmd(commandHandler), 
-				new CleanItemFileCmd(commandHandler), new SetPermissionCmd(commandHandler), new ReloadCmd()));
+				new CleanItemFileCmd(commandHandler), new SetPermissionCmd(commandHandler), new ReloadCmd(), new CustomTable()));
 
 		//commandHandler.loadCommandClass(new Test());
 	}
@@ -161,7 +162,12 @@ public class CraftEnhance extends JavaPlugin{
 	}
 
 	public void openEnhancedCraftingTable(Player p){
-        CustomCraftingTable table = new CustomCraftingTable(getGuiManager(), guiTemplatesFile.getTemplate(CustomCraftingTable.class), null, p);
+		CustomCraftingTable table = new CustomCraftingTable(
+				getGuiManager(),
+				getGuiTemplatesFile().getTemplate(WBRecipeViewer.class),
+				null, p
+		);
+		getGuiManager().openGUI(p, table);
 	}
 	
 }

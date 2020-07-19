@@ -4,10 +4,13 @@ import com.dutchjelly.craftenhance.gui.GuiManager;
 import com.dutchjelly.craftenhance.gui.templates.GuiTemplate;
 import com.dutchjelly.craftenhance.gui.util.ButtonType;
 import com.dutchjelly.craftenhance.gui.util.IButtonHandler;
+import com.dutchjelly.craftenhance.messaging.Debug;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.DragType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 
@@ -70,6 +73,9 @@ public abstract class GUIElement implements InventoryHolder{
 
     public void handleOutsideClick(InventoryClickEvent e){
         if(!(e.getWhoClicked() instanceof Player)) return;
+    }
+
+    public void handleDragging(InventoryDragEvent e){
     }
 
     public void addBtnListener(ButtonType type, IButtonHandler listener){

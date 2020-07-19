@@ -52,6 +52,28 @@ public class GuiManager implements Listener {
 		Debug.Send("A GUI closed, now there are " + openGUIs.size() + " left in memory.");
 	}
 
+
+	@EventHandler
+    public void onDrag(InventoryDragEvent e){
+        GUIElement openGUI = openGUIs.values().stream().filter(x -> e.getView().getTopInventory().equals(x.getInventory())).findFirst().orElse(null);
+        if(openGUI == null) return;
+        if(e.getInventory() == null) return;
+
+        Debug.Send("Player dragged over " + e.getInventorySlots().stream().map(x -> String.valueOf((int)x)).collect(Collectors.joining(",")));
+
+        try{
+            openGUI.handleDragging(e);
+
+            if(!openGUI.isCancelResponsible() && !e.isCancelled())
+                e.setCancelled(true);
+
+        }catch(Exception exception){
+            exception.printStackTrace();
+            if(!e.isCancelled())
+                e.setCancelled(true);
+        }
+    }
+
 	@EventHandler
 	public void onClick(InventoryClickEvent clickEvent){
 

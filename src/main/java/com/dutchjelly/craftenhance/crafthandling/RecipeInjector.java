@@ -3,6 +3,7 @@ package com.dutchjelly.craftenhance.crafthandling;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 import com.dutchjelly.craftenhance.IEnhancedRecipe;
@@ -19,10 +20,8 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -106,16 +105,18 @@ public class RecipeInjector implements Listener{
 
     @EventHandler
     public void onCustomCraft(CustomPrepareCraftEvent e){
+	    Debug.Send("custom prepare craft fired, trying to inject recipe");
+	    Debug.Send(Arrays.stream(e.getTable().getMatrix()).map(x -> x == null ? "null" : x.getType().name()).collect(Collectors.joining(",")));
         CustomCraftingTable table = e.getTable();
 	    RecipeLoader.getInstance().getLoadedRecipes().forEach(x -> {
 	        if(!(x instanceof WBRecipe)) return;
 	        WBRecipe wbRecipe = (WBRecipe)x;
 	        if(wbRecipe.isShapeless() && WBRecipeComparer.ingredientsMatch(table.getMatrix(), wbRecipe.getContent(), wbRecipe.isMatchMeta() ? ItemMatchers::matchMeta : ItemMatchers::matchType)){
-                table.setResult(wbRecipe.getResult());
+                table.setRecipe(wbRecipe.getContent(), wbRecipe.getResult(), wbRecipe.isShapeless());
                 return;
             }
             if(!wbRecipe.isShapeless() && WBRecipeComparer.shapeMatches(table.getMatrix(), wbRecipe.getContent(), wbRecipe.isMatchMeta() ? ItemMatchers::matchMeta : ItemMatchers::matchType)){
-                table.setResult(wbRecipe.getResult());
+                table.setRecipe(wbRecipe.getContent(), wbRecipe.getResult(), wbRecipe.isShapeless());
                 return;
             }
         });
@@ -125,18 +126,20 @@ public class RecipeInjector implements Listener{
             if(sRecipe instanceof ShapedRecipe){
                 ItemStack[] content = ServerRecipeTranslator.translateShapedRecipe((ShapedRecipe)sRecipe);
                 if(WBRecipeComparer.shapeMatches(content, table.getMatrix(), ItemMatchers::matchType)){
-                    table.setResult(sRecipe.getResult());
+                    table.setRecipe(content, sRecipe.getResult(), false);
                     return;
                 }
             }else if(sRecipe instanceof ShapelessRecipe){
                 ItemStack[] ingredients = ServerRecipeTranslator.translateShapelessRecipe((ShapelessRecipe)sRecipe);
                 if(WBRecipeComparer.ingredientsMatch(ingredients, table.getMatrix(), ItemMatchers::matchType)){
-                    table.setResult(sRecipe.getResult());
+                    table.setRecipe(ingredients, sRecipe.getResult(), true);
                     return;
                 }
             }else continue;
         }
 
+        Debug.Send("no matching recipe in custom crafting table");
+        table.setRecipe(null, null, false);
     }
 
 
