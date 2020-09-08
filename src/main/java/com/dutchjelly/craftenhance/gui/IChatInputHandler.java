@@ -1,4 +1,4 @@
-package com.dutchjelly.craftenhance.gui.util;
+package com.dutchjelly.craftenhance.gui;
 
 public interface IChatInputHandler {
     void handle(String message);
