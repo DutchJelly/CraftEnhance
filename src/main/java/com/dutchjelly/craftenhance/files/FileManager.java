@@ -109,6 +109,7 @@ public class FileManager {
 		if(item == null) return null;
 		String base = item.hasItemMeta() && item.getItemMeta().hasDisplayName() ?
 				item.getItemMeta().getDisplayName() : item.getType().name();
+		base = base.replaceAll("\\.", "");
 		String unique = base;
 		int incrementer = 1;
 		while(items.keySet().contains(unique))
