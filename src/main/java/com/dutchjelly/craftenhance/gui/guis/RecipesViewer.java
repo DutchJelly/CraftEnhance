@@ -87,8 +87,9 @@ public class RecipesViewer extends GUIElement {
         }
 
         inventories = new Inventory[requiredPages];
+        int titledInventories = getTemplate().getInvTitles().size();
         for(int i = 0; i < requiredPages; i++) {
-            inventories[i] = GuiUtil.CopyInventory(getTemplate().getTemplate(), getTemplate().getInvTitle(), this);
+            inventories[i] = GuiUtil.CopyInventory(getTemplate().getTemplate(), getTemplate().getInvTitles().get(i % titledInventories), this);
         }
 
         //It does get quite confusing here! It's mapping the locations to the actual locations specified in fill-space.

@@ -26,6 +26,9 @@ public class GuiTemplate {
     @Getter
     private final String invTitle;
 
+    @Getter
+    private final List<String> invTitles;
+
     @Getter @NonNull
     private final Map<Integer, ButtonType> buttonMapping;
 
@@ -34,7 +37,16 @@ public class GuiTemplate {
 
     public GuiTemplate(ConfigurationSection config){
 
-        String name = ChatColor.translateAlternateColorCodes('&', config.getString("name"));
+        String name = config.getString("name");
+        List<String> names = config.getStringList("names");
+        if(names == null) names = new ArrayList<>();
+
+        names.add(name);
+        names = names.stream().map(x -> ChatColor.translateAlternateColorCodes('&', x)).collect(Collectors.toList());
+
+        if(names.isEmpty())
+            throw new ConfigError("a template has no name");
+
 
         ConfigurationSection templateSection = config.getConfigurationSection("template");
         if(templateSection == null){
@@ -52,7 +64,8 @@ public class GuiTemplate {
                 templateInventoryContent.set(slot, item.clone());
             }
         }
-        invTitle = name;
+        invTitles = names;
+        invTitle = names.get(0);
         template = templateInventoryContent.stream().toArray(ItemStack[]::new);
 
         ConfigurationSection buttonSection = config.getConfigurationSection("button-mapping");
