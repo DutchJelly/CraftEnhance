@@ -10,16 +10,6 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
-	<distributionManagement>
-		<repository>
-			<id>nexus-releases</id>
-			<url>https://maven.skorrloregaming.com/repository/maven-releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>nexus-snapshots</id>
-			<url>https://maven.skorrloregaming.com/repository/maven-snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
 	<build>
 		<plugins>
 			<plugin>
@@ -56,6 +46,14 @@
             <version>1.18.12</version>
             <scope>provided</scope>
         </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.bukkit</groupId>-->
+            <!--<artifactId>bukkit</artifactId>-->
+            <!--<version>1.16.1-R0.1-SNAPSHOT</version>-->
+            <!--<scope>system</scope>-->
+            <!--<systemPath>${project.basedir}/craftbukkit-1.16.1.jar</systemPath>-->
+        <!--</dependency>-->
+
 
 	</dependencies>
 </project>

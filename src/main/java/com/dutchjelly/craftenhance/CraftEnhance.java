@@ -83,8 +83,8 @@ public class CraftEnhance extends JavaPlugin{
 		Messenger.Message("If you find a bug in the plugin, please report it to https://dev.bukkit.org/projects/craftenhance.");
 		VersionChecker checker = VersionChecker.init(this);
 		if(!checker.runVersionCheck()){
-		    getPluginLoader().disablePlugin(this);
-		    return;
+			for(int i = 0; i < 4; i++)
+		    	Messenger.Message("WARN: The installed version isn't tested to work with the game version of the server.");
         }
 		checker.runUpdateCheck();
 	}
@@ -142,7 +142,7 @@ public class CraftEnhance extends JavaPlugin{
 		//All command with the base /ceh
 		commandHandler.loadCommandClasses(Arrays.asList(new CreateRecipeCmd(commandHandler),
 				new RecipesCmd(commandHandler), new SpecsCommand(commandHandler), new ChangeKeyCmd(commandHandler), 
-				new CleanItemFileCmd(commandHandler), new SetPermissionCmd(commandHandler), new ReloadCmd(), new CustomTable()));
+				new CleanItemFileCmd(commandHandler), new SetPermissionCmd(commandHandler), new ReloadCmd()));
 
 		//commandHandler.loadCommandClass(new Test());
 	}

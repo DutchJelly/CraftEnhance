@@ -11,6 +11,9 @@ enable-updatechecker: true
 # If this option is enabled, people can only see recipes that they have permissions to.
 only-show-available: false
 
+# Enable this to make the players learn the recipes (making them show up in the green recipe book)
+learn-recipes: false
+
 debug-prefix: "[DEBUG] "
 global-prefix: "&7[&bCraft&dEnhance&7] &r"
 
