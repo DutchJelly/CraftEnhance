@@ -34,7 +34,6 @@ public class RecipesViewer extends GUIElement {
     private int currentPage = 0;
 	//TODO: implement map for recipe location mapping to allow customizable recipe locations. I'm thinking of making that a config thing in a RecipesViewer GuiTemplate.
 
-
 	public RecipesViewer(GuiManager manager, GuiTemplate template, GUIElement previous, Player p, List<IEnhancedRecipe> recipes){
         super(manager, template, previous, p);
 	    Debug.Send("An instance is being made for a recipes viewer");
@@ -144,4 +143,10 @@ public class RecipesViewer extends GUIElement {
 	public boolean isCancelResponsible() {
 		return false;
 	}
+
+
+	public void setPage(int page){
+	    if(page < 0) page = 0;
+	    currentPage = Math.min(page, inventories.length);
+    }
 }

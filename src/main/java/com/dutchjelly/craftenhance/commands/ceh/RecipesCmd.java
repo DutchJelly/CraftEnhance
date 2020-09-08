@@ -42,6 +42,15 @@ public class RecipesCmd implements ICommand {
                 || p.hasPermission(x.getPermissions())).collect(Collectors.toList()
         );
 		final RecipesViewer gui = new RecipesViewer(main.getGuiManager(), template, null, p, new ArrayList<>(recipes));
+
+		if(args.length == 1){
+		    try{
+                int pageIndex = Integer.valueOf(args[0]);
+                gui.setPage(pageIndex); //setpage will handle invalid indexes and will jump to the nearest valid page
+            }catch(NumberFormatException e){
+		        p.sendMessage("that's not a number");
+            }
+        }
 		handler.getMain().getGuiManager().openGUI(p, gui);
 	}
 
