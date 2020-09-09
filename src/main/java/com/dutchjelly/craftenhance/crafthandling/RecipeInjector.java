@@ -181,7 +181,7 @@ public class RecipeInjector implements Listener{
 
 
     private boolean entityCanCraft(HumanEntity entity, IEnhancedRecipe recipe){
-	    return recipe.getPermissions() == null || recipe.getPermissions() == ""
+	    return recipe.getPermissions() == null || recipe.getPermissions().equals("")
                 || entity.hasPermission(recipe.getPermissions());
     }
 }
