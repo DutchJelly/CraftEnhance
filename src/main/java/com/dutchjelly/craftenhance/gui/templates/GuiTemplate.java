@@ -39,9 +39,14 @@ public class GuiTemplate {
 
         String name = config.getString("name");
         List<String> names = config.getStringList("names");
+
+        if(name == null && names == null)
+            throw new ConfigError("no gui name is specified");
+
         if(names == null) names = new ArrayList<>();
 
-        names.add(name);
+        if(name != null)
+            names.add(name);
         names = names.stream().map(x -> ChatColor.translateAlternateColorCodes('&', x)).collect(Collectors.toList());
 
         if(names.isEmpty())
