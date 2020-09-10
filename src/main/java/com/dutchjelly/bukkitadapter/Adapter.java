@@ -42,6 +42,7 @@ public class Adapter {
         return null;
     }
 
+    @SuppressWarnings("deprecation")
     public static ItemStack getColoredItem(String name, DyeColor color){
         try{
             return new ItemStack(Material.valueOf(color.name() + "_" + name));
