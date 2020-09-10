@@ -22,6 +22,14 @@ These are some of the TODO's including future features. Any help in doing those 
 
 ### Changelog
 
+##### 2.4.1
+```diff
++ Custom head support in GUI's
++ Option to open page in the recipes viewer with /recipes [number]
++ Option to set names for each page in the recipes viewer by adding `names:` list in the guiconfig file
++ Learning recipes is now configurable, listed as `learn-recipes: false` in the config by default
++ [BUGFIX] empty permissions did not work on recipes
+
 ##### 2.4.0
 ```diff
 + Fixed a bug where recipe editor would get opened instead of recipe viewer.
