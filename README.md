@@ -32,7 +32,6 @@ These are some of the TODO's including future features. Any help in doing those 
 + [BUGFIX] empty permissions did not work on recipes
 + [BUGFIX] dots in item names now don't break the items.yml file format
 - Removed feature where the plugin disables when the wrong version is installed. Instead it shows some warnings now. 
-  This way the plugin can support 1.8, or start testing it.
 ```
 
 ##### 2.4.0
