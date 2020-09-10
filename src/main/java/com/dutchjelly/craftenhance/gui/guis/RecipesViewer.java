@@ -147,6 +147,6 @@ public class RecipesViewer extends GUIElement {
 
 	public void setPage(int page){
 	    if(page < 0) page = 0;
-	    currentPage = Math.min(page, inventories.length);
+	    currentPage = Math.min(page, inventories.length-1);
     }
 }
