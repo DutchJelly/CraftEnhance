@@ -162,7 +162,8 @@ public class RecipeLoader implements Listener {
             server.addRecipe(serverRecipe);
             Debug.Send("Added server recipe for " + serverRecipe.getResult().toString());
             loaded.put(recipe.getKey(), serverRecipe);
-            Bukkit.getServer().getOnlinePlayers().forEach(x -> Adapter.DiscoverRecipes(x, Arrays.asList(serverRecipe)));
+            if(CraftEnhance.self().getConfig().getBoolean("learn-recipes"))
+                Bukkit.getServer().getOnlinePlayers().forEach(x -> Adapter.DiscoverRecipes(x, Arrays.asList(serverRecipe)));
         }else{
             Debug.Send("Didn't add server recipe for " + recipe.getKey() + " because a similar one was already loaded: " + alwaysSimilar.toString() + " with the result " + alwaysSimilar.getResult().toString());
         }
