@@ -2,8 +2,8 @@ package com.dutchjelly.craftenhance.gui.templates;
 
 import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.ConfigError;
+import com.dutchjelly.craftenhance.gui.util.SkullCreator;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -12,13 +12,16 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.material.Dye;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class GuiItemTemplate {
+
+    public final static String GUI_SKULL_MATERIAL_NAME = "GUI_SKULL_ITEM";
+
 
     @Getter
     private final ItemStack item;
@@ -41,10 +44,26 @@ public class GuiItemTemplate {
             if(mat == null) throw new ConfigError("material " + material + " not found");
             item = new ItemStack(mat);
         }else{
-            DyeColor dColor = DyeColor.valueOf(color);
-            if(dColor == null) throw new ConfigError("color " + color + " not found");
-            item = Adapter.getColoredItem(material, dColor);
+
+            //Tricky way to support skull meta's using the color attribute as data.
+            if(material.equalsIgnoreCase(GUI_SKULL_MATERIAL_NAME)){
+                if(color.startsWith("uuid"))
+                    item = SkullCreator.itemFromUuid(UUID.fromString(color.replaceFirst("uuid", "")));
+                else if(color.startsWith("base64"))
+                    item = SkullCreator.itemFromBase64(color.replaceFirst("base64", ""));
+                else if(color.startsWith("url"))
+                    item = SkullCreator.itemFromUrl(color.replaceFirst("url", ""));
+                else throw new ConfigError("specified skull meta is invalid");
+            }
+
+            else{
+                DyeColor dColor = DyeColor.valueOf(color);
+                if(dColor == null) throw new ConfigError("color " + color + " not found");
+                item = Adapter.getColoredItem(material, dColor);
+            }
         }
+
+
 
         List<String> lore = config.getStringList("lore");
         if(lore != null)
