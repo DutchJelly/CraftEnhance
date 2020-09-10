@@ -17,6 +17,7 @@ Some examples of why I would use this plugin as an API in certain cases is to:
 These are some of the TODO's including future features. Any help in doing those will be appreciated.
  - [ ] Implement categories
  - [ ] Add furnace recipes
+ - [ ] Implement recipe disabler gui
  - [ ] Add gui support for editing recipe permissions
  - [ ] Add ability to hide recipes from players that are still craftable for them
 
