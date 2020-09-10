@@ -29,7 +29,6 @@ public class Adapter {
      * generic section
      */
 
-
     public static Material getMaterial(String name){
         try{
             return Material.valueOf(name);
