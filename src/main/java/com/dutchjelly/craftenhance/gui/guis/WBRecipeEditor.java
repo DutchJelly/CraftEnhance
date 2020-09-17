@@ -76,7 +76,7 @@ public class WBRecipeEditor extends GUIElement {
     }
 
     private void switchHidden(ItemStack itemStack, ButtonType buttonType) {
-        shapeless = !shapeless;
+        hidden = !hidden;
         updatePlaceHolders();
     }
 
