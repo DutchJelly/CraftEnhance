@@ -29,6 +29,9 @@ These are some of the TODO's including future features. Any help in doing those 
 + Option to open page in the recipes viewer with /recipes [number]
 + Option to set names for each page in the recipes viewer by adding `names:` list in the guiconfig file
 + Learning recipes is now configurable, listed as `learn-recipes: false` in the config by default
++ Option to make recipe hidden through the editor. 
++ Players that have edit perms or a ".hidden" suffix like: <recipe perm>.hidden they can see the hidden recipe.
++ Recipe permissions are now editable through the gui.
 + [BUGFIX] empty permissions did not work on recipes
 + [BUGFIX] dots in item names now don't break the items.yml file format
 - Removed feature where the plugin disables when the wrong version is installed. Instead it shows some warnings now. 
