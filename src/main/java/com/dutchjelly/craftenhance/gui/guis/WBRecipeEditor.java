@@ -23,6 +23,7 @@ public class WBRecipeEditor extends GUIElement {
 	
 	private Inventory inventory;
 	private WBRecipe recipe;
+	private String permission;
 	private boolean matchMeta;
 	private boolean shapeless;
 	private boolean hidden;
@@ -39,10 +40,39 @@ public class WBRecipeEditor extends GUIElement {
         addBtnListener(ButtonType.SwitchShaped, this::switchShaped);
         addBtnListener(ButtonType.ResetRecipe, this::resetRecipe);
         addBtnListener(ButtonType.SetPosition, this::setPosition);
+        addBtnListener(ButtonType.SetPermission, this::setPermission);
+
         addBtnListener(ButtonType.SwitchHidden, this::switchHidden);
 
 	    updateRecipeDisplay();
 		updatePlaceHolders();
+    }
+
+    private void setPermission(ItemStack itemStack, ButtonType buttonType) {
+        Messenger.Message("Please specify the permission. Write \"-\" for empty permission. Write \"&cQ&r\" to exit.", getPlayer());
+        getManager().waitForChatInput(this, getPlayer(), this::handlePermissionSetCB);
+    }
+
+    private void handlePermissionSetCB(String message) {
+        if(message == null || message.trim() == "") return;
+
+        message = message.trim();
+
+        if(message.toLowerCase().equals("q")) return;
+
+        if(message.equals("-")){
+            permission = "";
+            return;
+        }
+
+        if(message.contains(" ")){
+            Messenger.Message("A permission can't contain a space.", getPlayer());
+            getManager().waitForChatInput(this, getPlayer(), this::handlePermissionSetCB);
+            return;
+        }
+
+        permission = message;
+        updatePlaceHolders();
     }
 
     private void switchHidden(ItemStack itemStack, ButtonType buttonType) {
@@ -125,7 +155,7 @@ public class WBRecipeEditor extends GUIElement {
             put(InfoItemPlaceHolders.Key.getPlaceHolder(), recipe.getKey() == null ? "null" : recipe.getKey());
             put(InfoItemPlaceHolders.MatchMeta.getPlaceHolder(), matchMeta ? "match meta" : "only match type");
             put(InfoItemPlaceHolders.Hidden.getPlaceHolder(), hidden ? "hide recipe in menu" : "show recipe in menu");
-            put(InfoItemPlaceHolders.Permission.getPlaceHolder(), recipe.getPermissions() == null ? "null" : recipe.getPermissions());
+            put(InfoItemPlaceHolders.Permission.getPlaceHolder(), permission == null || permission.trim().equals("") ? "null" : permission);
             put(InfoItemPlaceHolders.Shaped.getPlaceHolder(), shapeless ? "shapeless" : "shaped");
             put(InfoItemPlaceHolders.Slot.getPlaceHolder(), String.valueOf(recipe.getSlot()));
             put(InfoItemPlaceHolders.Page.getPlaceHolder(), String.valueOf(recipe.getPage()));
@@ -228,6 +258,7 @@ public class WBRecipeEditor extends GUIElement {
 		recipe.setMatchMeta(matchMeta);
 		recipe.setShapeless(shapeless);
 		recipe.setHidden(hidden);
+		recipe.setPermissions(permission);
 		getManager().getMain().getFm().saveRecipe(recipe);
 		RecipeLoader.getInstance().loadRecipe(recipe);
 
