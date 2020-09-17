@@ -57,13 +57,16 @@ WBRecipeEditor:
   name: "recipe editor"
   fill-space: "0-2,9-11,18-20,13"
   button-mapping:
+    6: SetPosition
     7: SwitchShaped
-    16: SwitchMatchMeta
     8: DeleteRecipe
+    15: SwitchHidden
+    16: SwitchMatchMeta
     17: ResetRecipe
+    24: SetPermission
     25: SaveRecipe
     26: Back
-    6: SetPosition
+
 #    15: ChangeCategory
   template:
     3-5,14-15,21-24:
@@ -73,6 +76,16 @@ WBRecipeEditor:
       lore:
       - ""
       glow: false
+    24:
+      material: PAPER
+      name: "Click to set permission"
+      lore:
+      - "current: [permission]"
+      glow: true
+    15:
+      material: DIAMOND
+      name: "Click to change: &e[hidden]"
+      glow: true
     26:
       material: GLOWSTONE_DUST
       name: "Back"
