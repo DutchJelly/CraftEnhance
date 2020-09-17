@@ -18,11 +18,14 @@ public interface IEnhancedRecipe extends ConfigurationSerializable {
     boolean isSimilar(Recipe r);
     boolean isAlwaysSimilar(Recipe r);
     boolean isSimilar(IEnhancedRecipe r);
+    boolean isHidden();
 
     int getPage();
     void setPage(int page);
     int getSlot();
     void setSlot(int slot);
+
+
 
 
     String toString();
