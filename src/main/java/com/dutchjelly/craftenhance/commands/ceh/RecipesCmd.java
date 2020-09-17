@@ -38,7 +38,7 @@ public class RecipesCmd implements ICommand {
         final GuiTemplate template = main.getGuiTemplatesFile().getTemplate(RecipesViewer.class);
 		final List<IEnhancedRecipe> recipes = RecipeLoader.getInstance().getLoadedRecipes().stream().filter(x ->
 				(!handler.getMain().getConfig().getBoolean("only-show-available") || x.getPermissions() == null || x.getPermissions() == "" || p.hasPermission(x.getPermissions()))
-				&& (x.isHidden() || p.hasPermission(PermissionTypes.Edit.getPerm()))).collect(Collectors.toList()
+				&& (!x.isHidden() || p.hasPermission(PermissionTypes.Edit.getPerm()) || p.hasPermission(x.getPermissions() + ".hidden"))).collect(Collectors.toList()
         );
 		final RecipesViewer gui = new RecipesViewer(main.getGuiManager(), template, null, p, new ArrayList<>(recipes));
 
