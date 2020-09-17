@@ -2,6 +2,7 @@ package com.dutchjelly.craftenhance.commands.ceh;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.IEnhancedRecipe;
+import com.dutchjelly.craftenhance.PermissionTypes;
 import com.dutchjelly.craftenhance.commandhandling.ICommand;
 import com.dutchjelly.craftenhance.commandhandling.CommandRoute;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
@@ -36,10 +37,8 @@ public class RecipesCmd implements ICommand {
 		final CraftEnhance main = handler.getMain();
         final GuiTemplate template = main.getGuiTemplatesFile().getTemplate(RecipesViewer.class);
 		final List<IEnhancedRecipe> recipes = RecipeLoader.getInstance().getLoadedRecipes().stream().filter(x ->
-                !handler.getMain().getConfig().getBoolean("only-show-available")
-                || x.getPermissions() == null
-                || x.getPermissions() == ""
-                || p.hasPermission(x.getPermissions())).collect(Collectors.toList()
+				(!handler.getMain().getConfig().getBoolean("only-show-available") || x.getPermissions() == null || x.getPermissions() == "" || p.hasPermission(x.getPermissions()))
+				&& (x.isHidden() || p.hasPermission(PermissionTypes.Edit.getPerm()))).collect(Collectors.toList()
         );
 		final RecipesViewer gui = new RecipesViewer(main.getGuiManager(), template, null, p, new ArrayList<>(recipes));
 

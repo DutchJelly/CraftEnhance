@@ -61,6 +61,9 @@ public class WBRecipe implements IEnhancedRecipe {
     @Getter @Setter
     private String permissions;
 
+    @Getter @Setter
+    private boolean hidden;
+
 
     @Override
     public Recipe getServerRecipe() {
@@ -138,6 +141,8 @@ public class WBRecipe implements IEnhancedRecipe {
             recipe.shapeless = (Boolean) args.get("shapeless");
         if(args.containsKey("matchmeta"))
             recipe.matchMeta = (Boolean) args.get("matchmeta");
+        if(args.containsKey("hidden"))
+            recipe.matchMeta = (Boolean) args.get("matchmeta");
         if(args.containsKey("slot"))
             recipe.slot = (int)args.get("slot");
         if(args.containsKey("page"))
@@ -161,6 +166,7 @@ public class WBRecipe implements IEnhancedRecipe {
         Map<String, Object> serialized = new HashMap<String, Object>();
         serialized.put("permission", permissions);
         serialized.put("shapeless", shapeless);
+        serialized.put("hidden", hidden);
         serialized.put("slot", slot);
         serialized.put("page", page);
         serialized.put("result", fm.getItemKey(result));

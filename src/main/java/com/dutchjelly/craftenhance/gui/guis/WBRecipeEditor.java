@@ -25,6 +25,7 @@ public class WBRecipeEditor extends GUIElement {
 	private WBRecipe recipe;
 	private boolean matchMeta;
 	private boolean shapeless;
+	private boolean hidden;
 
 	public WBRecipeEditor(GuiManager manager, GuiTemplate template, GUIElement previous, Player p, WBRecipe recipe){
 	    super(manager,template,previous,p);
@@ -38,12 +39,18 @@ public class WBRecipeEditor extends GUIElement {
         addBtnListener(ButtonType.SwitchShaped, this::switchShaped);
         addBtnListener(ButtonType.ResetRecipe, this::resetRecipe);
         addBtnListener(ButtonType.SetPosition, this::setPosition);
+        addBtnListener(ButtonType.SwitchHidden, this::switchHidden);
 
 	    updateRecipeDisplay();
 		updatePlaceHolders();
     }
 
-	private void setPosition(ItemStack itemStack, ButtonType buttonType) {
+    private void switchHidden(ItemStack itemStack, ButtonType buttonType) {
+        shapeless = !shapeless;
+        updatePlaceHolders();
+    }
+
+    private void setPosition(ItemStack itemStack, ButtonType buttonType) {
 		Messenger.Message("Please specify the page and slot that you want the recipe to be displayed on in format: \"&epage slot&r\". Write \"&cQ&r\" to exit.", getPlayer());
         getManager().waitForChatInput(this, getPlayer(), this::handlePositionChange);
 	}
@@ -108,7 +115,7 @@ public class WBRecipeEditor extends GUIElement {
         inventory.setItem(fillSpace.get(9), recipe.getResult());
         matchMeta = recipe.isMatchMeta();
         shapeless = recipe.isShapeless();
-
+        hidden = recipe.isHidden();
 	}
 
 	private void updatePlaceHolders(){
@@ -117,6 +124,7 @@ public class WBRecipeEditor extends GUIElement {
         Map<String, String> placeHolders = new HashMap<String,String>(){{
             put(InfoItemPlaceHolders.Key.getPlaceHolder(), recipe.getKey() == null ? "null" : recipe.getKey());
             put(InfoItemPlaceHolders.MatchMeta.getPlaceHolder(), matchMeta ? "match meta" : "only match type");
+            put(InfoItemPlaceHolders.Hidden.getPlaceHolder(), hidden ? "hide recipe in menu" : "show recipe in menu");
             put(InfoItemPlaceHolders.Permission.getPlaceHolder(), recipe.getPermissions() == null ? "null" : recipe.getPermissions());
             put(InfoItemPlaceHolders.Shaped.getPlaceHolder(), shapeless ? "shapeless" : "shaped");
             put(InfoItemPlaceHolders.Slot.getPlaceHolder(), String.valueOf(recipe.getSlot()));
@@ -219,6 +227,7 @@ public class WBRecipeEditor extends GUIElement {
 		recipe.setResult(newResult);
 		recipe.setMatchMeta(matchMeta);
 		recipe.setShapeless(shapeless);
+		recipe.setHidden(hidden);
 		getManager().getMain().getFm().saveRecipe(recipe);
 		RecipeLoader.getInstance().loadRecipe(recipe);
 

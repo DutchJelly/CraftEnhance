@@ -10,5 +10,6 @@ public enum ButtonType {
     SwitchShaped,
     SwitchMatchMeta,
     ResetRecipe,
-    SetPosition
+    SetPosition,
+    SwitchHidden
 }
