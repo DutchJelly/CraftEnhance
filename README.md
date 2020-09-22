@@ -13,13 +13,6 @@ Some examples of why I would use this plugin as an API in certain cases is to:
  - Create own recipes programatically.
  - Use the debugger/messenger.
  - Add own GUI's by extending the GUIElement interface class.
- 
-These are some of the TODO's including future features. Any help in doing those will be appreciated.
- - [ ] Implement categories
- - [ ] Add furnace recipes
- - [ ] Implement recipe disabler gui
- - [ ] Add gui support for editing recipe permissions
- - [ ] Add ability to hide recipes from players that are still craftable for them
 
 ### Changelog
 
