@@ -1,26 +1,21 @@
 package com.dutchjelly.bukkitadapter;
 
 
-import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.Material;
 
 import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.inventory.ShapelessRecipe;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.bukkit.DyeColor;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class Adapter {
 
@@ -88,6 +83,10 @@ public class Adapter {
 //    public static void DiscoverRecipes(Player player, List<Recipe> recipes){
 //        return;
 //    }
+//
+//    public static void SetOwningPlayer(SkullMeta meta, OfflinePlayer player){
+//        meta.setOwner(player.getName());
+//    }
 
     /**
      * section for 1.12
@@ -123,12 +122,14 @@ public class Adapter {
 //    public static void DiscoverRecipes(Player player, List<Recipe> recipes){
 //        return;
 //    }
-
+//    public static void SetOwningPlayer(SkullMeta meta, OfflinePlayer player){
+//        meta.setOwningPlayer(player);
+//    }
     /**
      * section for 1.13+
-     * TODO: add AddIngredient and GetShapelessRecipe to this section
+     *
      */
-
+//
     public static List<String> CompatibleVersions(){
         return Arrays.asList("1.13", "1.14", "1.15", "1.16");
     }
@@ -149,11 +150,11 @@ public class Adapter {
     }
 
     public static void AddIngredient(ShapelessRecipe recipe, ItemStack ingredient){
-        recipe.addIngredient(ingredient.getType());
+        recipe.addIngredient(new RecipeChoice.ExactChoice(ingredient));
     }
 
     public static void SetIngredient(ShapedRecipe recipe, char key, ItemStack ingredient){
-        recipe.setIngredient(key, ingredient.getType());
+        recipe.setIngredient(key, new RecipeChoice.ExactChoice(ingredient));
     }
 
     public static void DiscoverRecipes(Player player, List<Recipe> recipes){
@@ -167,6 +168,8 @@ public class Adapter {
             }
         }
     }
-
+    public static void SetOwningPlayer(SkullMeta meta, OfflinePlayer player){
+        meta.setOwningPlayer(player);
+    }
 
 }
