@@ -25,7 +25,8 @@ public class RecipeLoader implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent e){
-        Adapter.DiscoverRecipes(e.getPlayer(), getLoadedServerRecipes());
+        if(CraftEnhance.self().getConfig().getBoolean("learn-recipes"))
+            Adapter.DiscoverRecipes(e.getPlayer(), getLoadedServerRecipes());
     }
 
     //Ensure one instance
