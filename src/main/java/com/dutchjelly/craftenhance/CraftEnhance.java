@@ -1,6 +1,5 @@
 package com.dutchjelly.craftenhance;
 
-import java.io.File;
 import java.util.Arrays;
 
 import com.dutchjelly.craftenhance.commands.ceh.*;
@@ -87,6 +86,10 @@ public class CraftEnhance extends JavaPlugin{
 		    	Messenger.Message("WARN: The installed version isn't tested to work with the game version of the server.");
         }
 		checker.runUpdateCheck();
+
+
+		final int metricsId = 9023;
+		new Metrics(this, metricsId);
 	}
 
 
