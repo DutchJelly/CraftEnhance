@@ -163,7 +163,7 @@ public class WBRecipe implements IEnhancedRecipe {
     public Map<String, Object> serialize() {
         FileManager fm = CraftEnhance.getPlugin(CraftEnhance.class).getFm();
 
-        Map<String, Object> serialized = new HashMap<String, Object>();
+        Map<String, Object> serialized = new HashMap<>();
         serialized.put("permission", permissions);
         serialized.put("shapeless", shapeless);
         serialized.put("matchmeta", matchMeta);
