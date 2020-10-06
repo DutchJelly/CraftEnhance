@@ -185,7 +185,7 @@ public class WBRecipe implements IEnhancedRecipe {
     public String toString(){
         String s = "";
         s += "key = " + key + "\n";
-        s += "result = " + result.toString() + "\n";
+        s += "result = " + result == null ? "null" : result.toString() + "\n";
         return s;
     }
 
