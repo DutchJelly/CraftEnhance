@@ -1,10 +1,12 @@
 package com.dutchjelly.bukkitadapter;
 
 
+import lombok.SneakyThrows;
 import org.bukkit.Material;
 
 import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.Damageable;
@@ -20,9 +22,10 @@ import java.util.List;
 public class Adapter {
 
 
-    /**
-     * generic section
-     */
+    public static List<String> CompatibleVersions(){
+        return Arrays.asList("1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16");
+    }
+
 
     public static Material getMaterial(String name){
         try{
@@ -49,127 +52,72 @@ public class Adapter {
         return null;
     }
 
-    /**
-     * section for 1.9-1.11
-     * TODO: add AddIngredient and GetShapelessRecipe to this section
-     */
-
-//    public static List<String> CompatibleVersions(){
-//        return Arrays.asList("1.9", "1.10", "1.11");
-//    }
-//
-//    public static ShapedRecipe GetShapedRecipe(JavaPlugin plugin, String key, ItemStack result) {
-//        return new ShapedRecipe(result);
-//    }
-//
-//    public static ShapelessRecipe GetShapelessRecipe(JavaPlugin plugin, String key, ItemStack result){
-//        return new ShapelessRecipe(result);
-//    }
-//
-//    public static ItemStack SetDurability(ItemStack item, int damage){
-//        short maxDurability = item.getType().getMaxDurability();
-//        item.setDurability((short)damage);
-//        return item;
-//    }
-//
-//    public static void SetIngredient(ShapedRecipe recipe, char key, ItemStack ingredient){
-//        recipe.setIngredient(key, ingredient.getData());
-//    }
-//
-//    public static void AddIngredient(ShapelessRecipe recipe, ItemStack ingredient){
-//        recipe.addIngredient(ingredient.getData());
-//    }
-//
-//    public static void DiscoverRecipes(Player player, List<Recipe> recipes){
-//        return;
-//    }
-//
-//    public static void SetOwningPlayer(SkullMeta meta, OfflinePlayer player){
-//        meta.setOwner(player.getName());
-//    }
-
-    /**
-     * section for 1.12
-     */
-
-//    public static List<String> CompatibleVersions(){
-//        return Arrays.asList("1.12");
-//    }
-//
-//    public static ShapedRecipe GetShapedRecipe(JavaPlugin plugin, String key, ItemStack result) {
-//        return new ShapedRecipe(new NamespacedKey(plugin, key),result);
-//    }
-//
-//    public static ShapelessRecipe GetShapelessRecipe(JavaPlugin plugin, String key, ItemStack result){
-//        return new ShapelessRecipe(new NamespacedKey(plugin, key), result);
-//    }
-//
-//    //1.12 and lower
-//    public static void SetIngredient(ShapedRecipe recipe, char key, ItemStack ingredient){
-//        recipe.setIngredient(key, ingredient.getData());
-//    }
-//
-//    public static void AddIngredient(ShapelessRecipe recipe, ItemStack ingredient){
-//        recipe.addIngredient(ingredient.getData());
-//    }
-//
-//    public static ItemStack SetDurability(ItemStack item, int damage){
-//        short maxDurability = item.getType().getMaxDurability();
-//        item.setDurability((short)damage);
-//        return item;
-//    }
-//
-//    public static void DiscoverRecipes(Player player, List<Recipe> recipes){
-//        return;
-//    }
-//    public static void SetOwningPlayer(SkullMeta meta, OfflinePlayer player){
-//        meta.setOwningPlayer(player);
-//    }
-    /**
-     * section for 1.13+
-     *
-     */
-//
-    public static List<String> CompatibleVersions(){
-        return Arrays.asList("1.13", "1.14", "1.15", "1.16");
+    @SneakyThrows
+    private static Object getNameSpacedKey(JavaPlugin plugin, String key){
+        return Class.forName("org.bukkit.NamespacedKey").getConstructor(JavaPlugin.class, String.class).newInstance(plugin, key);
     }
 
-    public static ShapedRecipe GetShapedRecipe(JavaPlugin plugin, String key, ItemStack result) {
-        return new ShapedRecipe(new NamespacedKey(plugin, key),result);
+    public static ShapedRecipe GetShapedRecipe(JavaPlugin plugin, String key, ItemStack result){
+        try{
+            return ShapedRecipe.class.getConstructor(Class.forName("org.bukkit.NamespacedKey"), ItemStack.class).newInstance(getNameSpacedKey(plugin, key), result);
+        } catch(Exception e){ }
+        return new ShapedRecipe(result);
     }
 
     public static ShapelessRecipe GetShapelessRecipe(JavaPlugin plugin, String key, ItemStack result){
-        return new ShapelessRecipe(new NamespacedKey(plugin, key), result);
+        try{
+            return ShapelessRecipe.class.getConstructor(Class.forName("org.bukkit.NamespacedKey"), ItemStack.class).newInstance(getNameSpacedKey(plugin, key), result);
+        } catch(Exception e){ }
+        return new ShapelessRecipe(result);
     }
 
     public static ItemStack SetDurability(ItemStack item, int damage){
-        Damageable meta = (Damageable)item.getItemMeta();
-        meta.setDamage(damage);
-        item.setItemMeta((ItemMeta)meta);
+        //TODO This is deprecated, do it with DamageableMeta.
+        item.setDurability((short)damage);
         return item;
     }
 
-    public static void AddIngredient(ShapelessRecipe recipe, ItemStack ingredient){
-        recipe.addIngredient(new RecipeChoice.ExactChoice(ingredient));
-    }
 
     public static void SetIngredient(ShapedRecipe recipe, char key, ItemStack ingredient){
-        recipe.setIngredient(key, new RecipeChoice.ExactChoice(ingredient));
+        try{
+            recipe.getClass().getMethod("setIngredient", char.class, Class.forName("org.bukkit.inventory.RecipeChoice.ExactChoice")).invoke(recipe,
+                    key, Class.forName("org.bukkit.inventory.RecipeChoice.ExactChoice").getConstructor(ItemStack.class).newInstance(ingredient)
+            );
+        }catch(Exception e){
+            recipe.setIngredient(key, ingredient.getData());
+        }
+    }
+
+    public static void AddIngredient(ShapelessRecipe recipe, ItemStack ingredient){
+        try{
+            recipe.getClass().getMethod("addIngredient", Class.forName("org.bukkit.inventory.RecipeChoice.ExactChoice")).invoke(recipe,
+                    Class.forName("org.bukkit.inventory.RecipeChoice.ExactChoice").getConstructor(ItemStack.class).newInstance(ingredient)
+            );
+        }catch(Exception e){
+            recipe.addIngredient(ingredient.getData());
+        }
     }
 
     public static void DiscoverRecipes(Player player, List<Recipe> recipes){
-        for (Recipe recipe : recipes) {
-            if(recipe instanceof ShapedRecipe){
-                ShapedRecipe shaped = (ShapedRecipe) recipe;
-                player.discoverRecipe(shaped.getKey());
-            }else if(recipe instanceof ShapelessRecipe){
-                ShapelessRecipe shapeless = (ShapelessRecipe) recipe;
-                player.discoverRecipe(shapeless.getKey());
+        try{
+            for (Recipe recipe : recipes) {
+                if(recipe instanceof ShapedRecipe){
+                    ShapedRecipe shaped = (ShapedRecipe) recipe;
+                    player.discoverRecipe(shaped.getKey());
+                }else if(recipe instanceof ShapelessRecipe){
+                    ShapelessRecipe shapeless = (ShapelessRecipe) recipe;
+                    player.discoverRecipe(shapeless.getKey());
+                }
             }
-        }
+        }catch(Exception e){ }
     }
+
     public static void SetOwningPlayer(SkullMeta meta, OfflinePlayer player){
-        meta.setOwningPlayer(player);
+        try{
+            meta.setOwningPlayer(player);
+        }catch(Exception e){
+            meta.setOwner(player.getName());
+        }
     }
 
 }
