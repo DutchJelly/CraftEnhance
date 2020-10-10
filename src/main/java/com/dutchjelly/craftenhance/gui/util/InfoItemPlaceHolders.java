@@ -7,6 +7,7 @@ public enum InfoItemPlaceHolders {
     Permission("[permission]"),
     Key("[key]"),
     Slot("[slot]"),
+    DisableMode("[mode]"),
     Page("[page]");
 
 

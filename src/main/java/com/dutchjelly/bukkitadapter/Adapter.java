@@ -1,7 +1,9 @@
 package com.dutchjelly.bukkitadapter;
 
 
+import com.dutchjelly.craftenhance.messaging.Debug;
 import lombok.SneakyThrows;
+import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Material;
 
 import org.bukkit.NamespacedKey;
@@ -16,6 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import org.bukkit.DyeColor;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
@@ -118,6 +121,30 @@ public class Adapter {
         }catch(Exception e){
             meta.setOwner(player.getName());
         }
+    }
+
+    public static Recipe FilterRecipes(List<Recipe> recipes, String name){
+        for(Recipe r : recipes){
+            String id = GetRecipeIdentifier(r);
+            if(id == null) continue;
+            if(id.equalsIgnoreCase(name))
+                return r;
+        }
+
+        return recipes.stream().filter(x -> x != null).filter(x -> x.getResult().getType().name().equalsIgnoreCase(name)).findFirst().orElse(null);
+
+    }
+
+
+    public static String GetRecipeIdentifier(Recipe r){
+        try{
+            //reflection is so damn powerful!! You can even invoke methods from derived classes.
+            Object obj = r.getClass().getMethod("getKey").invoke(r);
+            if(obj != null) return obj.toString();
+        }catch(Exception e){
+        }
+
+        return r.getResult().getType().name();
     }
 
 }

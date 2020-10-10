@@ -38,6 +38,9 @@ public class RecipeLoader implements Listener {
     @Getter
     private List<Recipe> serverRecipes = new ArrayList<>();
 
+    @Getter
+    private List<Recipe> disabledServerRecipes = new ArrayList<>();
+
 
     private Map<String, Recipe> loaded = new HashMap<>();
     private Server server;
@@ -53,6 +56,8 @@ public class RecipeLoader implements Listener {
     private RecipeLoader(Server server){
         this.server = server;
         server.recipeIterator().forEachRemaining(serverRecipes::add);
+
+
     }
 
     //Adds or merges group with existing group.
@@ -183,16 +188,6 @@ public class RecipeLoader implements Listener {
         return new ArrayList<>(loaded.values());
     }
 
-//    public <T extends Recipe> List<T> getDefaultServerRecipes(){
-//        return serverRecipes.stream().map(x -> {
-//            try{
-//                return (T)x;
-//            }catch(Exception e){
-//                return null;
-//            }
-//        }).filter(x -> x != null).collect(Collectors.toList());
-//    }
-
     public void printGroupsDebugInfo(){
         for(RecipeGroup group : groupedRecipes){
             Debug.Send("group of grouped recipes:");
@@ -201,6 +196,36 @@ public class RecipeLoader implements Listener {
         }
     }
 
+    public boolean disableServerRecipe(Recipe r){
+        if(serverRecipes.contains(r)) {
+            Debug.Send("[Recipe Loader] disabling server recipe for " + r.getResult().getType().name());
 
+            serverRecipes.remove(r);
+            disabledServerRecipes.add(r);
 
+            groupedRecipes.forEach(x -> {
+                if(x.getServerRecipes().contains(r))
+                    x.getServerRecipes().remove(r);
+            });
+            syncServerRecipeState();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean enableServerRecipe(Recipe r){
+        if(!serverRecipes.contains(r)) {
+            Debug.Send("[Recipe Loader] enabling server recipe for " + r.getResult().getType().name());
+            serverRecipes.add(r);
+            disabledServerRecipes.remove(r);
+            syncServerRecipeState();
+            return true;
+        }
+        return false;
+    }
+
+    public void disableServerRecipes(List<Recipe> disabledServerRecipes){
+        //No need to be efficient here, this'll only run once.
+        disabledServerRecipes.forEach(x -> disableServerRecipe(x));
+    }
 }
