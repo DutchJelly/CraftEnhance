@@ -16,6 +16,14 @@ Some examples of why I would use this plugin as an API in certain cases is to:
 
 ### Changelog
 
+##### 2.4.2
+```diff
++ Added server recipe disabler gui `/ceh disable`.
++ Added proper 2*2 crafting support.
++ Only one build of the plugin will now support the game versions 1.9-1.16, seperate builds with slightly different configurations were needed before.
++ [BUGFIX] matchmeta/hidden property of WBRecipe is now serialized properly.
++ [BUGFIX] Players now only discover recipes when it's actually enabled in the config.
+
 ##### 2.4.1
 ```diff
 + Custom head support in GUI's
