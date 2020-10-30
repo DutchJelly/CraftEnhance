@@ -87,7 +87,7 @@ public class FileManager {
 	
 	public void cacheRecipes(){
 		Debug.Send("The file manager is caching recipes...");
-		IEnhancedRecipe keyValue = null;
+		IEnhancedRecipe keyValue;
 		recipesConfig = getYamlConfig(recipesFile);
 		recipes.clear();
 		for(String key : recipesConfig.getKeys(false)){

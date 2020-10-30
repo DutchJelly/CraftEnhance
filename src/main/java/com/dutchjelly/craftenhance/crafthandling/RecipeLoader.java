@@ -4,6 +4,7 @@ import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.IEnhancedRecipe;
 import com.dutchjelly.craftenhance.messaging.Debug;
+import com.dutchjelly.craftenhance.messaging.Messenger;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
@@ -145,6 +146,11 @@ public class RecipeLoader implements Listener {
     }
 
     public void loadRecipe(@NonNull IEnhancedRecipe recipe){
+
+        if(recipe.validate() != null) {
+            Messenger.Error("There's an issue with recipe " + recipe.getKey() + ": " + recipe.validate());
+            return;
+        }
 
         if(loaded.containsKey(recipe.getKey()))
             unloadRecipe(recipe);

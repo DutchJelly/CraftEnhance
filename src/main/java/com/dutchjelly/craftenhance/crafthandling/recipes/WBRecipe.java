@@ -18,6 +18,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -182,6 +183,9 @@ public class WBRecipe implements IEnhancedRecipe {
     public String validate(){
         if(result == null)
             return "recipe cannot have null result";
+
+        if(content.length == 0 || !Arrays.stream(content).anyMatch(x -> x != null))
+            return "recipe content cannot be empty";
 
         return null;
     }

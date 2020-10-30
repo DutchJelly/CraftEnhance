@@ -72,7 +72,7 @@ public class CraftEnhance extends JavaPlugin{
 
         Debug.Send("Loading recipes");
         RecipeLoader loader = RecipeLoader.getInstance();
-		fm.getRecipes().forEach(loader::loadRecipe);
+		fm.getRecipes().stream().filter(x -> x.validate() == null).forEach(loader::loadRecipe);
 		loader.printGroupsDebugInfo();
 		loader.disableServerRecipes(
 		        fm.readDisabledServerRecipes().stream().map(x ->
