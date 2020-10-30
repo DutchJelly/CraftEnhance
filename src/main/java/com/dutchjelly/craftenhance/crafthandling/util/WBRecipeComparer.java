@@ -11,29 +11,30 @@ import java.util.stream.Collectors;
 
 public class WBRecipeComparer {
 
-    private static ItemStack[] mirror(ItemStack[] content){
+    private static ItemStack[] mirror(ItemStack[] content, int size){
         if(content == null) return null;
         if(content.length == 0) return content;
         ItemStack[] mirrored = new ItemStack[content.length];
-        double dimensions = Math.sqrt(content.length);
-        if(Math.ceil(dimensions) != Math.floor(dimensions)) return content;
 
-        int size = (int)dimensions;
 
         for(int i = 0; i < size; i++){
+
+            //Walk through right and left elements of this row and swab them.
             for(int j = 0; j < size/2; j++){
-                mirrored[i*3+j] = content[i*3+(size-j-1)];
-                mirrored[i*3+(size-j-1)] = content[i*3+j];
+                mirrored[i*size+j] = content[i*size+(size-j-1)];
+                mirrored[i*size+(size-j-1)] = content[i*size+j];
             }
+
+            //Copy middle item to mirrored.
             if(size%2 != 0)
-                mirrored[i*3+(size/2)] = content[i*3+(size/2)];
+                mirrored[i*size+(size/2)] = content[i*size+(size/2)];
         }
         return mirrored;
     }
 
     //This compares shapes and doesn't take mirrored recipes into account.
     //public for testing purposes. Not very professional I know, but it gets the job done.
-    public static boolean shapeIterationMatches(ItemStack[] content, ItemStack[] r, IMatcher<ItemStack> matcher){
+    public static boolean shapeIterationMatches(ItemStack[] content, ItemStack[] r, IMatcher<ItemStack> matcher, int rowSize){
         //Find the first element of r and content.
         int i = -1, j = -1;
         while(++i < r.length && r[i] == null);
@@ -42,33 +43,31 @@ public class WBRecipeComparer {
         //Look if one or both recipes are empty. Return true if both are empty.
         if(i == r.length || j == content.length) return i == r.length && j == content.length;
 
-//        Debug.Send(Arrays.stream(content).map(x -> x == null ? "null" : x.toString()).collect(Collectors.joining(", ")));
-//        Debug.Send(Arrays.stream(r).map(x -> x == null ? "null" : x.toString()).collect(Collectors.joining(", ")));
-//
-//        Debug.Send("i: " + i + ", j: " + j);
-
         if(!matcher.match(r[i],content[j])){
-//            Debug.Send(r[i].toString());
-//            Debug.Send(content[j].toString());
-//            Debug.Send(String.valueOf(content[j].isSimilar(r[i])));
             return false;
         }
 
+        //Offsets relative to the first item of the recipe.
         int iOffx, iOffy, jOffx, jOffy;
         for(;;) {
             iOffx = iOffy = 0;
             jOffx = jOffy = 0;
-            while (++i < r.length && r[i] == null) {
+            while (++i < r.length) {
                 iOffx++;
-                if (i % 3 == 0) iOffy++;
-            }
-            if (i % 3 == 0) iOffy++;
+                if (i % rowSize == 0) iOffy++;
 
-            while (++j < content.length && content[j] == null) {
-                jOffx++;
-                if (j % 3 == 0) jOffy++;
+                if(r[i] != null) break;
+
             }
-            if (j % 3 == 0) jOffy++;
+//            if (i % rowSize == 0) iOffy++;
+
+            while (++j < content.length) {
+                jOffx++;
+                if (j % rowSize == 0) jOffy++;
+
+                if(content[j] != null) break;
+            }
+//            if (j % rowSize == 0) jOffy++;
 
 //            Debug.Send("i: " + i + ", j: " + j);
 
@@ -80,12 +79,15 @@ public class WBRecipeComparer {
             if (!matcher.match(r[i], content[j]))
                 return false;
 
+            //The offsets have to be the same, otherwise the shape isn't equal.
             if (iOffx != jOffx || iOffy != jOffy) return false;
         }
     }
 
     public static boolean shapeMatches(ItemStack[] content, ItemStack[] r, IMatcher<ItemStack> matcher){
-        return shapeIterationMatches(content, r, matcher) || shapeIterationMatches(mirror(content), r, matcher);
+        int rowSize = content == null ? 0 : (int)Math.sqrt(content.length);
+
+        return shapeIterationMatches(content, r, matcher, rowSize) || shapeIterationMatches(mirror(content, rowSize), r, matcher, rowSize);
     }
 
     private static ItemStack[] ensureNoGaps(ItemStack[] items){

@@ -1,8 +1,9 @@
 package com.dutchjelly.craftenhance;
 
-import java.io.File;
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
+import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.commands.ceh.*;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
@@ -58,18 +59,26 @@ public class CraftEnhance extends JavaPlugin{
 
 		saveDefaultConfig();
 		Debug.init(this);
+
+		Debug.Send("Coloring config messages.");
+		ConfigFormatter.init(this).formatConfigMessages();
+		Messenger.Init(this);
+
 		//Most other instances use the file manager, so setup before everything.
         Debug.Send("Setting up the file manager for recipes.");
 		setupFileManager();
 
-		Debug.Send("Coloring config messages.");
-		ConfigFormatter.init(this).formatConfigMessages();
-        Messenger.Init(this);
+
 
         Debug.Send("Loading recipes");
         RecipeLoader loader = RecipeLoader.getInstance();
-		fm.getRecipes().forEach(loader::loadRecipe);
+		fm.getRecipes().stream().filter(x -> x.validate() == null).forEach(loader::loadRecipe);
 		loader.printGroupsDebugInfo();
+		loader.disableServerRecipes(
+		        fm.readDisabledServerRecipes().stream().map(x ->
+                        Adapter.FilterRecipes(loader.getServerRecipes(), x)
+                ).collect(Collectors.toList())
+        );
 
 		Debug.Send("Loading gui templates");
 		guiTemplatesFile = new GuiTemplatesFile(this);
@@ -87,10 +96,15 @@ public class CraftEnhance extends JavaPlugin{
 		    	Messenger.Message("WARN: The installed version isn't tested to work with the game version of the server.");
         }
 		checker.runUpdateCheck();
+
+
+		final int metricsId = 9023;
+		new Metrics(this, metricsId);
 	}
 
 
 	public void reload(){
+		Messenger.Message("WARN: This reload function is causing some issues currently. It's being worked on.");
 	    saveDefaultConfig();
 	    fm = FileManager.init(this);
 		fm.cacheItems();
@@ -105,7 +119,12 @@ public class CraftEnhance extends JavaPlugin{
 	
 	@Override
 	public void onDisable(){
-		guiManager.closeAll();
+	    try{
+            guiManager.closeAll();
+        } catch(Exception e) {}
+
+        fm.saveDisabledServerRecipes(RecipeLoader.getInstance().getDisabledServerRecipes().stream().map(x -> Adapter.GetRecipeIdentifier(x)).collect(Collectors.toList()));
+        getServer().resetRecipes();
 	}
 	
 	@Override
@@ -133,19 +152,29 @@ public class CraftEnhance extends JavaPlugin{
 	}
 	
 	//Assigns executor classes for the commands.
-	private void setupCommands(){
-		commandHandler = new CustomCmdHandler(this);
-		//All commands with the base /edititem
-		commandHandler.loadCommandClasses(Arrays.asList(new DisplayNameCmd(commandHandler), new DurabilityCmd(commandHandler),
-				new EnchantCmd(commandHandler), new ItemFlagCmd(commandHandler), new LocalizedNameCmd(commandHandler), 
-				new LoreCmd(commandHandler)));
-		//All command with the base /ceh
-		commandHandler.loadCommandClasses(Arrays.asList(new CreateRecipeCmd(commandHandler),
-				new RecipesCmd(commandHandler), new SpecsCommand(commandHandler), new ChangeKeyCmd(commandHandler), 
-				new CleanItemFileCmd(commandHandler), new SetPermissionCmd(commandHandler), new ReloadCmd()));
-
-		//commandHandler.loadCommandClass(new Test());
-	}
+	private void setupCommands() {
+        commandHandler = new CustomCmdHandler(this);
+        //All commands with the base /edititem
+        commandHandler.loadCommandClasses(Arrays.asList(
+                new DisplayNameCmd(commandHandler),
+                new DurabilityCmd(commandHandler),
+                new EnchantCmd(commandHandler),
+                new ItemFlagCmd(commandHandler),
+                new LocalizedNameCmd(commandHandler),
+                new LoreCmd(commandHandler))
+        );
+        //All command with the base /ceh
+        commandHandler.loadCommandClasses(Arrays.asList(
+                new CreateRecipeCmd(commandHandler),
+                new RecipesCmd(commandHandler),
+                new SpecsCommand(commandHandler),
+                new ChangeKeyCmd(commandHandler),
+                new CleanItemFileCmd(commandHandler),
+                new SetPermissionCmd(commandHandler),
+                new ReloadCmd(),
+                new Disabler(commandHandler))
+        );
+    }
 	
 	//Registers the listener class to the server.
 	private void setupListeners(){

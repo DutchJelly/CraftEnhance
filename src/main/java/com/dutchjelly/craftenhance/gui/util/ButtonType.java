@@ -12,5 +12,6 @@ public enum ButtonType {
     ResetRecipe,
     SetPosition,
     SwitchHidden,
-    SetPermission
+    SetPermission,
+    SwitchDisablerMode
 }

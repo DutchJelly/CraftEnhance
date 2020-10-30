@@ -1,7 +1,5 @@
 package com.dutchjelly.craftenhance.crafthandling.util;
 
-import com.dutchjelly.craftenhance.messaging.Debug;
-import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 public class ItemMatchers{
@@ -15,6 +13,10 @@ public class ItemMatchers{
     public static boolean matchMeta(ItemStack a, ItemStack b){
         if(a == null || b == null) return a == null && b == null;
         //TODO find a way to not have to use toString() to compare item meta...
+
+        //Also use this method in case some ItemStack has an overwritten method.
+        if(a.isSimilar(b)) return true;
+
         return a.getType().equals(b.getType()) && a.getDurability() == b.getDurability() && a.hasItemMeta() == b.hasItemMeta() && (!a.hasItemMeta() || a.getItemMeta().toString().equals(b.getItemMeta().toString()));
     }
 

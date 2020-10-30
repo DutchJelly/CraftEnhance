@@ -1,5 +1,6 @@
 package com.dutchjelly.craftenhance.crafthandling.recipes;
 
+import com.dutchjelly.craftenhance.ConfigError;
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.IEnhancedRecipe;
 import com.dutchjelly.craftenhance.crafthandling.util.ItemMatchers;
@@ -17,6 +18,7 @@ import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -142,7 +144,7 @@ public class WBRecipe implements IEnhancedRecipe {
         if(args.containsKey("matchmeta"))
             recipe.matchMeta = (Boolean) args.get("matchmeta");
         if(args.containsKey("hidden"))
-            recipe.matchMeta = (Boolean) args.get("hidden");
+            recipe.hidden = (Boolean) args.get("hidden");
         if(args.containsKey("slot"))
             recipe.slot = (int)args.get("slot");
         if(args.containsKey("page"))
@@ -153,9 +155,6 @@ public class WBRecipe implements IEnhancedRecipe {
             recipe.content[i] = fm.getItem(recipeKeys.get(i));
         }
 
-        if(recipe.result == null)
-            throw new IllegalStateException("recipe cannot have null result");
-
         return recipe;
     }
 
@@ -163,9 +162,10 @@ public class WBRecipe implements IEnhancedRecipe {
     public Map<String, Object> serialize() {
         FileManager fm = CraftEnhance.getPlugin(CraftEnhance.class).getFm();
 
-        Map<String, Object> serialized = new HashMap<String, Object>();
+        Map<String, Object> serialized = new HashMap<>();
         serialized.put("permission", permissions);
         serialized.put("shapeless", shapeless);
+        serialized.put("matchmeta", matchMeta);
         serialized.put("hidden", hidden);
         serialized.put("slot", slot);
         serialized.put("page", page);
@@ -179,12 +179,22 @@ public class WBRecipe implements IEnhancedRecipe {
         return serialized;
     }
 
+    @Override
+    public String validate(){
+        if(result == null)
+            return "recipe cannot have null result";
+
+        if(content.length == 0 || !Arrays.stream(content).anyMatch(x -> x != null))
+            return "recipe content cannot be empty";
+
+        return null;
+    }
 
     @Override
     public String toString(){
         String s = "";
         s += "key = " + key + "\n";
-        s += "result = " + result.toString() + "\n";
+        s += "result = " + result == null ? "null" : result.toString() + "\n";
         return s;
     }
 

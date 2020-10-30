@@ -20,6 +20,8 @@ public interface IEnhancedRecipe extends ConfigurationSerializable {
     boolean isSimilar(IEnhancedRecipe r);
     boolean isHidden();
 
+    String validate();
+
     int getPage();
     void setPage(int page);
     int getSlot();

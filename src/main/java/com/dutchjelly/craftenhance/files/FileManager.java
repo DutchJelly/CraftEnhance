@@ -1,44 +1,64 @@
 package com.dutchjelly.craftenhance.files;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.Reader;
+import java.lang.reflect.Type;
+import java.util.*;
 import java.util.logging.Logger;
 
+import com.dutchjelly.craftenhance.ConfigError;
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.IEnhancedRecipe;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.messaging.Debug;
+import com.dutchjelly.craftenhance.messaging.Messenger;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import lombok.SneakyThrows;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
 
 public class FileManager {
+
+	private final boolean useJson;
 	
 	private File dataFolder;
 	private File itemsFile;
 	private File recipesFile;
+	private File serverRecipeFile;
 	private FileConfiguration recipesConfig;
 	private FileConfiguration itemsConfig;
+	private FileConfiguration serverRecipeConfig;
+
+	private String itemsJson;
 	private Logger logger;
 	private Map<String, ItemStack> items;
 	private List<IEnhancedRecipe> recipes;
 
+	private FileManager(boolean useJson) {
+	    this.useJson = useJson;
+    }
+
 	public static FileManager init(CraftEnhance main){
-		FileManager fm = new FileManager();
+//		FileManager fm = new FileManager(main.getConfig().getBoolean("use-json"));
+        FileManager fm = new FileManager(main.getConfig().getBoolean("use-json"));
 		fm.items = new HashMap<>();
 		fm.recipes = new ArrayList<>();
 		fm.logger = main.getLogger();
 		fm.dataFolder = main.getDataFolder();
 		fm.dataFolder.mkdir();
-		fm.itemsFile = fm.getFile("items.yml");
+		fm.itemsFile = fm.getFile(fm.useJson ? "items.json" : "items.yml");
 		fm.recipesFile = fm.getFile("recipes.yml");
+		fm.serverRecipeFile = fm.getFile("server-recipes.yml");
 		return fm;
 	}
 
@@ -72,13 +92,37 @@ public class FileManager {
 		recipes.clear();
 		for(String key : recipesConfig.getKeys(false)){
 			Debug.Send("Caching recipe with key " + key);
-			keyValue = (IEnhancedRecipe)recipesConfig.get(key);
+            keyValue = (IEnhancedRecipe)recipesConfig.get(key);
+            String validation = keyValue.validate();
+            if(validation != null){
+                Messenger.Error("Recipe with key " + key + " has issues: " + validation);
+                Messenger.Error("This recipe will not be cached and loaded.");
+                continue;
+            }
 			keyValue.setKey(key);
 			recipes.add(keyValue);
 		}
 	}
-	
+
+	@SneakyThrows
 	public void cacheItems(){
+
+	    if(useJson){
+
+            StringBuilder json = new StringBuilder("");
+            Scanner scanner = new Scanner(itemsFile);
+            while(scanner.hasNextLine())
+                json.append(scanner.nextLine());
+            scanner.close();
+	        items.clear();
+	        Type typeToken = new TypeToken<HashMap<String,Map<String,Object>>>(){}.getType();
+            Gson gson = new Gson();
+            final Map<String,Map<String,Object>> serialized = gson.fromJson(json.toString(), typeToken);
+            if(serialized != null)
+                serialized.keySet().forEach(x -> items.put(x, ItemStack.deserialize(serialized.get(x))));
+            return;
+        }
+
 		itemsConfig = getYamlConfig(itemsFile);
 		items.clear();
 		for(String key : itemsConfig.getKeys(false)){
@@ -132,8 +176,22 @@ public class FileManager {
 	public boolean isUniqueRecipeKey(String key){
 		return getRecipe(key) == null;
 	}
-	
+
+	@SneakyThrows
 	public boolean saveItem(String key, ItemStack item){
+
+	    if(useJson){
+	        items.put(key, item);
+	        Gson gson = new Gson();
+	        Map<String,Map<String,Object>> serialized = new HashMap<>();
+	        items.keySet().forEach(x -> serialized.put(x, items.get(x).serialize()));
+	        itemsJson = gson.toJson(serialized, new TypeToken<HashMap<String,Map<String,Object>>>(){}.getType());
+            FileWriter writer = new FileWriter(itemsFile);
+            writer.write(itemsJson);
+            writer.close();
+	        return true;
+        }
+
 		itemsConfig = getYamlConfig(itemsFile);
 		if(!itemsConfig.contains(key)){
 			itemsConfig.set(key, item);
@@ -147,6 +205,22 @@ public class FileManager {
 		}
 		return false;
 	}
+
+	public List<String> readDisabledServerRecipes(){
+	    if(serverRecipeConfig == null)
+	        serverRecipeConfig = getYamlConfig(serverRecipeFile);
+	    return serverRecipeConfig.getStringList("disabled");
+    }
+
+    public boolean saveDisabledServerRecipes(List<String> keys){
+        serverRecipeConfig.set("disabled", keys);
+        try {
+            serverRecipeConfig.save(serverRecipeFile);
+        } catch (IOException e) {
+            return false;
+        }
+        return true;
+    }
 	
 	public void saveRecipe(IEnhancedRecipe recipe){
 		Debug.Send("Saving recipe " + recipe.toString() + " with key " + recipe.getKey());

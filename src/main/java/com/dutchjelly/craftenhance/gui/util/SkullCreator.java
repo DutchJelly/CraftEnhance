@@ -123,7 +123,7 @@ public class SkullCreator {
         notNull(id, "id");
 
         SkullMeta meta = (SkullMeta) item.getItemMeta();
-        meta.setOwningPlayer(Bukkit.getOfflinePlayer(id));
+        Adapter.SetOwningPlayer(meta,Bukkit.getOfflinePlayer(id));
         item.setItemMeta(meta);
 
         return item;

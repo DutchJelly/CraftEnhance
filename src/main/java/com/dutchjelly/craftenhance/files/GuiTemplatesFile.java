@@ -54,8 +54,10 @@ public class GuiTemplatesFile {
     }
 
     public GuiTemplate getTemplate(Class<? extends GUIElement> clazz){
-        if(!templates.containsKey(clazz))
+        if(!templates.containsKey(clazz)){
             throw new ConfigError("Cannot find template of " + clazz.getSimpleName());
+        }
+
         return templates.get(clazz);
     }
 }
