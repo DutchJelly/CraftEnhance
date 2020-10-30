@@ -59,13 +59,16 @@ public class CraftEnhance extends JavaPlugin{
 
 		saveDefaultConfig();
 		Debug.init(this);
+
+		Debug.Send("Coloring config messages.");
+		ConfigFormatter.init(this).formatConfigMessages();
+		Messenger.Init(this);
+
 		//Most other instances use the file manager, so setup before everything.
         Debug.Send("Setting up the file manager for recipes.");
 		setupFileManager();
 
-		Debug.Send("Coloring config messages.");
-		ConfigFormatter.init(this).formatConfigMessages();
-        Messenger.Init(this);
+
 
         Debug.Send("Loading recipes");
         RecipeLoader loader = RecipeLoader.getInstance();
