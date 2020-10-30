@@ -1,5 +1,6 @@
 package com.dutchjelly.craftenhance.crafthandling.recipes;
 
+import com.dutchjelly.craftenhance.ConfigError;
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.IEnhancedRecipe;
 import com.dutchjelly.craftenhance.crafthandling.util.ItemMatchers;
@@ -153,9 +154,6 @@ public class WBRecipe implements IEnhancedRecipe {
             recipe.content[i] = fm.getItem(recipeKeys.get(i));
         }
 
-        if(recipe.result == null)
-            throw new IllegalStateException("recipe cannot have null result");
-
         return recipe;
     }
 
@@ -180,6 +178,13 @@ public class WBRecipe implements IEnhancedRecipe {
         return serialized;
     }
 
+    @Override
+    public String validate(){
+        if(result == null)
+            return "recipe cannot have null result";
+
+        return null;
+    }
 
     @Override
     public String toString(){

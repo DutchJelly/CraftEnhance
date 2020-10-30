@@ -1,6 +1,7 @@
 package com.dutchjelly.bukkitadapter;
 
 
+import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import lombok.SneakyThrows;
 import org.apache.commons.lang.reflect.FieldUtils;
@@ -19,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.DyeColor;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -55,22 +57,26 @@ public class Adapter {
         return null;
     }
 
-    @SneakyThrows
-    private static Object getNameSpacedKey(JavaPlugin plugin, String key){
+    private static Object getNameSpacedKey(JavaPlugin plugin, String key) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         return Class.forName("org.bukkit.NamespacedKey").getConstructor(JavaPlugin.class, String.class).newInstance(plugin, key);
     }
 
     public static ShapedRecipe GetShapedRecipe(JavaPlugin plugin, String key, ItemStack result){
         try{
             return ShapedRecipe.class.getConstructor(Class.forName("org.bukkit.NamespacedKey"), ItemStack.class).newInstance(getNameSpacedKey(plugin, key), result);
-        } catch(Exception e){ }
+        }
+        catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+            Debug.Send("Couldn't use namespaced key: " + e.getMessage());
+        }
         return new ShapedRecipe(result);
     }
 
     public static ShapelessRecipe GetShapelessRecipe(JavaPlugin plugin, String key, ItemStack result){
-        try{
+        try {
             return ShapelessRecipe.class.getConstructor(Class.forName("org.bukkit.NamespacedKey"), ItemStack.class).newInstance(getNameSpacedKey(plugin, key), result);
-        } catch(Exception e){ }
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+            Debug.Send("Couldn't use namespaced key: " + e.getMessage());
+        }
         return new ShapelessRecipe(result);
     }
 
@@ -82,6 +88,11 @@ public class Adapter {
 
 
     public static void SetIngredient(ShapedRecipe recipe, char key, ItemStack ingredient){
+        if(!CraftEnhance.self().getConfig().getBoolean("learn-recipes")){
+            recipe.setIngredient(key, ingredient.getData());
+            return;
+        }
+
         try{
             recipe.getClass().getMethod("setIngredient", char.class, Class.forName("org.bukkit.inventory.RecipeChoice.ExactChoice")).invoke(recipe,
                     key, Class.forName("org.bukkit.inventory.RecipeChoice.ExactChoice").getConstructor(ItemStack.class).newInstance(ingredient)
@@ -92,6 +103,10 @@ public class Adapter {
     }
 
     public static void AddIngredient(ShapelessRecipe recipe, ItemStack ingredient){
+        if(!CraftEnhance.self().getConfig().getBoolean("learn-recipes")){
+            recipe.addIngredient(ingredient.getData());
+            return;
+        }
         try{
             recipe.getClass().getMethod("addIngredient", Class.forName("org.bukkit.inventory.RecipeChoice.ExactChoice")).invoke(recipe,
                     Class.forName("org.bukkit.inventory.RecipeChoice.ExactChoice").getConstructor(ItemStack.class).newInstance(ingredient)

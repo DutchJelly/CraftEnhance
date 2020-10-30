@@ -8,10 +8,12 @@ import java.lang.reflect.Type;
 import java.util.*;
 import java.util.logging.Logger;
 
+import com.dutchjelly.craftenhance.ConfigError;
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.IEnhancedRecipe;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.messaging.Debug;
+import com.dutchjelly.craftenhance.messaging.Messenger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
@@ -85,12 +87,18 @@ public class FileManager {
 	
 	public void cacheRecipes(){
 		Debug.Send("The file manager is caching recipes...");
-		IEnhancedRecipe keyValue;
+		IEnhancedRecipe keyValue = null;
 		recipesConfig = getYamlConfig(recipesFile);
 		recipes.clear();
 		for(String key : recipesConfig.getKeys(false)){
 			Debug.Send("Caching recipe with key " + key);
-			keyValue = (IEnhancedRecipe)recipesConfig.get(key);
+            keyValue = (IEnhancedRecipe)recipesConfig.get(key);
+            String validation = keyValue.validate();
+            if(validation != null){
+                Messenger.Error("Recipe with key " + key + " has issues: " + validation);
+                Messenger.Error("This recipe will not be cached and loaded.");
+                continue;
+            }
 			keyValue.setKey(key);
 			recipes.add(keyValue);
 		}
