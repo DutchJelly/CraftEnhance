@@ -3,23 +3,17 @@ package com.dutchjelly.bukkitadapter;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.messaging.Debug;
-import lombok.SneakyThrows;
-import org.apache.commons.lang.reflect.FieldUtils;
 import org.bukkit.Material;
 
-import org.bukkit.NamespacedKey;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
-import org.bukkit.inventory.meta.Damageable;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.bukkit.DyeColor;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
@@ -58,7 +52,8 @@ public class Adapter {
     }
 
     private static Object getNameSpacedKey(JavaPlugin plugin, String key) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        return Class.forName("org.bukkit.NamespacedKey").getConstructor(JavaPlugin.class, String.class).newInstance(plugin, key);
+//        return new NamespacedKey(plugin, key);
+        return Class.forName("org.bukkit.NamespacedKey").getConstructor(org.bukkit.plugin.Plugin.class, String.class).newInstance(plugin, key);
     }
 
     public static ShapedRecipe GetShapedRecipe(JavaPlugin plugin, String key, ItemStack result){
@@ -66,7 +61,7 @@ public class Adapter {
             return ShapedRecipe.class.getConstructor(Class.forName("org.bukkit.NamespacedKey"), ItemStack.class).newInstance(getNameSpacedKey(plugin, key), result);
         }
         catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
-            Debug.Send("Couldn't use namespaced key: " + e.getMessage());
+            Debug.Send("Couldn't use namespaced key: " + e.getMessage() + "\n" + e.getStackTrace());
         }
         return new ShapedRecipe(result);
     }
@@ -75,36 +70,43 @@ public class Adapter {
         try {
             return ShapelessRecipe.class.getConstructor(Class.forName("org.bukkit.NamespacedKey"), ItemStack.class).newInstance(getNameSpacedKey(plugin, key), result);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
-            Debug.Send("Couldn't use namespaced key: " + e.getMessage());
+            Debug.Send("Couldn't use namespaced key: " + e.getMessage() + "\n" + e.getStackTrace());
         }
         return new ShapelessRecipe(result);
     }
 
     public static ItemStack SetDurability(ItemStack item, int damage){
-        //TODO This is deprecated, do it with DamageableMeta.
         item.setDurability((short)damage);
         return item;
     }
 
-
     public static void SetIngredient(ShapedRecipe recipe, char key, ItemStack ingredient){
         if(!CraftEnhance.self().getConfig().getBoolean("learn-recipes")){
-            recipe.setIngredient(key, ingredient.getData());
+            MaterialData md = ingredient.getData();
+            if(md == null || !md.getItemType().equals(ingredient.getType()) || md.getItemType().equals(Material.AIR)){
+                recipe.setIngredient(key, ingredient.getType());
+            }else{
+                recipe.setIngredient(key, md);
+            }
             return;
         }
-
         try{
             recipe.getClass().getMethod("setIngredient", char.class, Class.forName("org.bukkit.inventory.RecipeChoice.ExactChoice")).invoke(recipe,
                     key, Class.forName("org.bukkit.inventory.RecipeChoice.ExactChoice").getConstructor(ItemStack.class).newInstance(ingredient)
             );
         }catch(Exception e){
-            recipe.setIngredient(key, ingredient.getData());
+            recipe.setIngredient(key, ingredient.getType());
         }
     }
 
     public static void AddIngredient(ShapelessRecipe recipe, ItemStack ingredient){
         if(!CraftEnhance.self().getConfig().getBoolean("learn-recipes")){
-            recipe.addIngredient(ingredient.getData());
+            MaterialData md = ingredient.getData();
+            if(md == null || !md.getItemType().equals(ingredient.getType()) || md.getItemType().equals(Material.AIR)){
+                recipe.addIngredient(ingredient.getType());
+            }else{
+                recipe.addIngredient(md);
+            }
             return;
         }
         try{
@@ -112,7 +114,7 @@ public class Adapter {
                     Class.forName("org.bukkit.inventory.RecipeChoice.ExactChoice").getConstructor(ItemStack.class).newInstance(ingredient)
             );
         }catch(Exception e){
-            recipe.addIngredient(ingredient.getData());
+            recipe.addIngredient(ingredient.getType());
         }
     }
 
