@@ -16,6 +16,14 @@ Some examples of why I would use this plugin as an API in certain cases is to:
 
 ### Changelog
 
+##### 2.4.2
+```diff
++ Now `ExactChoice` is only used when `learn-recipes` is set to true.
++ [BUGFIX] `NameSpacedKey` is now using the correct Constructor parameter types in the reflection.
++ [BUGFIX] Newer items don't have ItemData, so the plugin now falls back on Materials to load recipes.
++ Added error handling for when recipes aren't loaded properly. It'll now get skipped instead of throwing errors.
+```
+
 ##### 2.4.2-beta
 ```diff
 + Added server recipe disabler gui `/ceh disable`.
