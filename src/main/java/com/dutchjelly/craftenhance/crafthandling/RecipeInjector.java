@@ -4,6 +4,7 @@ package com.dutchjelly.craftenhance.crafthandling;
 import java.util.List;
 
 
+import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.IEnhancedRecipe;
 
 import com.dutchjelly.craftenhance.api.CraftEnhanceAPI;
@@ -14,10 +15,15 @@ import com.dutchjelly.craftenhance.crafthandling.util.ServerRecipeTranslator;
 import com.dutchjelly.craftenhance.crafthandling.util.WBRecipeComparer;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import lombok.SneakyThrows;
+import org.bukkit.Bukkit;
+import org.bukkit.block.Furnace;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.FurnaceBurnEvent;
+import org.bukkit.event.inventory.FurnaceSmeltEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 
 import org.bukkit.inventory.*;
@@ -33,7 +39,6 @@ public class RecipeInjector implements Listener{
 	    this.plugin = plugin;
 		loader = RecipeLoader.getInstance();
 	}
-
 
 
     @EventHandler
@@ -179,6 +184,33 @@ public class RecipeInjector implements Listener{
 //        table.setRecipe(null, null, false);
     }
 
+
+    @EventHandler
+    public void smelt(FurnaceSmeltEvent e){
+	    Debug.Send("furnace smelt");
+	    e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void burn(FurnaceBurnEvent e){
+        Debug.Send("furnace burn");
+    }
+
+    @EventHandler
+    public void click(InventoryClickEvent e){
+	    if(!(e.getView().getTopInventory() instanceof FurnaceInventory)) return;
+        Debug.Send("furnace click");
+
+        FurnaceInventory inv = (FurnaceInventory)e.getView().getTopInventory();
+        Furnace f = inv.getHolder();
+        f.setCookTimeTotal(Integer.MAX_VALUE);
+        Bukkit.getScheduler().runTask(CraftEnhance.self(), () -> {
+            Debug.Send(inv.getSmelting());
+        });
+
+        Debug.Send(f.getCookTimeTotal());
+
+    }
 
     private boolean entityCanCraft(HumanEntity entity, IEnhancedRecipe recipe){
 	    return recipe.getPermissions() == null || recipe.getPermissions().equals("")

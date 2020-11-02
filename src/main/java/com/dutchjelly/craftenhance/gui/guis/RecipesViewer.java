@@ -4,19 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import com.dutchjelly.craftenhance.IEnhancedRecipe;
 import com.dutchjelly.craftenhance.PermissionTypes;
 
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.gui.GuiManager;
+import com.dutchjelly.craftenhance.gui.guis.editors.WBRecipeEditor;
 import com.dutchjelly.craftenhance.gui.templates.GuiTemplate;
 import com.dutchjelly.craftenhance.gui.util.ButtonType;
 import com.dutchjelly.craftenhance.gui.util.GuiUtil;
 import com.dutchjelly.craftenhance.messaging.Debug;
 
 import com.dutchjelly.craftenhance.messaging.Messenger;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -25,7 +26,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class RecipesViewer extends GUIElement {
 
-	protected List<IEnhancedRecipe> recipes;
+    @Getter
+	private List<IEnhancedRecipe> recipes;
 
 	//Positions of format (itemsPerPage*pageNumber) + (index of slot in fill-space).
 	private Map<Integer, IEnhancedRecipe> recipePositions;
@@ -43,8 +45,8 @@ public class RecipesViewer extends GUIElement {
         generateInventories(null);
 	}
 
-	//protected so a editor doesn't have to create a new instance when it deletes something and the user goes to previous page.
-	protected void generateInventories(Player subscriber){
+	//public so a editor doesn't have to create a new instance when it deletes something and the user goes to previous page.
+	public void generateInventories(Player subscriber){
 
         int itemsPerPage = getTemplate().getFillSpace().size();
         int requiredPages = Math.max((int)Math.ceil((double)recipes.size()/itemsPerPage), 1);

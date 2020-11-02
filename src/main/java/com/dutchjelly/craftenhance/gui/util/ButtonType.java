@@ -13,5 +13,7 @@ public enum ButtonType {
     SetPosition,
     SwitchHidden,
     SetPermission,
-    SwitchDisablerMode
+    SwitchDisablerMode,
+    ChooseWorkbenchType,
+    ChooseFurnaceType
 }
