@@ -73,6 +73,11 @@ public class FurnaceRecipe implements IEnhancedRecipe {
     }
 
     @Override
+    public void setHidden(boolean hidden) {
+
+    }
+
+    @Override
     public boolean isMatchMeta() {
         return false;
     }
