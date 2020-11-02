@@ -194,6 +194,8 @@ public class RecipeInjector implements Listener{
     @EventHandler
     public void burn(FurnaceBurnEvent e){
         Debug.Send("furnace burn");
+        Furnace f = (Furnace)e.getBlock().getState();
+        Debug.Send(f.getCookTimeTotal());
     }
 
     @EventHandler
@@ -201,14 +203,17 @@ public class RecipeInjector implements Listener{
 	    if(!(e.getView().getTopInventory() instanceof FurnaceInventory)) return;
         Debug.Send("furnace click");
 
-        FurnaceInventory inv = (FurnaceInventory)e.getView().getTopInventory();
-        Furnace f = inv.getHolder();
-        f.setCookTimeTotal(Integer.MAX_VALUE);
-        Bukkit.getScheduler().runTask(CraftEnhance.self(), () -> {
-            Debug.Send(inv.getSmelting());
-        });
+        final FurnaceInventory inv = (FurnaceInventory)e.getView().getTopInventory();
 
-        Debug.Send(f.getCookTimeTotal());
+        Bukkit.getScheduler().runTaskLater(CraftEnhance.self(), () -> {
+            Furnace f = inv.getHolder();
+            f.setCookTimeTotal(-1);
+            f.update();
+            Debug.Send(f.getCookTimeTotal());
+            Debug.Send(f.getBurnTime());
+        }, 1L);
+
+
 
     }
 
