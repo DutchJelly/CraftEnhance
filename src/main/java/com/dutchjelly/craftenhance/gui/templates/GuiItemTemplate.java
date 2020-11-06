@@ -1,7 +1,7 @@
 package com.dutchjelly.craftenhance.gui.templates;
 
 import com.dutchjelly.bukkitadapter.Adapter;
-import com.dutchjelly.craftenhance.ConfigError;
+import com.dutchjelly.craftenhance.exceptions.ConfigError;
 import com.dutchjelly.craftenhance.gui.util.SkullCreator;
 import lombok.Getter;
 import org.bukkit.ChatColor;

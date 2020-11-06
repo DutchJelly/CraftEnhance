@@ -1,13 +1,10 @@
 package com.dutchjelly.craftenhance.crafthandling.util;
 
-import com.dutchjelly.craftenhance.IMatcher;
-import com.dutchjelly.craftenhance.messaging.Debug;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 
 public class WBRecipeComparer {
 

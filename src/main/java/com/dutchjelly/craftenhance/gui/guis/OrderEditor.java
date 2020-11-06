@@ -4,23 +4,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.dutchjelly.craftenhance.IEnhancedRecipe;
+import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
 import com.dutchjelly.craftenhance.gui.GuiManager;
 import com.dutchjelly.craftenhance.gui.templates.GuiTemplate;
 import com.dutchjelly.craftenhance.gui.util.ButtonType;
 import com.dutchjelly.craftenhance.gui.util.GuiUtil;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.messaging.Messenger;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 public class OrderEditor extends GUIElement {
 
-	private List<IEnhancedRecipe> recipes;
+	private List<EnhancedRecipe> recipes;
 	private Inventory[] inventories;
 	private int currentPage;
 	
@@ -82,7 +80,7 @@ public class OrderEditor extends GUIElement {
         return false;
     }
 
-    private void move(IEnhancedRecipe recipe, int translation){
+    private void move(EnhancedRecipe recipe, int translation){
 		int startIndex = translation > 0 ? 0 : -translation;
 		int endIndex = translation > 0 ? recipes.size()-translation : recipes.size();
 		for(int i = startIndex; i < endIndex; i++)
@@ -93,12 +91,12 @@ public class OrderEditor extends GUIElement {
 	}
 	
 	private void switchRecipes(int a, int b){
-		IEnhancedRecipe temp = recipes.get(a);
+		EnhancedRecipe temp = recipes.get(a);
 		recipes.set(a, recipes.get(b));
 		recipes.set(b, temp);
 	}
 	
-	private IEnhancedRecipe findResultingRecipe(ItemStack result, int clickPos){
+	private EnhancedRecipe findResultingRecipe(ItemStack result, int clickPos){
 		if(clickPos > getInventory().getSize()-9) return null;
 		int translatedClickPos = currentPage * (getInventory().getSize()-9) + clickPos;
 		if(translatedClickPos >= recipes.size()) return null;

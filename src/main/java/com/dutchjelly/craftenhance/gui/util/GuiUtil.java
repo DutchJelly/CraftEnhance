@@ -1,6 +1,6 @@
 package com.dutchjelly.craftenhance.gui.util;
 
-import com.dutchjelly.craftenhance.ConfigError;
+import com.dutchjelly.craftenhance.exceptions.ConfigError;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class GuiUtil {

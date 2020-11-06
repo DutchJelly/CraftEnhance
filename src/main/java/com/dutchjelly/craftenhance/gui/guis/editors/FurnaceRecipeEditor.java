@@ -4,8 +4,11 @@ import com.dutchjelly.craftenhance.crafthandling.recipes.FurnaceRecipe;
 import com.dutchjelly.craftenhance.gui.GuiManager;
 import com.dutchjelly.craftenhance.gui.guis.GUIElement;
 import com.dutchjelly.craftenhance.gui.templates.GuiTemplate;
+import com.dutchjelly.craftenhance.gui.util.ButtonType;
+import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -15,23 +18,63 @@ public class FurnaceRecipeEditor extends RecipeEditor<FurnaceRecipe> {
         super(manager, template, previous, p, recipe);
     }
 
+    private short duration;
+    private int exp;
+
     @Override
     public void initBtnListeners() {
-
+        addBtnListener(ButtonType.SetCookTime, (btn, type) -> {
+            Messenger.Message("Please input a cook duration.", getPlayer());
+            this.getManager().waitForChatInput(this, getPlayer(), (msg) -> {
+                short parsed;
+                try{
+                    parsed = Short.valueOf(msg);
+                }catch(NumberFormatException e){
+                    Messenger.Message("Error, you didn't input a number.", getPlayer());
+                    return true;
+                }
+                Messenger.Message("Successfully set duration to " + parsed, getPlayer());
+                duration = parsed;
+                updatePlaceHolders();
+                return false;
+            });
+        });
+        addBtnListener(ButtonType.SetExp, (btn, type) -> {
+            Messenger.Message("Please input an exp amount.", getPlayer());
+            this.getManager().waitForChatInput(this, getPlayer(), (msg) -> {
+                int parsed;
+                try{
+                    parsed = Integer.valueOf(msg);
+                }catch(NumberFormatException e){
+                    Messenger.Message("Error, you didn't input a number.", getPlayer());
+                    return true;
+                }
+                if(parsed < 0) parsed = 0;
+                Messenger.Message("Successfully set exp to " + parsed, getPlayer());
+                exp = parsed;
+                updatePlaceHolders();
+                return false;
+            });
+        });
     }
 
     @Override
     public void onRecipeDisplayUpdate() {
-
+        duration = getRecipe().getDuration();
+        exp = getRecipe().getExp();
     }
 
     @Override
     public Map<String, String> getPlaceHolders() {
-        return null;
+        return new HashMap<String, String>(){{
+            put("[exp]", String.valueOf(exp));
+            put("[duration]", String.valueOf(duration));
+        }};
     }
 
     @Override
     public void beforeSave() {
-
+        getRecipe().setDuration(duration);
+        getRecipe().setExp(exp);
     }
 }

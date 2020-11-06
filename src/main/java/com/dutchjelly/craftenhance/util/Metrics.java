@@ -1,4 +1,4 @@
-package com.dutchjelly.craftenhance;
+package com.dutchjelly.craftenhance.util;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

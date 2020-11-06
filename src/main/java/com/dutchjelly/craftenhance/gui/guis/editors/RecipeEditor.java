@@ -1,7 +1,7 @@
 package com.dutchjelly.craftenhance.gui.guis.editors;
 
-import com.dutchjelly.craftenhance.ConfigError;
-import com.dutchjelly.craftenhance.IEnhancedRecipe;
+import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
+import com.dutchjelly.craftenhance.exceptions.ConfigError;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
 import com.dutchjelly.craftenhance.gui.GuiManager;
 import com.dutchjelly.craftenhance.gui.guis.GUIElement;
@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class RecipeEditor<RecipeT extends IEnhancedRecipe> extends GUIElement {
+public abstract class RecipeEditor<RecipeT extends EnhancedRecipe> extends GUIElement {
 
     private Inventory inventory;
 
@@ -64,26 +64,26 @@ public abstract class RecipeEditor<RecipeT extends IEnhancedRecipe> extends GUIE
         getManager().waitForChatInput(this, getPlayer(), this::handlePermissionSetCB);
     }
 
-    private void handlePermissionSetCB(String message) {
-        if(message == null || message.trim() == "") return;
+    private boolean handlePermissionSetCB(String message) {
+        if(message == null || message.trim() == "") return false;
 
         message = message.trim();
 
-        if(message.toLowerCase().equals("q")) return;
+        if(message.toLowerCase().equals("q")) return false;
 
         if(message.equals("-")){
             permission = "";
-            return;
+            return false;
         }
 
         if(message.contains(" ")){
             Messenger.Message("A permission can't contain a space.", getPlayer());
-            getManager().waitForChatInput(this, getPlayer(), this::handlePermissionSetCB);
-            return;
+            return true;
         }
 
         permission = message;
         updatePlaceHolders();
+        return false;
     }
 
     private void switchHidden(ItemStack itemStack, ButtonType buttonType) {
@@ -96,33 +96,30 @@ public abstract class RecipeEditor<RecipeT extends IEnhancedRecipe> extends GUIE
         getManager().waitForChatInput(this, getPlayer(), this::handlePositionChange);
     }
 
-    public void handlePositionChange(String message){
-        if(message == null || message.trim() == "") return;
+    public boolean handlePositionChange(String message){
+        if(message == null || message.trim() == "") return false;
 
-        if(message.toLowerCase().equals("q")) return;
+        if(message.toLowerCase().equals("q")) return false;
 
         String args[] = message.split(" ");
 
         if(args.length != 2) {
             Messenger.Message("Please specify a page and slot number separated by a space.", getPlayer());
-            getManager().waitForChatInput(this, getPlayer(), this::handlePositionChange);
-            return;
+            return true;
         }
         int page = 0,slot = 0;
         try{
             page = Integer.parseInt(args[0]);
         }catch(NumberFormatException e){
             Messenger.Message("Could not parse the page number.", getPlayer());
-            getManager().waitForChatInput(this, getPlayer(), this::handlePositionChange);
-            return;
+            return true;
         }
 
         try{
             slot = Integer.parseInt(args[1]);
         }catch(NumberFormatException e){
             Messenger.Message("Could not parse the slot number.", getPlayer());
-            getManager().waitForChatInput(this, getPlayer(), this::handlePositionChange);
-            return;
+            return true;
         }
 
         recipe.setPage(page);
@@ -138,6 +135,7 @@ public abstract class RecipeEditor<RecipeT extends IEnhancedRecipe> extends GUIE
         }
 
         updatePlaceHolders();
+        return false;
     }
 
 
@@ -147,7 +145,7 @@ public abstract class RecipeEditor<RecipeT extends IEnhancedRecipe> extends GUIE
     private void updateRecipeDisplay(){
         List<Integer> fillSpace = getTemplate().getFillSpace();
         if(fillSpace.size() != recipe.getContent().length+1)
-            throw new ConfigError("fill space of Recip Editor must be " + (recipe.getContent().length+1) );
+            throw new ConfigError("fill space of Recipe editor must be " + (recipe.getContent().length+1) );
         for(int i = 0; i < recipe.getContent().length; i++){
             if(fillSpace.get(i) >= inventory.getSize())
                 throw new ConfigError("fill space spot " + fillSpace.get(i) + " is outside of inventory");
@@ -260,12 +258,11 @@ public abstract class RecipeEditor<RecipeT extends IEnhancedRecipe> extends GUIE
         recipe.setResult(newResult);
 
         recipe.setMatchMeta(matchMeta);
-//        recipe.setShapeless(shapeless);
         recipe.setHidden(hidden);
         beforeSave();
         recipe.setPermissions(permission);
-        getManager().getMain().getFm().saveRecipe(recipe);
-        RecipeLoader.getInstance().loadRecipe(recipe);
+        recipe.save();
+        recipe.load();
 
         Messenger.Message("Successfully saved the recipe.", getPlayer());
         return;

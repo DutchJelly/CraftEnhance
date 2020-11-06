@@ -1,4 +1,4 @@
-package com.dutchjelly.craftenhance.gui;
+package com.dutchjelly.craftenhance.gui.interfaces;
 
 import com.dutchjelly.craftenhance.gui.util.ButtonType;
 import org.bukkit.inventory.ItemStack;

@@ -75,6 +75,20 @@ public class Adapter {
         return new ShapelessRecipe(result);
     }
 
+    public static FurnaceRecipe GetFurnaceRecipe(JavaPlugin plugin, String key, ItemStack result, Material source, int duration, float exp){
+        try{
+            return FurnaceRecipe.class.getConstructor(Class.forName("org.bukkit.NamespacedKey"), ItemStack.class, Material.class, Float.class, Integer.class)
+                    .newInstance(getNameSpacedKey(plugin, key), result, source, exp, duration);
+        }
+        catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+            Debug.Send("Couldn't use namespaced key: " + e.getMessage() + "\n" + e.getStackTrace());
+        }
+        FurnaceRecipe recipe = new FurnaceRecipe(result, source);
+        recipe.setCookingTime(duration);
+        recipe.setExperience(exp);
+        return recipe;
+    }
+
     public static ItemStack SetDurability(ItemStack item, int damage){
         item.setDurability((short)damage);
         return item;

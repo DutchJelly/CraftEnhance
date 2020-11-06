@@ -27,7 +27,11 @@ public class ItemMatchers{
 
 
     public static boolean matchTypeData(ItemStack a, ItemStack b){
+
         if(a == null || b == null) return a == null && b == null;
+
+        if(a.getData() == null && b.getData() == null)
+            return matchType(a, b);
         return a.getData().equals(b.getData());
     }
 }

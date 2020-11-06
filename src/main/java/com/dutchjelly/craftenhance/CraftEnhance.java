@@ -9,8 +9,9 @@ import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.files.GuiTemplatesFile;
 import com.dutchjelly.craftenhance.gui.guis.CustomCraftingTable;
-import com.dutchjelly.craftenhance.gui.guis.WBRecipeViewer;
+import com.dutchjelly.craftenhance.gui.guis.viewers.WBRecipeViewer;
 import com.dutchjelly.craftenhance.updatechecking.VersionChecker;
+import com.dutchjelly.craftenhance.util.Metrics;
 import lombok.Getter;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -112,6 +113,11 @@ public class CraftEnhance extends JavaPlugin{
 		RecipeLoader loader = RecipeLoader.getInstance();
 		loader.unloadAll();
         fm.getRecipes().forEach(loader::loadRecipe);
+		loader.disableServerRecipes(
+				fm.readDisabledServerRecipes().stream().map(x ->
+						Adapter.FilterRecipes(loader.getServerRecipes(), x)
+				).collect(Collectors.toList())
+		);
         guiTemplatesFile.load();
         reloadConfig();
         ConfigFormatter.init(this).formatConfigMessages();
@@ -119,10 +125,6 @@ public class CraftEnhance extends JavaPlugin{
 	
 	@Override
 	public void onDisable(){
-	    try{
-            guiManager.closeAll();
-        } catch(Exception e) {}
-
         fm.saveDisabledServerRecipes(RecipeLoader.getInstance().getDisabledServerRecipes().stream().map(x -> Adapter.GetRecipeIdentifier(x)).collect(Collectors.toList()));
         getServer().resetRecipes();
 	}
@@ -147,7 +149,7 @@ public class CraftEnhance extends JavaPlugin{
 	
 	//Registers the classes that extend ConfigurationSerializable.
 	private void registerSerialization(){
-		ConfigurationSerialization.registerClass(WBRecipe.class, "WBRecipe");
+		ConfigurationSerialization.registerClass(WBRecipe.class, "EnhancedRecipe");
         ConfigurationSerialization.registerClass(WBRecipe.class, "Recipe");
 	}
 	

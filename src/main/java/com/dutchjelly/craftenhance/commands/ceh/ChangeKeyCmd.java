@@ -1,11 +1,10 @@
 package com.dutchjelly.craftenhance.commands.ceh;
 
-import com.dutchjelly.craftenhance.IEnhancedRecipe;
+import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
 import com.dutchjelly.craftenhance.commandhandling.ICommand;
 import com.dutchjelly.craftenhance.commandhandling.CommandRoute;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
-import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,7 +29,7 @@ public class ChangeKeyCmd implements ICommand {
 			Messenger.MessageFromConfig("messages.commands.few-arguments", p, "2");
 			return;
 		}
-		IEnhancedRecipe recipe = handler.getMain().getFm().getRecipe(args[0]);
+		EnhancedRecipe recipe = handler.getMain().getFm().getRecipe(args[0]);
 		if(recipe == null) {
 			Messenger.Message("That recipe key doesn't exist", p);
 			return;
@@ -52,7 +51,7 @@ public class ChangeKeyCmd implements ICommand {
 			Messenger.MessageFromConfig("messages.commands.few-arguments", sender, "2");
 			return;
 		}
-        IEnhancedRecipe recipe = handler.getMain().getFm().getRecipe(args[0]);
+        EnhancedRecipe recipe = handler.getMain().getFm().getRecipe(args[0]);
 		if(recipe == null) {
 			Messenger.Message("That recipe key doesn't exist", sender);
 			return;

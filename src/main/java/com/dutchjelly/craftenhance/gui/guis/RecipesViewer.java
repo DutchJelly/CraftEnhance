@@ -5,8 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.dutchjelly.craftenhance.IEnhancedRecipe;
-import com.dutchjelly.craftenhance.PermissionTypes;
+import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
+import com.dutchjelly.craftenhance.gui.guis.viewers.WBRecipeViewer;
+import com.dutchjelly.craftenhance.util.PermissionTypes;
 
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.gui.GuiManager;
@@ -27,16 +28,16 @@ import org.bukkit.inventory.ItemStack;
 public class RecipesViewer extends GUIElement {
 
     @Getter
-	private List<IEnhancedRecipe> recipes;
+	private List<EnhancedRecipe> recipes;
 
 	//Positions of format (itemsPerPage*pageNumber) + (index of slot in fill-space).
-	private Map<Integer, IEnhancedRecipe> recipePositions;
+	private Map<Integer, EnhancedRecipe> recipePositions;
 
     private Inventory[] inventories;
     private int currentPage = 0;
 	//TODO: implement map for recipe location mapping to allow customizable recipe locations. I'm thinking of making that a config thing in a RecipesViewer GuiTemplate.
 
-	public RecipesViewer(GuiManager manager, GuiTemplate template, GUIElement previous, Player p, List<IEnhancedRecipe> recipes){
+	public RecipesViewer(GuiManager manager, GuiTemplate template, GUIElement previous, Player p, List<EnhancedRecipe> recipes){
         super(manager, template, previous, p);
 	    Debug.Send("An instance is being made for a recipes viewer");
 	    this.recipes = recipes;
@@ -56,11 +57,11 @@ public class RecipesViewer extends GUIElement {
         List<Integer> fillSpace = getTemplate().getFillSpace();
 
         recipePositions = new HashMap<>();
-        List<IEnhancedRecipe> notPositioned = new ArrayList<>();
+        List<EnhancedRecipe> notPositioned = new ArrayList<>();
 
 
         //Look to position statically positioned recipes.
-        for (IEnhancedRecipe recipe : recipes) {
+        for (EnhancedRecipe recipe : recipes) {
             if(recipe.getSlot() == -1 || recipe.getPage() == -1){
                 notPositioned.add(recipe);
                 continue;
@@ -128,7 +129,7 @@ public class RecipesViewer extends GUIElement {
         handleRecipeClick(recipePositions.get(clickedRecipePosition), e.getClick());
 	}
 
-	private void handleRecipeClick(IEnhancedRecipe clickedRecipe, ClickType clickType){
+	private void handleRecipeClick(EnhancedRecipe clickedRecipe, ClickType clickType){
 	    Debug.Send("handling recipe click..");
 	    if((clickType == ClickType.MIDDLE || clickType == ClickType.RIGHT) && getPlayer().hasPermission(PermissionTypes.Edit.getPerm())){
 	        if(clickedRecipe instanceof WBRecipe)

@@ -1,12 +1,9 @@
 package com.dutchjelly.craftenhance.gui.templates;
 
-import com.dutchjelly.craftenhance.ConfigError;
+import com.dutchjelly.craftenhance.exceptions.ConfigError;
 import com.dutchjelly.craftenhance.gui.util.ButtonType;
-import com.dutchjelly.craftenhance.messaging.Debug;
-import com.dutchjelly.craftenhance.messaging.Messenger;
 import lombok.Getter;
 import lombok.NonNull;
-import lombok.SneakyThrows;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.inventory.ItemStack;

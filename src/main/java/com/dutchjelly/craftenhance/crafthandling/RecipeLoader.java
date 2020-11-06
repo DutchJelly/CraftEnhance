@@ -2,25 +2,22 @@ package com.dutchjelly.craftenhance.crafthandling;
 
 import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.CraftEnhance;
-import com.dutchjelly.craftenhance.IEnhancedRecipe;
+import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.messaging.Messenger;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.Server;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class RecipeLoader implements Listener {
 
@@ -87,7 +84,7 @@ public class RecipeLoader implements Listener {
         return newGroup;
     }
 
-    public RecipeGroup findGroup(IEnhancedRecipe recipe){
+    public RecipeGroup findGroup(EnhancedRecipe recipe){
         return groupedRecipes.stream().filter(x -> x.getEnhancedRecipes().contains(recipe)).findFirst().orElse(null);
     }
 
@@ -103,7 +100,16 @@ public class RecipeLoader implements Listener {
         return originGroups;
     }
 
-    public boolean isLoadedAsServerRecipe(IEnhancedRecipe recipe){
+    public List<RecipeGroup> findGroupsBySource(ItemStack source){
+        List<RecipeGroup> originGroups = new ArrayList<>();
+        for(RecipeGroup group : groupedRecipes){
+            if(group.getEnhancedRecipes().stream().anyMatch(x -> Arrays.stream(x.getContent()).anyMatch(y -> y.equals(source))))
+                originGroups.add(group);
+        }
+        return originGroups;
+    }
+
+    public boolean isLoadedAsServerRecipe(EnhancedRecipe recipe){
         return loaded.containsKey(recipe.getKey());
     }
 
@@ -120,7 +126,7 @@ public class RecipeLoader implements Listener {
         server.resetRecipes();
     }
 
-    public void unloadRecipe(IEnhancedRecipe recipe){
+    public void unloadRecipe(EnhancedRecipe recipe){
         RecipeGroup group = findGroup(recipe);
         if(group == null) {
             printGroupsDebugInfo();
@@ -145,7 +151,7 @@ public class RecipeLoader implements Listener {
         printGroupsDebugInfo();
     }
 
-    public void loadRecipe(@NonNull IEnhancedRecipe recipe){
+    public void loadRecipe(@NonNull EnhancedRecipe recipe){
 
         if(recipe.validate() != null) {
             Messenger.Error("There's an issue with recipe " + recipe.getKey() + ": " + recipe.validate());
@@ -186,7 +192,7 @@ public class RecipeLoader implements Listener {
         addGroup(group);
     }
 
-    public List<IEnhancedRecipe> getLoadedRecipes(){
+    public List<EnhancedRecipe> getLoadedRecipes(){
         return groupedRecipes.stream().flatMap(x -> x.getEnhancedRecipes().stream()).distinct().collect(Collectors.toList());
     }
 

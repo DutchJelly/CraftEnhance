@@ -3,7 +3,7 @@ package com.dutchjelly.craftenhance.gui.guis;
 import com.dutchjelly.craftenhance.gui.GuiManager;
 import com.dutchjelly.craftenhance.gui.templates.GuiTemplate;
 import com.dutchjelly.craftenhance.gui.util.ButtonType;
-import com.dutchjelly.craftenhance.gui.IButtonHandler;
+import com.dutchjelly.craftenhance.gui.interfaces.IButtonHandler;
 import lombok.Getter;
 import lombok.NonNull;
 import org.bukkit.entity.Player;

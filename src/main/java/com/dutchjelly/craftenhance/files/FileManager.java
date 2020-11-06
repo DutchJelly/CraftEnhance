@@ -3,29 +3,20 @@ package com.dutchjelly.craftenhance.files;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.logging.Logger;
 
-import com.dutchjelly.craftenhance.ConfigError;
 import com.dutchjelly.craftenhance.CraftEnhance;
-import com.dutchjelly.craftenhance.IEnhancedRecipe;
-import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
+import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.messaging.Messenger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import lombok.SneakyThrows;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.configuration.serialization.ConfigurationSerializable;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
-import org.bukkit.inventory.ShapedRecipe;
 
 public class FileManager {
 
@@ -42,7 +33,7 @@ public class FileManager {
 	private String itemsJson;
 	private Logger logger;
 	private Map<String, ItemStack> items;
-	private List<IEnhancedRecipe> recipes;
+	private List<EnhancedRecipe> recipes;
 
 	private FileManager(boolean useJson) {
 	    this.useJson = useJson;
@@ -87,12 +78,12 @@ public class FileManager {
 	
 	public void cacheRecipes(){
 		Debug.Send("The file manager is caching recipes...");
-		IEnhancedRecipe keyValue;
+		EnhancedRecipe keyValue;
 		recipesConfig = getYamlConfig(recipesFile);
 		recipes.clear();
 		for(String key : recipesConfig.getKeys(false)){
 			Debug.Send("Caching recipe with key " + key);
-            keyValue = (IEnhancedRecipe)recipesConfig.get(key);
+            keyValue = (EnhancedRecipe)recipesConfig.get(key);
             String validation = keyValue.validate();
             if(validation != null){
                 Messenger.Error("Recipe with key " + key + " has issues: " + validation);
@@ -161,12 +152,12 @@ public class FileManager {
 		return unique;
 	}
 	
-	public List<IEnhancedRecipe> getRecipes(){
+	public List<EnhancedRecipe> getRecipes(){
 		return recipes;
 	}
 	
-	public IEnhancedRecipe getRecipe(String key){
-		for(IEnhancedRecipe recipe : recipes){
+	public EnhancedRecipe getRecipe(String key){
+		for(EnhancedRecipe recipe : recipes){
 			if(recipe.getKey().equals(key))
 				return recipe;
 		}
@@ -222,7 +213,7 @@ public class FileManager {
         return true;
     }
 	
-	public void saveRecipe(IEnhancedRecipe recipe){
+	public void saveRecipe(EnhancedRecipe recipe){
 		Debug.Send("Saving recipe " + recipe.toString() + " with key " + recipe.getKey());
 		recipesConfig = getYamlConfig(recipesFile);
 		recipesConfig.set(recipe.getKey(), recipe);
@@ -236,7 +227,7 @@ public class FileManager {
 		}
 	}
 	
-	public void removeRecipe(IEnhancedRecipe recipe){
+	public void removeRecipe(EnhancedRecipe recipe){
 		Debug.Send("Removing recipe " + recipe.toString() + " with key " + recipe.getKey());
 		recipesConfig = getYamlConfig(recipesFile);
 		recipesConfig.set(recipe.getKey(), null);
@@ -250,7 +241,7 @@ public class FileManager {
 	
 	public void overrideSave(){
 		Debug.Send("Overriding saved recipes with new list..");
-		List<IEnhancedRecipe> cloned = new ArrayList<>();
+		List<EnhancedRecipe> cloned = new ArrayList<>();
 		recipes.forEach(x -> cloned.add(x));
 		removeAllRecipes();
 		cloned.forEach(x -> saveRecipe(x));
@@ -280,7 +271,7 @@ public class FileManager {
 	}
 	
 	private boolean isItemInUse(ItemStack item){
-		for(IEnhancedRecipe r : recipes){
+		for(EnhancedRecipe r : recipes){
 			if(r.getResult().equals(item)) return true;
             for(ItemStack inRecipe : r.getContent()){
                 if(inRecipe != null && inRecipe.equals(item)) return true;

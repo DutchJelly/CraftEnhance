@@ -15,5 +15,5 @@ public enum ButtonType {
     SetPermission,
     SwitchDisablerMode,
     ChooseWorkbenchType,
-    ChooseFurnaceType
+    SetCookTime, SetExp, ChooseFurnaceType
 }

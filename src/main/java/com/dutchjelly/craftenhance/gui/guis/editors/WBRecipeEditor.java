@@ -35,20 +35,16 @@ public class WBRecipeEditor extends RecipeEditor<WBRecipe> {
 
     @Override
     protected void initBtnListeners() {
-        addBtnListener(ButtonType.SwitchShaped, this::switchShaped);
+        addBtnListener(ButtonType.SwitchShaped, (btn, type) -> {
+            shapeless = !shapeless;
+            updatePlaceHolders();
+        });
     }
 
     @Override
     protected void beforeSave() {
         getRecipe().setShapeless(shapeless);
     }
-
-    private void switchShaped(ItemStack button, ButtonType btnType){
-        shapeless = !shapeless;
-        updatePlaceHolders();
-    }
-
-
 
 
 }

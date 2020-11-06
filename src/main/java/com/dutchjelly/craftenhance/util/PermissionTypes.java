@@ -1,4 +1,6 @@
-package com.dutchjelly.craftenhance;
+package com.dutchjelly.craftenhance.util;
+
+import com.dutchjelly.craftenhance.CraftEnhance;
 
 public enum PermissionTypes {
     Edit("perms.recipe-editor"),

@@ -1,14 +1,14 @@
 package com.dutchjelly.craftenhance.gui.guis.viewers;
 
-import com.dutchjelly.craftenhance.ConfigError;
-import com.dutchjelly.craftenhance.IEnhancedRecipe;
+import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
+import com.dutchjelly.craftenhance.exceptions.ConfigError;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.gui.GuiManager;
 import com.dutchjelly.craftenhance.gui.guis.GUIElement;
-import com.dutchjelly.craftenhance.gui.guis.WBRecipeViewer;
 import com.dutchjelly.craftenhance.gui.templates.GuiTemplate;
 import com.dutchjelly.craftenhance.gui.util.GuiUtil;
 import com.dutchjelly.craftenhance.gui.util.InfoItemPlaceHolders;
+import lombok.Getter;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -18,8 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class RecipeViewer<RecipeT extends IEnhancedRecipe> extends GUIElement {
+public abstract class RecipeViewer<RecipeT extends EnhancedRecipe> extends GUIElement {
     private Inventory inventory;
+
+    @Getter
     private RecipeT recipe;
 
     public RecipeViewer(GuiManager manager, GuiTemplate template, GUIElement previous, Player p, RecipeT recipe) {
@@ -33,16 +35,16 @@ public abstract class RecipeViewer<RecipeT extends IEnhancedRecipe> extends GUIE
 
     private void updateRecipeDisplay(){
         List<Integer> fillSpace = getTemplate().getFillSpace();
-        if (fillSpace.size() != 10)
-            throw new ConfigError("fill space of WBrecipe viewer must be 10");
-        for (int i = 0; i < 9; i++) {
+        if (fillSpace.size() != recipe.getContent().length + 1)
+            throw new ConfigError("fill space of recipe viewer must be " + (recipe.getContent().length + 1));
+        for (int i = 0; i < recipe.getContent().length; i++) {
             if (fillSpace.get(i) >= inventory.getSize())
                 throw new ConfigError("fill space spot " + fillSpace.get(i) + " is outside of inventory");
             inventory.setItem(fillSpace.get(i), recipe.getContent()[i]);
         }
         if (fillSpace.get(9) >= inventory.getSize())
-            throw new ConfigError("fill space spot " + fillSpace.get(9) + " is outside of inventory");
-        inventory.setItem(fillSpace.get(9), recipe.getResult());
+            throw new ConfigError("fill space spot " + fillSpace.get(recipe.getContent().length) + " is outside of inventory");
+        inventory.setItem(fillSpace.get(recipe.getContent().length), recipe.getResult());
     }
 
     protected abstract Map<String,String> getPlaceHolders();
@@ -81,7 +83,7 @@ public abstract class RecipeViewer<RecipeT extends IEnhancedRecipe> extends GUIE
             }
             if (translatedSlot == -1) return;
 
-            IEnhancedRecipe clickedItemRecipe = getManager().getMain().getFm().getRecipes().stream().filter(x -> x.getResult().equals(e.getCurrentItem())).findFirst().orElse(null);
+            EnhancedRecipe clickedItemRecipe = getManager().getMain().getFm().getRecipes().stream().filter(x -> x.getResult().equals(e.getCurrentItem())).findFirst().orElse(null);
             if (clickedItemRecipe == null || clickedItemRecipe.equals(recipe)) return;
 
             if (clickedItemRecipe instanceof WBRecipe)

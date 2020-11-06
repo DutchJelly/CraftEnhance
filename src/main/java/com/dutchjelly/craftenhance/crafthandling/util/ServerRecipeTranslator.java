@@ -24,15 +24,20 @@ public class ServerRecipeTranslator {
 
     private static List<String> UsedKeys = new ArrayList<>();
 
-    public static ShapedRecipe translateShapedEnhancedRecipe(ItemStack[] content, ItemStack result, String key){
-        if(!Arrays.asList(content).stream().anyMatch(x -> x != null))
-            return null;
+    public static String GetFreeKey(String seed){
         Random r = new Random();
-        String recipeKey = key.toLowerCase().replaceAll("[^a-z0-9 ]", "");
+        String recipeKey = seed.toLowerCase().replaceAll("[^a-z0-9 ]", "");
         recipeKey = recipeKey.trim();
         while(UsedKeys.contains(recipeKey)) recipeKey += String.valueOf(r.nextInt(10));
         if(!UsedKeys.contains(recipeKey))
             UsedKeys.add(recipeKey);
+        return recipeKey;
+    }
+
+    public static ShapedRecipe translateShapedEnhancedRecipe(ItemStack[] content, ItemStack result, String key){
+        if(!Arrays.asList(content).stream().anyMatch(x -> x != null))
+            return null;
+        String recipeKey = GetFreeKey(key);
         ShapedRecipe shaped = Adapter.GetShapedRecipe(
                 CraftEnhance.getPlugin(CraftEnhance.class), KeyPrefix + recipeKey, result
         );
@@ -51,13 +56,7 @@ public class ServerRecipeTranslator {
         List<ItemStack> ingredients = Arrays.stream(content).filter(x -> x != null).collect(Collectors.toList());
         if(ingredients.size() == 0)
             return null;
-
-        Random r = new Random();
-        String recipeKey = key.toLowerCase().replaceAll("[^a-z0-9 ]", "");
-        recipeKey = recipeKey.trim();
-        while(UsedKeys.contains(recipeKey)) recipeKey += String.valueOf(r.nextInt(10));
-        if(!UsedKeys.contains(recipeKey))
-            UsedKeys.add(recipeKey);
+        String recipeKey = GetFreeKey(key);
         ShapelessRecipe shapeless = Adapter.GetShapelessRecipe(
                 CraftEnhance.getPlugin(CraftEnhance.class), KeyPrefix + recipeKey, result
         );
