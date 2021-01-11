@@ -100,11 +100,24 @@ public class RecipeLoader implements Listener {
         return originGroups;
     }
 
-    public List<RecipeGroup> findGroupsBySource(ItemStack source){
+    public <T extends EnhancedRecipe> RecipeGroup findGroupBySource(ItemStack source){
+        for(RecipeGroup group : groupedRecipes){
+            try{
+                if(group.getEnhancedRecipes().stream().anyMatch(x -> (T)x != null && Arrays.stream(x.getContent()).anyMatch(y -> y.equals(source))))
+                    return group;
+            } catch(ClassCastException e){}
+        }
+        return null;
+    }
+
+    public <T extends EnhancedRecipe> List<RecipeGroup> findGroupsBySource(ItemStack source){
         List<RecipeGroup> originGroups = new ArrayList<>();
         for(RecipeGroup group : groupedRecipes){
-            if(group.getEnhancedRecipes().stream().anyMatch(x -> Arrays.stream(x.getContent()).anyMatch(y -> y.equals(source))))
-                originGroups.add(group);
+            try{
+                if(group.getEnhancedRecipes().stream().anyMatch(x -> (T)x != null && Arrays.stream(x.getContent()).anyMatch(y -> y.equals(source))))
+                    originGroups.add(group);
+            } catch(ClassCastException e){}
+
         }
         return originGroups;
     }

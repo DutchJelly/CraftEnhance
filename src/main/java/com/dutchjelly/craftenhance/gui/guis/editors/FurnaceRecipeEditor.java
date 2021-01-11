@@ -18,8 +18,8 @@ public class FurnaceRecipeEditor extends RecipeEditor<FurnaceRecipe> {
         super(manager, template, previous, p, recipe);
     }
 
-    private short duration;
-    private int exp;
+    private int duration;
+    private float exp;
 
     @Override
     public void initBtnListeners() {

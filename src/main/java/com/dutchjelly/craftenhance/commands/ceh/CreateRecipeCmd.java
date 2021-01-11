@@ -4,6 +4,7 @@ import com.dutchjelly.craftenhance.commandhandling.ICommand;
 import com.dutchjelly.craftenhance.commandhandling.CommandRoute;
 import com.dutchjelly.craftenhance.commandhandling.CustomCmdHandler;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
+import com.dutchjelly.craftenhance.gui.guis.EditorTypeSelector;
 import com.dutchjelly.craftenhance.gui.guis.editors.WBRecipeEditor;
 import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.command.CommandSender;
@@ -31,9 +32,7 @@ public class CreateRecipeCmd implements ICommand {
 	        int uniqueKeyIndex = 1;
 	        while(!handler.getMain().getFm().isUniqueRecipeKey("recipe" + uniqueKeyIndex))
                 uniqueKeyIndex++;
-            WBRecipe newRecipe = new WBRecipe(null, null, new ItemStack[9]);
-            newRecipe.setKey("recipe" + uniqueKeyIndex);
-            WBRecipeEditor gui = new WBRecipeEditor(handler.getMain().getGuiManager(), handler.getMain().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class), null, p, newRecipe);
+            EditorTypeSelector gui = new EditorTypeSelector(handler.getMain().getGuiManager(), handler.getMain().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class), null, p, "recipe" + uniqueKeyIndex, null);
             handler.getMain().getGuiManager().openGUI(p, gui);
 	        return;
         }
@@ -51,9 +50,7 @@ public class CreateRecipeCmd implements ICommand {
             Messenger.Message("The specified recipe key isn't unique.", p);
 			return;
 		}
-        WBRecipe newRecipe = new WBRecipe(args[1], null, new ItemStack[9]);
-	    newRecipe.setKey(args[0]);
-        WBRecipeEditor gui = new WBRecipeEditor(handler.getMain().getGuiManager(), handler.getMain().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class), null, p, newRecipe);
+        EditorTypeSelector gui = new EditorTypeSelector(handler.getMain().getGuiManager(), handler.getMain().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class), null, p, args[0], args[1]);
 		handler.getMain().getGuiManager().openGUI(p, gui);
 	}
 

@@ -24,11 +24,9 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.FurnaceBurnEvent;
-import org.bukkit.event.inventory.FurnaceSmeltEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.inventory.*;
 
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.permissions.Permissible;
@@ -180,99 +178,76 @@ public class RecipeInjector implements Listener{
     //Track what player has last accessed a furnace, and use that as permissible.
     private Map<Location, Permissible> furnaceData = new HashMap<>();
 
+	@EventHandler
+    public void onFurnaceOpen(InventoryOpenEvent e){
+	    if(!e.isCancelled() && e.getInventory() instanceof FurnaceInventory)
+	        furnaceData.put(e.getInventory().getLocation(), e.getPlayer());
+    }
+
     @EventHandler
     public void smelt(FurnaceSmeltEvent e){
 	    Debug.Send("furnace smelt");
-	    List<RecipeGroup> possibleRecipeGroups = RecipeLoader.getInstance().findGroupsByResult(e.getResult());
-        if(possibleRecipeGroups == null || possibleRecipeGroups.size() == 0) return;
+	    RecipeGroup group = RecipeLoader.getInstance().<FurnaceRecipe>findGroupBySource(e.getSource());
+        if(group == null) return;
 
-        for(RecipeGroup group : possibleRecipeGroups){
+        boolean didMatchEnhanced = false;
 
-            //Check if any grouped enhanced recipe is a match.
-            for(EnhancedRecipe eRecipe : group.getEnhancedRecipes()){
-                if(!(eRecipe instanceof FurnaceRecipe)) continue;
+        //Check if any grouped enhanced recipe is a match.
+        for(EnhancedRecipe eRecipe : group.getEnhancedRecipes()){
+            FurnaceRecipe fRecipe = (FurnaceRecipe) eRecipe;
 
-                FurnaceRecipe fRecipe = (FurnaceRecipe) eRecipe;
+            Debug.Send("Checking if enhanced recipe for " + fRecipe.getResult().toString() + " matches.");
 
-                Debug.Send("Checking if enhanced recipe for " + fRecipe.getResult().toString() + " matches.");
-
-                if(fRecipe.matches(new ItemStack[]{e.getSource()})){
-                    if((furnaceData.containsKey(e.getBlock().getLocation()) && furnaceData.get(e.getBlock().getLocation()).hasPermission(fRecipe.getPermissions()))
-                            || fRecipe.getPermissions() == null || fRecipe.getPermissions().trim().equals("")){
-                        e.setResult(fRecipe.getResult());
-                        return;
-                    }
+            if(fRecipe.matches(new ItemStack[]{e.getSource()})){
+                if(furnaceData.containsKey(e.getBlock().getLocation()) && entityCanCraft(furnaceData.get(e.getBlock().getLocation()), fRecipe)) {
+                    //TODO test if result can be changed here
+                    e.setResult(fRecipe.getResult());
+                    return;
                 }
-                Debug.Send("Recipe doesn't match or no perms.");
+                didMatchEnhanced = true;
             }
 
-            //Check for similar server recipes if no enhanced ones match.
-            for(Recipe sRecipe : group.getServerRecipes()){
-                if(sRecipe instanceof org.bukkit.inventory.FurnaceRecipe){
-                    org.bukkit.inventory.FurnaceRecipe fRecipe = (org.bukkit.inventory.FurnaceRecipe)sRecipe;
-                    if(fRecipe.getInput().equals(e.getSource())){
-                        e.setResult(fRecipe.getResult());
-                        return;
-                    }
-                }
+            Debug.Send("Recipe doesn't match or no perms.");
+        }
+
+        //Check for similar server recipes if no enhanced ones match.
+        for(Recipe sRecipe : group.getServerRecipes()){
+            org.bukkit.inventory.FurnaceRecipe fRecipe = (org.bukkit.inventory.FurnaceRecipe)sRecipe;
+            if(ItemMatchers.matchType(fRecipe.getInput(), e.getSource())){
+                e.setResult(fRecipe.getResult());
+                return;
             }
         }
-        e.setCancelled(true);
+
+        if(didMatchEnhanced)
+            e.setCancelled(true);
     }
 
-    private RecipeGroup getMatchingFurnaceRecipes(ItemStack source) {
-        List<EnhancedRecipe> recipes = new ArrayList<>();
-        List<Recipe> serverRecipes = new ArrayList<>();
-        for (RecipeGroup group : RecipeLoader.getInstance().findGroupsBySource(source)) {
+//    @EventHandler
+//    public void burn(FurnaceBurnEvent e){
+//        Debug.Send("furnace burn");
+//        Permissible permissible = furnaceData.get(e.getBlock().getLocation());
+//        Furnace f = (Furnace)e.getBlock().getState();
+//        ItemStack smelting = f.getInventory().getSmelting();
+//    }
+//
+//    @EventHandler
+//    public void click(InventoryClickEvent e){
+//	    if(!(e.getView().getTopInventory() instanceof FurnaceInventory)) return;
+//        Debug.Send("furnace click");
+//
+//        final FurnaceInventory inv = (FurnaceInventory)e.getView().getTopInventory();
+//
+//        Bukkit.getScheduler().runTaskLater(CraftEnhance.self(), () -> {
+//            Furnace f = inv.getHolder();
+//            f.setCookTimeTotal(-1);
+//            f.update();
+//            Debug.Send(f.getCookTimeTotal());
+//            Debug.Send(f.getBurnTime());
+//        }, 1L);
+//    }
 
-            //Check if any grouped enhanced recipe is a match.
-            for (EnhancedRecipe eRecipe : group.getEnhancedRecipes()) {
-                if (!(eRecipe instanceof FurnaceRecipe)) continue;
-
-                FurnaceRecipe fRecipe = (FurnaceRecipe) eRecipe;
-
-                if (fRecipe.matches(new ItemStack[]{source})) {
-                    recipes.add(fRecipe);
-                }
-            }
-
-            for(Recipe sRecipe : group.getServerRecipes()){
-                if(sRecipe instanceof org.bukkit.inventory.FurnaceRecipe){
-                    org.bukkit.inventory.FurnaceRecipe fRecipe = (org.bukkit.inventory.FurnaceRecipe)sRecipe;
-                    if(fRecipe.getInput().equals(source)){
-                        serverRecipes.add(sRecipe);
-                    }
-                }
-            }
-        }
-        return new RecipeGroup(recipes, serverRecipes);
-    }
-
-    @EventHandler
-    public void burn(FurnaceBurnEvent e){
-        Debug.Send("furnace burn");
-        Permissible permissible = furnaceData.get(e.getBlock().getLocation());
-        Furnace f = (Furnace)e.getBlock().getState();
-        ItemStack smelting = f.getInventory().getSmelting();
-    }
-
-    @EventHandler
-    public void click(InventoryClickEvent e){
-	    if(!(e.getView().getTopInventory() instanceof FurnaceInventory)) return;
-        Debug.Send("furnace click");
-
-        final FurnaceInventory inv = (FurnaceInventory)e.getView().getTopInventory();
-
-        Bukkit.getScheduler().runTaskLater(CraftEnhance.self(), () -> {
-            Furnace f = inv.getHolder();
-            f.setCookTimeTotal(-1);
-            f.update();
-            Debug.Send(f.getCookTimeTotal());
-            Debug.Send(f.getBurnTime());
-        }, 1L);
-    }
-
-    private boolean entityCanCraft(HumanEntity entity, EnhancedRecipe recipe){
+    private boolean entityCanCraft(Permissible entity, EnhancedRecipe recipe){
 	    return recipe.getPermissions() == null || recipe.getPermissions().equals("")
                 || entity.hasPermission(recipe.getPermissions());
     }
