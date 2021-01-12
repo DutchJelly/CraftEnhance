@@ -28,6 +28,10 @@ public class WBRecipe extends EnhancedRecipe {
         super(args);
     }
 
+    public WBRecipe(){
+
+    }
+
 
     public static WBRecipe deserialize(Map<String,Object> args){
 

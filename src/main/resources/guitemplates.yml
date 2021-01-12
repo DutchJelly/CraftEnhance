@@ -179,3 +179,98 @@ RecipeDisabler:
       name: "&f"
       lore:
       glow: false
+FurnaceRecipeEditor:
+  name: "furnace editor"
+  fill-space: "10,12"
+  button-mapping:
+    6: SetPosition
+    8: DeleteRecipe
+    15: SwitchHidden
+    16: SwitchMatchMeta
+    17: ResetRecipe
+    24: SetPermission
+    25: SaveRecipe
+    26: Back
+  template:
+    0-5,14-15,21-24:
+      color: GRAY
+      material: STAINED_GLASS_PANE
+      name: ""
+      lore:
+      - ""
+      glow: false
+    24:
+      material: PAPER
+      name: "Click to set permission"
+      lore:
+      - "current: [permission]"
+      glow: true
+    15:
+      material: DIAMOND
+      name: "Click to change: &e[hidden]"
+      glow: true
+    26:
+      material: GLOWSTONE_DUST
+      name: "Back"
+      lore:
+      - "Go back to the previous GUI"
+      glow: true
+    12:
+      material: FURNACE
+      name: "&6Enhanced furance recipe"
+      lore:
+      - "&fThe ingredients need &3[match meta]"
+      - "&fThe key of the recipe is &3[key]"
+      - "&fThe permission of the recipe is &3[permission]"
+      glow: true
+    25:
+      material: EMERALD
+      name: "&aSave &fthe recipe"
+      lore:
+      - ""
+      glow: true
+    8:
+      material: REDSTONE
+      name: "&cDelete &fthe recipe"
+      lore:
+      - "&7&oNote that there's no going back"
+      - "&7&oonce you delete your recipe."
+      glow: true
+    17:
+      material: STONE
+      name: "&7Reset &fthe recipe"
+      lore:
+      - ""
+      glow: true
+    16:
+      material: ENCHANTED_BOOK
+      name: "&fClick to change: &e[match meta]"
+      lore:
+      - ""
+      glow: true
+    6:
+      material: PAPER
+      name: "&fClick to set the position"
+      lore:
+      - "&fCurrent position"
+      - "&fSlot &3[slot]"
+      - "&fPage &3[page]"
+      glow: true
+EditorTypeSelector:
+  name: "select type"
+  button-mapping:
+    6: ChooseFurnaceType
+    8: ChooseWorkbenchType
+  template:
+    6:
+      material: FURNACE
+      name: "&fClick to create a furnace recipe"
+      lore:
+      - ""
+      glow: true
+    8:
+      material: WORKBENCH
+      name: "&fClick to create a workbench recipe"
+      lore:
+      - ""
+      glow: true

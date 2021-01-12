@@ -62,7 +62,7 @@ public class GuiManager implements Listener {
         if(openGUI == null) return;
 
         try{
-            if(clickEvent.getClickedInventory().equals(openGUI.getInventory()))
+            if(clickEvent.getClickedInventory() != null && clickEvent.getClickedInventory().equals(openGUI.getInventory()))
                 openGUI.handleEvent(clickEvent);
             else openGUI.handleOutsideClick(clickEvent);
 

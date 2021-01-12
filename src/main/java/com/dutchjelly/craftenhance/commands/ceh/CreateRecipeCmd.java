@@ -32,7 +32,7 @@ public class CreateRecipeCmd implements ICommand {
 	        int uniqueKeyIndex = 1;
 	        while(!handler.getMain().getFm().isUniqueRecipeKey("recipe" + uniqueKeyIndex))
                 uniqueKeyIndex++;
-            EditorTypeSelector gui = new EditorTypeSelector(handler.getMain().getGuiManager(), handler.getMain().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class), null, p, "recipe" + uniqueKeyIndex, null);
+            EditorTypeSelector gui = new EditorTypeSelector(handler.getMain().getGuiManager(), handler.getMain().getGuiTemplatesFile().getTemplate(EditorTypeSelector.class), null, p, "recipe" + uniqueKeyIndex, null);
             handler.getMain().getGuiManager().openGUI(p, gui);
 	        return;
         }
@@ -50,7 +50,7 @@ public class CreateRecipeCmd implements ICommand {
             Messenger.Message("The specified recipe key isn't unique.", p);
 			return;
 		}
-        EditorTypeSelector gui = new EditorTypeSelector(handler.getMain().getGuiManager(), handler.getMain().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class), null, p, args[0], args[1]);
+        EditorTypeSelector gui = new EditorTypeSelector(handler.getMain().getGuiManager(), handler.getMain().getGuiTemplatesFile().getTemplate(EditorTypeSelector.class), null, p, args[0], args[1]);
 		handler.getMain().getGuiManager().openGUI(p, gui);
 	}
 

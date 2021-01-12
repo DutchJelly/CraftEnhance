@@ -20,25 +20,25 @@ public class EditorTypeSelector extends GUIElement {
 
     public EditorTypeSelector(GuiManager manager, GuiTemplate template, GUIElement previousGui, Player player, String key, String permission){
         super(manager, template, previousGui, player);
-        this.addBtnListener(ButtonType.ChooseFurnaceType, (btn, type) -> {
+        this.addBtnListener(ButtonType.ChooseWorkbenchType, (btn, type) -> {
             WBRecipe newRecipe = new WBRecipe(permission, null, new ItemStack[9]);
             newRecipe.setKey(key);
 
             WBRecipeEditor gui = new WBRecipeEditor(
                     CraftEnhance.self().getGuiManager(),
                     CraftEnhance.self().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class),
-                    null, getPlayer(), newRecipe
+                    this, getPlayer(), newRecipe
             );
             getManager().openGUI(getPlayer(), gui);
         });
-        this.addBtnListener(ButtonType.ChooseWorkbenchType, (btn, type) -> {
-            FurnaceRecipe newRecipe = new FurnaceRecipe(permission, null, new ItemStack[9]);
+        this.addBtnListener(ButtonType.ChooseFurnaceType, (btn, type) -> {
+            FurnaceRecipe newRecipe = new FurnaceRecipe(permission, null, new ItemStack[1]);
             newRecipe.setKey(key);
 
             FurnaceRecipeEditor gui = new FurnaceRecipeEditor(
                     CraftEnhance.self().getGuiManager(),
-                    CraftEnhance.self().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class),
-                    null, getPlayer(), newRecipe
+                    CraftEnhance.self().getGuiTemplatesFile().getTemplate(FurnaceRecipeEditor.class),
+                    this, getPlayer(), newRecipe
             );
             getManager().openGUI(getPlayer(), gui);
         });

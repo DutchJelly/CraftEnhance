@@ -17,6 +17,7 @@ public class GuiTemplatesFile {
     private File file;
 
     private static final String GUI_FOLDER = "com.dutchjelly.craftenhance.gui.guis";
+    private static final String[] GUI_SUB_FOLDERS = {"editors", "viewers"};
     private static final String GUI_FILE_NAME = "guitemplates.yml";
 
     private Map<Class<? extends GUIElement>, GuiTemplate> templates;
@@ -27,22 +28,30 @@ public class GuiTemplatesFile {
         this.plugin = plugin;
     }
 
+    private Class<? extends GUIElement> findGuiClassByName(String name){
+        for(int i = -1; i < GUI_SUB_FOLDERS.length; i++){
+            try{
+                return i == -1 ?
+                        (Class<? extends GUIElement>)Class.forName(GUI_FOLDER + "." + name) :
+                        (Class<? extends GUIElement>)Class.forName(GUI_FOLDER + "." + GUI_SUB_FOLDERS[i] + "." + name);
+                }catch(ClassNotFoundException | ClassCastException e){ }
+        }
+        return null;
+    }
+
     public void load(){
         if(!file.exists())
             plugin.saveResource(GUI_FILE_NAME, false);
         templateConfig = YamlConfiguration.loadConfiguration(file);
         templates = new HashMap<>();
         for(String key : templateConfig.getKeys(false)){
-            Class<? extends GUIElement> clazz;
-            try{
-                clazz = (Class<? extends GUIElement>)Class.forName(GUI_FOLDER + "." + key);
-            }catch(ClassNotFoundException e){
-                Messenger.Error("Could not find class " + key);
-                continue;
-            }catch(ClassCastException e){
-                Messenger.Error("Class " + key + " isn't a gui.");
+
+            Class<? extends GUIElement> clazz = findGuiClassByName(key);
+            if(clazz == null) {
+                Messenger.Error("Could not find gui class " + key);
                 continue;
             }
+
             try{
                 templates.put(clazz, new GuiTemplate(templateConfig.getConfigurationSection(key)));
             }catch(ConfigError configError){

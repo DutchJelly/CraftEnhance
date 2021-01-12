@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.commands.ceh.*;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
+import com.dutchjelly.craftenhance.crafthandling.recipes.FurnaceRecipe;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.files.GuiTemplatesFile;
 import com.dutchjelly.craftenhance.gui.guis.CustomCraftingTable;
@@ -151,6 +152,7 @@ public class CraftEnhance extends JavaPlugin{
 	private void registerSerialization(){
 		ConfigurationSerialization.registerClass(WBRecipe.class, "EnhancedRecipe");
         ConfigurationSerialization.registerClass(WBRecipe.class, "Recipe");
+		ConfigurationSerialization.registerClass(FurnaceRecipe.class, "FurnaceRecipe");
 	}
 	
 	//Assigns executor classes for the commands.

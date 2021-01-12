@@ -6,24 +6,16 @@ import com.dutchjelly.craftenhance.crafthandling.util.ItemMatchers;
 import com.dutchjelly.craftenhance.crafthandling.util.ServerRecipeTranslator;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.block.Furnace;
-import org.bukkit.configuration.serialization.ConfigurationSerialization;
-import org.bukkit.configuration.serialization.SerializableAs;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@SerializableAs("FurnaceRecipe")
 public class FurnaceRecipe extends EnhancedRecipe {
 
-    static {
-        ConfigurationSerialization.registerClass(FurnaceRecipe.class);
-    }
-
     @Getter @Setter
-    private int duration = -1;
+    private int duration = 160;
 
     @Getter @Setter
     private float exp = 0;
@@ -38,8 +30,8 @@ public class FurnaceRecipe extends EnhancedRecipe {
 
     public static FurnaceRecipe deserialize(Map<String, Object> args){
         FurnaceRecipe recipe = new FurnaceRecipe(args);
-        recipe.duration = (short)args.get("duration");
-        recipe.exp = (int)args.get("exp");
+        recipe.duration = (int)args.get("duration");
+        recipe.exp = (float)(double)args.get("exp"); //snake yaml saves floats as doubles so we need to first parse to double
         return recipe;
     }
 

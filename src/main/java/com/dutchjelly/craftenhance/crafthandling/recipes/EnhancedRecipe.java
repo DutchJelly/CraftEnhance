@@ -46,8 +46,9 @@ public abstract class EnhancedRecipe extends GuiPlacable implements Configuratio
         if(args.containsKey("hidden"))
             hidden = (Boolean) args.get("hidden");
 
-        setContent(new ItemStack[9]);
+
         recipeKeys = (List<String>)args.get("recipe");
+        setContent(new ItemStack[recipeKeys.size()]);
         for(int i = 0; i < content.length; i++){
             content[i] = fm.getItem(recipeKeys.get(i));
         }
