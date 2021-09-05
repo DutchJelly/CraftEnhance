@@ -21,6 +21,10 @@ public class WBRecipeEditor extends RecipeEditor<WBRecipe> {
 	    super(manager,template,previous,p,recipe);
     }
 
+    public WBRecipeEditor(GuiManager manager, GUIElement previous, Player p, WBRecipe recipe){
+        super(manager,previous,p,recipe);
+    }
+
     @Override
     protected void onRecipeDisplayUpdate() {
         shapeless = getRecipe().isShapeless();

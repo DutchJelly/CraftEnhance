@@ -20,6 +20,9 @@ public class FurnaceRecipe extends EnhancedRecipe {
     @Getter @Setter
     private float exp = 0;
 
+    @Getter
+    private RecipeType type = RecipeType.FURNACE;
+
     private FurnaceRecipe(Map<String, Object> args){
         super(args);
     }

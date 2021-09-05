@@ -5,6 +5,11 @@
 enable-debug: false
 enable-recipes: true
 
+enable-backwards-compatible-item-matching: false
+
+# This will ensure that players won't be able to use default recipes with custom model data items.
+disable-default-custom-model-data-crafts: false
+
 # This update checker checks for new versions on the github page.
 enable-updatechecker: true
 

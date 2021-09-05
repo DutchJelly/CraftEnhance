@@ -14,6 +14,8 @@ import com.dutchjelly.craftenhance.messaging.Messenger;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.SneakyThrows;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
@@ -25,10 +27,12 @@ public class FileManager {
 	private File dataFolder;
 	private File itemsFile;
 	private File recipesFile;
+	private File containerOwnerFile;
 	private File serverRecipeFile;
 	private FileConfiguration recipesConfig;
 	private FileConfiguration itemsConfig;
 	private FileConfiguration serverRecipeConfig;
+	private FileConfiguration containerOwnerConfig;
 
 	private String itemsJson;
 	private Logger logger;
@@ -50,6 +54,7 @@ public class FileManager {
 		fm.itemsFile = fm.getFile(fm.useJson ? "items.json" : "items.yml");
 		fm.recipesFile = fm.getFile("recipes.yml");
 		fm.serverRecipeFile = fm.getFile("server-recipes.yml");
+		fm.containerOwnerFile = fm.getFile("container-owners.yml");
 		return fm;
 	}
 
@@ -212,6 +217,36 @@ public class FileManager {
         }
         return true;
     }
+
+    public Map<Location, UUID> getContainerOwners() {
+		containerOwnerConfig = getYamlConfig(containerOwnerFile);
+		Map<Location, UUID> blockOwners = new HashMap<>();
+		for (String key : containerOwnerConfig.getKeys(false)) {
+			String[] parsedKey = key.split(",");
+			Location loc = new Location(
+					Bukkit.getServer().getWorld(UUID.fromString(parsedKey[3])),
+					Integer.valueOf(parsedKey[0]),
+					Integer.valueOf(parsedKey[1]),
+					Integer.valueOf(parsedKey[2]));
+			blockOwners.put(loc, UUID.fromString(containerOwnerConfig.getString(key)));
+		}
+		return blockOwners;
+	}
+
+	public boolean saveContainerOwners(Map<Location, UUID> blockOwners) {
+		containerOwnerConfig.getKeys(false).forEach(x -> containerOwnerConfig.set(x, null));
+		for (Map.Entry<Location, UUID> blockOwnerSet : blockOwners.entrySet()) {
+			Location key = blockOwnerSet.getKey();
+			String keyString = key.getBlockX() + "," + key.getBlockY() + "," + key.getBlockZ() + "," + key.getWorld().getUID();
+			containerOwnerConfig.set(keyString, blockOwnerSet.getValue().toString());
+		}
+		try {
+			containerOwnerConfig.save(containerOwnerFile);
+		} catch (IOException e) {
+			return false;
+		}
+		return true;
+	}
 	
 	public void saveRecipe(EnhancedRecipe recipe){
 		Debug.Send("Saving recipe " + recipe.toString() + " with key " + recipe.getKey());

@@ -1,5 +1,8 @@
 package com.dutchjelly.craftenhance;
 
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -8,14 +11,18 @@ import com.dutchjelly.craftenhance.commands.ceh.*;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
 import com.dutchjelly.craftenhance.crafthandling.recipes.FurnaceRecipe;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
+import com.dutchjelly.craftenhance.crafthandling.util.ItemMatchers;
 import com.dutchjelly.craftenhance.files.GuiTemplatesFile;
 import com.dutchjelly.craftenhance.gui.guis.CustomCraftingTable;
 import com.dutchjelly.craftenhance.gui.guis.viewers.WBRecipeViewer;
 import com.dutchjelly.craftenhance.updatechecking.VersionChecker;
 import com.dutchjelly.craftenhance.util.Metrics;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -52,19 +59,22 @@ public class CraftEnhance extends JavaPlugin{
 
 	private CustomCmdHandler commandHandler;
 
+	private RecipeInjector injector;
+
 	@Override
 	public void onEnable(){
-
 	    plugin = this;
 		//The file manager needs serialization, so firstly register the classes.
 		registerSerialization();
-
+		
 		saveDefaultConfig();
 		Debug.init(this);
 
 		Debug.Send("Coloring config messages.");
 		ConfigFormatter.init(this).formatConfigMessages();
 		Messenger.Init(this);
+
+		ItemMatchers.init(getConfig().getBoolean("enable-backwards-compatible-item-matching"));
 
 		//Most other instances use the file manager, so setup before everything.
         Debug.Send("Setting up the file manager for recipes.");
@@ -82,9 +92,14 @@ public class CraftEnhance extends JavaPlugin{
                 ).collect(Collectors.toList())
         );
 
+		injector = new RecipeInjector(this);
+		injector.registerContainerOwners(fm.getContainerOwners());
+
 		Debug.Send("Loading gui templates");
 		guiTemplatesFile = new GuiTemplatesFile(this);
 		guiTemplatesFile.load();
+
+		guiManager = new GuiManager(this);
 
 		Debug.Send("Setting up listeners and commands");
 		setupListeners();
@@ -103,36 +118,25 @@ public class CraftEnhance extends JavaPlugin{
 		final int metricsId = 9023;
 		new Metrics(this, metricsId);
 	}
-
-
-	public void reload(){
-		Messenger.Message("WARN: This reload function is causing some issues currently. It's being worked on.");
-	    saveDefaultConfig();
-	    fm = FileManager.init(this);
-		fm.cacheItems();
-		fm.cacheRecipes();
-		RecipeLoader loader = RecipeLoader.getInstance();
-		loader.unloadAll();
-        fm.getRecipes().forEach(loader::loadRecipe);
-		loader.disableServerRecipes(
-				fm.readDisabledServerRecipes().stream().map(x ->
-						Adapter.FilterRecipes(loader.getServerRecipes(), x)
-				).collect(Collectors.toList())
-		);
-        guiTemplatesFile.load();
-        reloadConfig();
-        ConfigFormatter.init(this).formatConfigMessages();
-	}
 	
 	@Override
 	public void onDisable(){
+		Debug.Send("Saving container owners...");
+		fm.saveContainerOwners(injector.getContainerOwners());
+		Debug.Send("Saving disabled recipes...");
         fm.saveDisabledServerRecipes(RecipeLoader.getInstance().getDisabledServerRecipes().stream().map(x -> Adapter.GetRecipeIdentifier(x)).collect(Collectors.toList()));
         getServer().resetRecipes();
+	}
+
+	public void reload(){
+		onDisable();
+		RecipeLoader.clearInstance();
+		reloadConfig();
+		onEnable();
 	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args){
-
 		//Make sure that the user doesn't get a whole stacktrace when using an unsupported server jar.
 		//Note that this error could only get caused by onEnable() not being called.
 		if(commandHandler == null){
@@ -182,8 +186,7 @@ public class CraftEnhance extends JavaPlugin{
 	
 	//Registers the listener class to the server.
 	private void setupListeners(){
-        guiManager = new GuiManager(this);
-		getServer().getPluginManager().registerEvents(new RecipeInjector(this), this);
+		getServer().getPluginManager().registerEvents(injector, this);
 		getServer().getPluginManager().registerEvents(guiManager, this);
 		getServer().getPluginManager().registerEvents(RecipeLoader.getInstance(), this);
 	}

@@ -78,6 +78,9 @@ public abstract class EnhancedRecipe extends GuiPlacable implements Configuratio
     @Getter @Setter
     private boolean hidden;
 
+    @Getter
+    private RecipeType type;
+
     @Override
     public Map<String, Object> serialize() {
         FileManager fm = CraftEnhance.getPlugin(CraftEnhance.class).getFm();

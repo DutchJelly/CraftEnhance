@@ -8,6 +8,8 @@ public enum InfoItemPlaceHolders {
     Key("[key]"),
     Slot("[slot]"),
     DisableMode("[mode]"),
+    Exp("[exp]"),
+    Duration("[duration]"),
     Page("[page]");
 
 

@@ -3,6 +3,7 @@ package com.dutchjelly.bukkitadapter;
 
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.messaging.Debug;
+import org.bukkit.Keyed;
 import org.bukkit.Material;
 
 import org.bukkit.OfflinePlayer;
@@ -15,6 +16,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.DyeColor;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.security.Key;
 import java.util.Arrays;
 import java.util.List;
 
@@ -22,7 +25,7 @@ public class Adapter {
 
 
     public static List<String> CompatibleVersions(){
-        return Arrays.asList("1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16");
+        return Arrays.asList("1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15", "1.16", "1.17", "1.18");
     }
 
 
@@ -75,6 +78,17 @@ public class Adapter {
         return new ShapelessRecipe(result);
     }
 
+    private static <T> boolean callSingleParamMethod(String methodName, T param, Class<T> paramType, Object instance, Class<?> instanceType) {
+        try {
+            Method m = instanceType.getMethod(methodName, paramType);
+            m.invoke(instance, param);
+
+            return true;
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            return false;
+        }
+    }
+
     public static FurnaceRecipe GetFurnaceRecipe(JavaPlugin plugin, String key, ItemStack result, Material source, int duration, float exp){
         try{
             return FurnaceRecipe.class.getConstructor(Class.forName("org.bukkit.NamespacedKey"), ItemStack.class, Material.class, Float.class, Integer.class)
@@ -84,7 +98,9 @@ public class Adapter {
             Debug.Send("Couldn't use namespaced key: " + e.getMessage() + "\n" + e.getStackTrace());
         }
         FurnaceRecipe recipe = new FurnaceRecipe(result, source);
-        recipe.setCookingTime(duration);
+
+        if(!callSingleParamMethod("setCookingTime", duration, Integer.class, recipe, FurnaceRecipe.class))
+            Debug.Send("Custom cooking time is not supported.");
         recipe.setExperience(exp);
         return recipe;
     }
@@ -135,12 +151,9 @@ public class Adapter {
     public static void DiscoverRecipes(Player player, List<Recipe> recipes){
         try{
             for (Recipe recipe : recipes) {
-                if(recipe instanceof ShapedRecipe){
-                    ShapedRecipe shaped = (ShapedRecipe) recipe;
-                    player.discoverRecipe(shaped.getKey());
-                }else if(recipe instanceof ShapelessRecipe){
-                    ShapelessRecipe shapeless = (ShapelessRecipe) recipe;
-                    player.discoverRecipe(shapeless.getKey());
+                if(recipe instanceof Keyed) {
+                    Keyed keyed = (Keyed)recipe;
+                    player.discoverRecipe(keyed.getKey());
                 }
             }
         }catch(Exception e){ }

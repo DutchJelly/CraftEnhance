@@ -20,6 +20,9 @@ public class WBRecipe extends EnhancedRecipe {
     @Getter @Setter
     private boolean shapeless = false; //false by default
 
+    @Getter
+    private RecipeType type = RecipeType.WORKBENCH;
+
     public WBRecipe(String perm, ItemStack result, ItemStack[] content){
         super(perm, result, content);
     }

@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
+import com.dutchjelly.craftenhance.crafthandling.recipes.FurnaceRecipe;
+import com.dutchjelly.craftenhance.crafthandling.recipes.RecipeType;
+import com.dutchjelly.craftenhance.gui.guis.editors.FurnaceRecipeEditor;
+import com.dutchjelly.craftenhance.gui.guis.viewers.FurnaceRecipeViewer;
 import com.dutchjelly.craftenhance.gui.guis.viewers.WBRecipeViewer;
 import com.dutchjelly.craftenhance.util.PermissionTypes;
 
@@ -132,13 +136,18 @@ public class RecipesViewer extends GUIElement {
 	private void handleRecipeClick(EnhancedRecipe clickedRecipe, ClickType clickType){
 	    Debug.Send("handling recipe click..");
 	    if((clickType == ClickType.MIDDLE || clickType == ClickType.RIGHT) && getPlayer().hasPermission(PermissionTypes.Edit.getPerm())){
-	        if(clickedRecipe instanceof WBRecipe)
-                getManager().openGUI(getPlayer(), new WBRecipeEditor(getManager(),getManager().getMain().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class), this, getPlayer(), (WBRecipe)clickedRecipe));
+	        if(clickedRecipe.getType() == RecipeType.WORKBENCH)
+                getManager().openGUI(getPlayer(), new WBRecipeEditor(getManager(), this, getPlayer(), (WBRecipe)clickedRecipe));
+            if(clickedRecipe.getType() == RecipeType.FURNACE)
+                getManager().openGUI(getPlayer(), new FurnaceRecipeEditor(getManager(), this, getPlayer(), (FurnaceRecipe)clickedRecipe));
+
             else Debug.Send("Could not find the class of a clicked recipe.");
             return;
 	    }
-        if(clickedRecipe instanceof WBRecipe)
-            getManager().openGUI(getPlayer(), new WBRecipeViewer(getManager(),getManager().getMain().getGuiTemplatesFile().getTemplate(WBRecipeViewer.class), this, getPlayer(), (WBRecipe)clickedRecipe));
+        if(clickedRecipe.getType() == RecipeType.WORKBENCH)
+            getManager().openGUI(getPlayer(), new WBRecipeViewer(getManager(), this, getPlayer(), (WBRecipe)clickedRecipe));
+        if(clickedRecipe.getType() == RecipeType.FURNACE)
+            getManager().openGUI(getPlayer(), new FurnaceRecipeViewer(getManager(), this, getPlayer(), (FurnaceRecipe)clickedRecipe));
         else Debug.Send("Could not find the class of a clicked recipe.");
     }
 
