@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.*;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -20,6 +21,7 @@ import java.lang.reflect.Method;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 public class Adapter {
 
@@ -52,6 +54,21 @@ public class Adapter {
             }catch(Exception e2){ }
         }
         return null;
+    }
+
+    private static Optional<Boolean> canUseModeldata = Optional.empty();
+    public static boolean canUseModeldata() {
+        if(canUseModeldata.isPresent()) {
+            return canUseModeldata.get();
+        }
+        try {
+            ItemMeta.class.getMethod("getCustomModelData");
+            canUseModeldata = Optional.of(true);
+            return true;
+        } catch (NoSuchMethodException e) {
+            canUseModeldata = Optional.of(false);
+            return false;
+        }
     }
 
     private static Object getNameSpacedKey(JavaPlugin plugin, String key) throws ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {

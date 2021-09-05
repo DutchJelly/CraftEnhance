@@ -1,5 +1,6 @@
 package com.dutchjelly.craftenhance.crafthandling.util;
 
+import com.dutchjelly.bukkitadapter.Adapter;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -27,14 +28,15 @@ public class ItemMatchers{
 
     public static boolean matchMeta(ItemStack a, ItemStack b){
         if(a == null || b == null) return a == null && b == null;
-
-        if(a.isSimilar(b) && matchModelData(a,b)) return true;
+        boolean canUseModeldata = Adapter.canUseModeldata();
+        if(a.isSimilar(b) && (canUseModeldata && matchModelData(a,b) || !canUseModeldata)) return true;
 
         if(!backwardsCompatibleMatching) return false;
 
         //We use toString() because somehow items can be stored differently in memory, which breaks #isSimilar
         return a.getType().equals(b.getType()) && a.getDurability() == b.getDurability() && a.hasItemMeta() == b.hasItemMeta() && (!a.hasItemMeta() || (
-                a.getItemMeta().toString().equals(b.getItemMeta().toString())) && matchModelData(a, b)
+                a.getItemMeta().toString().equals(b.getItemMeta().toString()))
+                && (canUseModeldata && matchModelData(a, b) || !canUseModeldata)
         );
     }
 

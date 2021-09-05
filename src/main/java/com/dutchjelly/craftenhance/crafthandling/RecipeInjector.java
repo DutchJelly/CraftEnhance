@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 
+import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
 
@@ -69,7 +70,7 @@ public class RecipeInjector implements Listener{
     }
 
     private IMatcher<ItemStack> getTypeMatcher() {
-	    return disableDefaultModeldataCrafts ?
+	    return Adapter.canUseModeldata() && disableDefaultModeldataCrafts ?
                 ItemMatchers.constructIMatcher(ItemMatchers::matchType, ItemMatchers::matchModelData)
                 : ItemMatchers::matchType;
     }
@@ -88,7 +89,7 @@ public class RecipeInjector implements Listener{
         List<RecipeGroup> possibleRecipeGroups = loader.findGroupsByResult(serverRecipe.getResult(), RecipeType.WORKBENCH);
 
         if(possibleRecipeGroups == null || possibleRecipeGroups.size() == 0) {
-            if(disableDefaultModeldataCrafts && containsModeldata(inv)) {
+            if(disableDefaultModeldataCrafts && Adapter.canUseModeldata() &&  containsModeldata(inv)) {
                 inv.setResult(null);
             }
             return;
