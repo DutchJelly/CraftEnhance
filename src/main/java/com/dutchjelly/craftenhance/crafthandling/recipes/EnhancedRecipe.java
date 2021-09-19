@@ -1,5 +1,6 @@
 package com.dutchjelly.craftenhance.crafthandling.recipes;
 
+import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
 import com.dutchjelly.craftenhance.crafthandling.util.ItemMatchers;
@@ -39,10 +40,14 @@ public abstract class EnhancedRecipe extends GuiPlacable implements Configuratio
         List<String> recipeKeys;
         result = fm.getItem((String)args.get("result"));
         permissions = (String)args.get("permission");
-        if(args.containsKey("shapeless"))
-            shapeless = (Boolean) args.get("shapeless");
-        if(args.containsKey("matchmeta"))
-            matchMeta = (Boolean) args.get("matchmeta");
+        if(args.containsKey("matchtype")){
+            matchType = ItemMatchers.MatchType.valueOf((String)args.get("matchtype"));
+        } else if(args.containsKey("matchmeta")) {
+            matchType = (Boolean) args.get("matchmeta") ?
+                    ItemMatchers.MatchType.MATCH_META :
+                    ItemMatchers.MatchType.MATCH_TYPE;
+        }
+
         if(args.containsKey("hidden"))
             hidden = (Boolean) args.get("hidden");
 
@@ -67,10 +72,7 @@ public abstract class EnhancedRecipe extends GuiPlacable implements Configuratio
     private ItemStack[] content;
 
     @Getter @Setter
-    private boolean shapeless = false; //false by default
-
-    @Getter @Setter
-    private boolean matchMeta = true; //true by default
+    private ItemMatchers.MatchType matchType = ItemMatchers.MatchType.MATCH_META;
 
     @Getter @Setter
     private String permissions;
@@ -87,8 +89,7 @@ public abstract class EnhancedRecipe extends GuiPlacable implements Configuratio
         return new HashMap<String, Object>(){{
             putAll(EnhancedRecipe.super.serialize());
             put("permission", permissions);
-            put("shapeless", shapeless);
-            put("matchmeta", matchMeta);
+            put("matchtype", matchType.name());
             put("hidden", hidden);
             put("result", fm.getItemKey(result));
             put("recipe", Arrays.stream(content).map(x -> fm.getItemKey(x)).toArray(String[]::new));
@@ -98,10 +99,10 @@ public abstract class EnhancedRecipe extends GuiPlacable implements Configuratio
     public String validate(){
         if(result == null)
             return "recipe cannot have null result";
-
+        if(!Adapter.canUseModeldata() && matchType == ItemMatchers.MatchType.MATCH_MODELDATA_AND_TYPE)
+            return "recipe is using modeldata match while the server doesn't support it";
         if(content.length == 0 || !Arrays.stream(content).anyMatch(x -> x != null))
             return "recipe content cannot be empty";
-
         return null;
     }
 

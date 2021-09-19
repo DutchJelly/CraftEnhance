@@ -107,7 +107,7 @@ public class RecipeInjector implements Listener{
 
                 if(wbRecipe.matches(inv.getMatrix())
                     && e.getViewers().stream().allMatch(x -> entityCanCraft(x, wbRecipe))
-                    && !CraftEnhanceAPI.fireEvent(wbRecipe, (Player)e.getViewers().get(0), inv, group)){
+                    && !CraftEnhanceAPI.fireEvent(wbRecipe, e.getViewers().size() > 0 ? (Player)e.getViewers().get(0) : null, inv, group)){
 
                     inv.setResult(wbRecipe.getResult());
                     return;

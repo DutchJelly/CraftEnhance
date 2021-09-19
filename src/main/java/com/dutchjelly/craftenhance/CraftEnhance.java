@@ -1,5 +1,6 @@
 package com.dutchjelly.craftenhance;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -66,9 +67,13 @@ public class CraftEnhance extends JavaPlugin{
 	    plugin = this;
 		//The file manager needs serialization, so firstly register the classes.
 		registerSerialization();
-		
+
 		saveDefaultConfig();
+
 		Debug.init(this);
+		Debug.Send("Checking for config updates.");
+		File configFile = new File(getDataFolder(), "config.yml");
+		FileManager.EnsureResourceUpdate("config.yml", configFile, YamlConfiguration.loadConfiguration(configFile), this);
 
 		Debug.Send("Coloring config messages.");
 		ConfigFormatter.init(this).formatConfigMessages();
@@ -79,8 +84,6 @@ public class CraftEnhance extends JavaPlugin{
 		//Most other instances use the file manager, so setup before everything.
         Debug.Send("Setting up the file manager for recipes.");
 		setupFileManager();
-
-
 
         Debug.Send("Loading recipes");
         RecipeLoader loader = RecipeLoader.getInstance();

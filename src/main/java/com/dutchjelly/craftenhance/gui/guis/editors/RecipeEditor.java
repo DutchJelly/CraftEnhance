@@ -1,6 +1,7 @@
 package com.dutchjelly.craftenhance.gui.guis.editors;
 
 import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
+import com.dutchjelly.craftenhance.crafthandling.util.ItemMatchers;
 import com.dutchjelly.craftenhance.exceptions.ConfigError;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
 import com.dutchjelly.craftenhance.gui.GuiManager;
@@ -10,6 +11,7 @@ import com.dutchjelly.craftenhance.gui.templates.GuiTemplate;
 import com.dutchjelly.craftenhance.gui.util.ButtonType;
 import com.dutchjelly.craftenhance.gui.util.GuiUtil;
 import com.dutchjelly.craftenhance.gui.util.InfoItemPlaceHolders;
+import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.messaging.Messenger;
 import lombok.Getter;
 import org.bukkit.entity.Player;
@@ -31,7 +33,7 @@ public abstract class RecipeEditor<RecipeT extends EnhancedRecipe> extends GUIEl
 
     private String permission;
     private boolean hidden;
-    private boolean matchMeta;
+    private ItemMatchers.MatchType matchType;
 
     public RecipeEditor(GuiManager manager, GuiTemplate template, GUIElement previous, Player p, RecipeT recipe){
         super(manager,template,previous,p);
@@ -74,7 +76,16 @@ public abstract class RecipeEditor<RecipeT extends EnhancedRecipe> extends GUIEl
     }
 
     private void switchMatchMeta(ItemStack itemStack, ButtonType buttonType) {
-        this.matchMeta = !this.matchMeta;
+        ItemMatchers.MatchType[] matchTypes = ItemMatchers.MatchType.values();
+        int i;
+        for(i = 0; i < matchTypes.length; i++) {
+            if(matchTypes[i] == matchType) break;
+        }
+        if(i == matchTypes.length) {
+            Debug.Send("couldn't find match type that's currently selected in the editor");
+            return;
+        }
+        this.matchType = matchTypes[(i+1) % matchTypes.length];
         updatePlaceHolders();
     }
 
@@ -176,7 +187,7 @@ public abstract class RecipeEditor<RecipeT extends EnhancedRecipe> extends GUIEl
         if(fillSpace.get(recipe.getContent().length) >= inventory.getSize())
             throw new ConfigError("fill space spot " + fillSpace.get(recipe.getContent().length) + " is outside of inventory");
         inventory.setItem(fillSpace.get(recipe.getContent().length), recipe.getResult());
-        matchMeta = recipe.isMatchMeta();
+        matchType = recipe.getMatchType();
         hidden = recipe.isHidden();
         onRecipeDisplayUpdate();
     }
@@ -188,7 +199,8 @@ public abstract class RecipeEditor<RecipeT extends EnhancedRecipe> extends GUIEl
         ItemStack[] template = getTemplate().getTemplate();
         Map<String, String> placeHolders = new HashMap<String,String>(){{
             put(InfoItemPlaceHolders.Key.getPlaceHolder(), recipe.getKey() == null ? "null" : recipe.getKey());
-            put(InfoItemPlaceHolders.MatchMeta.getPlaceHolder(), matchMeta ? "match meta" : "only match type");
+            put(InfoItemPlaceHolders.MatchMeta.getPlaceHolder(), matchType.getDescription());
+            put(InfoItemPlaceHolders.MatchType.getPlaceHolder(), matchType.getDescription());
             put(InfoItemPlaceHolders.Hidden.getPlaceHolder(), hidden ? "hide recipe in menu" : "show recipe in menu");
             put(InfoItemPlaceHolders.Permission.getPlaceHolder(), permission == null || permission.trim().equals("") ? "none" : permission);
             put(InfoItemPlaceHolders.Slot.getPlaceHolder(), String.valueOf(recipe.getSlot()));
@@ -278,7 +290,7 @@ public abstract class RecipeEditor<RecipeT extends EnhancedRecipe> extends GUIEl
         recipe.setContent(newContents);
         recipe.setResult(newResult);
 
-        recipe.setMatchMeta(matchMeta);
+        recipe.setMatchType(matchType);
         recipe.setHidden(hidden);
         beforeSave();
         recipe.setPermissions(permission);

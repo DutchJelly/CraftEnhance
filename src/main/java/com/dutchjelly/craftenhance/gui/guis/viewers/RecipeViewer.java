@@ -63,7 +63,8 @@ public abstract class RecipeViewer<RecipeT extends EnhancedRecipe> extends GUIEl
         ItemStack[] template = getTemplate().getTemplate();
         Map<String, String> placeHolders = new HashMap<String,String>(){{
             put(InfoItemPlaceHolders.Key.getPlaceHolder(), recipe.getKey() == null ? "null" : recipe.getKey());
-            put(InfoItemPlaceHolders.MatchMeta.getPlaceHolder(), recipe.isMatchMeta() ? "match meta" : "only match type");
+            put(InfoItemPlaceHolders.MatchMeta.getPlaceHolder(), recipe.getMatchType().getDescription());
+            put(InfoItemPlaceHolders.MatchType.getPlaceHolder(), recipe.getMatchType().getDescription());
             put(InfoItemPlaceHolders.Permission.getPlaceHolder(), recipe.getPermissions() == null ? "null" : recipe.getPermissions());
         }};
 

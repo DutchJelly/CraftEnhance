@@ -29,6 +29,8 @@ public class WBRecipe extends EnhancedRecipe {
 
     private WBRecipe(Map<String, Object> args){
         super(args);
+        if(args.containsKey("shapeless"))
+            shapeless = (Boolean) args.get("shapeless");
     }
 
     public WBRecipe(){
@@ -118,15 +120,13 @@ public class WBRecipe extends EnhancedRecipe {
         return WBRecipeComparer.shapeMatches(getContent(), wbr.getContent(), ItemMatchers::matchType);
     }
 
-
-
     @Override
     public boolean matches(ItemStack[] content) {
-        if(isShapeless() && WBRecipeComparer.ingredientsMatch(content, getContent(), isMatchMeta() ? ItemMatchers::matchMeta : ItemMatchers::matchType)){
+        if(isShapeless() && WBRecipeComparer.ingredientsMatch(content, getContent(), getMatchType().getMatcher())){
             return true;
         }
 
-        if(!isShapeless() && WBRecipeComparer.shapeMatches(content, getContent(), isMatchMeta() ? ItemMatchers::matchMeta : ItemMatchers::matchType)){
+        if(!isShapeless() && WBRecipeComparer.shapeMatches(content, getContent(), getMatchType().getMatcher())){
             return true;
         }
 

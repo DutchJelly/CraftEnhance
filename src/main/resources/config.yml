@@ -5,7 +5,8 @@
 enable-debug: false
 enable-recipes: true
 
-enable-backwards-compatible-item-matching: false
+# Makes sure that the plugin can still compare NBT of older items. It compares slower.
+enable-backwards-compatible-item-matching: true
 
 # This will ensure that players won't be able to use default recipes with custom model data items.
 disable-default-custom-model-data-crafts: false

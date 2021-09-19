@@ -49,7 +49,7 @@ public class FurnaceRecipe extends EnhancedRecipe {
 
     @Override
     public boolean matches(ItemStack[] content) {
-        return content.length == 1 && (isMatchMeta() ? ItemMatchers.matchMeta(content[0], getContent()[0]) : ItemMatchers.matchTypeData(content[0], getContent()[0]));
+        return content.length == 1 && getMatchType().getMatcher().match(content[0], getContent()[0]);
     }
 
     @Override

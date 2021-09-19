@@ -1,8 +1,6 @@
 package com.dutchjelly.craftenhance.files;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.logging.Logger;
@@ -19,6 +17,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class FileManager {
 
@@ -56,6 +55,31 @@ public class FileManager {
 		fm.serverRecipeFile = fm.getFile("server-recipes.yml");
 		fm.containerOwnerFile = fm.getFile("container-owners.yml");
 		return fm;
+	}
+
+	@SneakyThrows
+	public static void EnsureResourceUpdate(String resourceName, File file, FileConfiguration fileConfig, JavaPlugin plugin) {
+		if(!file.exists()){
+			plugin.saveResource(resourceName, false);
+			return;
+		}
+
+		Reader jarConfigReader = new InputStreamReader(plugin.getResource(resourceName));
+		FileConfiguration jarResourceConfig = YamlConfiguration.loadConfiguration(jarConfigReader);
+		jarConfigReader.close();
+
+		boolean unsavedChanges = false;
+
+		for(String key : jarResourceConfig.getKeys(false)) {
+			if(!fileConfig.contains(key, false)) {
+				fileConfig.set(key, jarResourceConfig.get(key));
+				unsavedChanges = true;
+			}
+		}
+
+		if(unsavedChanges)
+			fileConfig.save(file);
+
 	}
 
 	private File ensureCreated(File file){
