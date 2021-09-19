@@ -48,6 +48,10 @@ public abstract class EnhancedRecipe extends GuiPlacable implements Configuratio
                     ItemMatchers.MatchType.MATCH_TYPE;
         }
 
+        if(args.containsKey("oncraftcommand")) {
+            onCraftCommand = (String)args.get("oncraftcommand");
+        }
+
         if(args.containsKey("hidden"))
             hidden = (Boolean) args.get("hidden");
 
@@ -80,6 +84,9 @@ public abstract class EnhancedRecipe extends GuiPlacable implements Configuratio
     @Getter @Setter
     private boolean hidden;
 
+    @Getter @Setter
+    private String onCraftCommand;
+
     @Getter
     private RecipeType type;
 
@@ -91,6 +98,7 @@ public abstract class EnhancedRecipe extends GuiPlacable implements Configuratio
             put("permission", permissions);
             put("matchtype", matchType.name());
             put("hidden", hidden);
+            put("oncraftcommand", onCraftCommand);
             put("result", fm.getItemKey(result));
             put("recipe", Arrays.stream(content).map(x -> fm.getItemKey(x)).toArray(String[]::new));
         }};

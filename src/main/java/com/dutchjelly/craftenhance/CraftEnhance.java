@@ -8,8 +8,10 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import com.dutchjelly.bukkitadapter.Adapter;
+import com.dutchjelly.craftenhance.api.CraftEnhanceAPI;
 import com.dutchjelly.craftenhance.commands.ceh.*;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
+import com.dutchjelly.craftenhance.crafthandling.customcraftevents.ExecuteCommand;
 import com.dutchjelly.craftenhance.crafthandling.recipes.FurnaceRecipe;
 import com.dutchjelly.craftenhance.crafthandling.recipes.WBRecipe;
 import com.dutchjelly.craftenhance.crafthandling.util.ItemMatchers;
@@ -120,6 +122,9 @@ public class CraftEnhance extends JavaPlugin{
 
 		final int metricsId = 9023;
 		new Metrics(this, metricsId);
+
+
+		CraftEnhanceAPI.registerListener(new ExecuteCommand());
 	}
 	
 	@Override

@@ -179,8 +179,10 @@ public class RecipeInjector implements Listener{
 	    Optional<ItemStack> result = getFurnaceResult(e.getSource(), (Furnace)e.getBlock().getState());
 	    if(result == null) return;
 
-	    if(result.isPresent())
+	    if(result.isPresent()){
             e.setResult(result.get());
+        }
+
 	    else e.setCancelled(true);
 
     }
