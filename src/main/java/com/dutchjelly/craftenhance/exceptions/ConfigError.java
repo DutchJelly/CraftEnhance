@@ -12,5 +12,4 @@ public class ConfigError extends RuntimeException {
     public void printStackTrace(){
         Messenger.Error("(Configuration error) " + getMessage());
     }
-
 }

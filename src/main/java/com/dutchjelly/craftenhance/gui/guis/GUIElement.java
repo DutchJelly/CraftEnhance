@@ -42,6 +42,15 @@ public abstract class GUIElement implements InventoryHolder{
         buttonClickHandlers.put(ButtonType.Back, Arrays.asList(this::handleBackBtnClicked));
     }
 
+    public GUIElement(GuiManager manager, GUIElement previousGui, Player player){
+        this.manager = manager;
+        this.template = manager.getMain().getGuiTemplatesFile().getTemplate(getClass());
+        this.player = player;
+        this.previousGui = previousGui;
+        buttonClickHandlers = new HashMap<>();
+        buttonClickHandlers.put(ButtonType.Back, Arrays.asList(this::handleBackBtnClicked));
+    }
+
     public void handleBackBtnClicked(ItemStack btn, ButtonType btnType){
         if(previousGui == null) return;
         manager.openGUI(player, previousGui);

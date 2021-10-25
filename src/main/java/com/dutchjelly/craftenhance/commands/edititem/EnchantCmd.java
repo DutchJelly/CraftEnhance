@@ -3,7 +3,6 @@ package com.dutchjelly.craftenhance.commands.edititem;
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.commandhandling.ICompletionProvider;
 import com.dutchjelly.craftenhance.messaging.Messenger;
-import com.sun.tools.javac.code.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;

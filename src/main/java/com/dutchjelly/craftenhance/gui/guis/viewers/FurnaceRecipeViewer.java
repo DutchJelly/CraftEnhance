@@ -4,6 +4,7 @@ import com.dutchjelly.craftenhance.crafthandling.recipes.FurnaceRecipe;
 import com.dutchjelly.craftenhance.gui.GuiManager;
 import com.dutchjelly.craftenhance.gui.guis.GUIElement;
 import com.dutchjelly.craftenhance.gui.templates.GuiTemplate;
+import com.dutchjelly.craftenhance.gui.util.InfoItemPlaceHolders;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -15,11 +16,15 @@ public class FurnaceRecipeViewer extends RecipeViewer<FurnaceRecipe> {
         super(manager, template, previous, p, recipe);
     }
 
+    public FurnaceRecipeViewer(GuiManager manager, GUIElement previous, Player p, FurnaceRecipe recipe){
+        super(manager, previous, p, recipe);
+    }
+
     @Override
     protected Map<String, String> getPlaceHolders() {
         return new HashMap<String, String>(){{
-            put("[duration]", String.valueOf(getRecipe().getDuration()));
-            put("[exp]", String.valueOf(getRecipe().getExp()));
+            put(InfoItemPlaceHolders.Duration.getPlaceHolder(), String.valueOf(getRecipe().getDuration()));
+            put(InfoItemPlaceHolders.Exp.getPlaceHolder(), String.valueOf(getRecipe().getExp()));
         }};
     }
 }

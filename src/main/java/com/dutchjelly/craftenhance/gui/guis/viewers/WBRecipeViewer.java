@@ -16,6 +16,10 @@ public class WBRecipeViewer extends RecipeViewer<WBRecipe> {
         super(manager, template, previous, p, recipe);
     }
 
+    public WBRecipeViewer(GuiManager manager, GUIElement previous, Player p, WBRecipe recipe) {
+        super(manager, previous, p, recipe);
+    }
+
     @Override
     protected Map<String, String> getPlaceHolders() {
         return new HashMap<String,String>(){{

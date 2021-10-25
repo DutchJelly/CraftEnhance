@@ -33,6 +33,15 @@ public abstract class RecipeViewer<RecipeT extends EnhancedRecipe> extends GUIEl
         updatePlaceHolders();
     }
 
+    public RecipeViewer(GuiManager manager, GUIElement previous, Player p, RecipeT recipe) {
+        super(manager, previous, p);
+        this.recipe = recipe;
+
+        inventory = GuiUtil.CopyInventory(getTemplate().getTemplate(), getTemplate().getInvTitle(), this);
+        updateRecipeDisplay();
+        updatePlaceHolders();
+    }
+
     private void updateRecipeDisplay(){
         List<Integer> fillSpace = getTemplate().getFillSpace();
         if (fillSpace.size() != recipe.getContent().length + 1)
@@ -42,7 +51,7 @@ public abstract class RecipeViewer<RecipeT extends EnhancedRecipe> extends GUIEl
                 throw new ConfigError("fill space spot " + fillSpace.get(i) + " is outside of inventory");
             inventory.setItem(fillSpace.get(i), recipe.getContent()[i]);
         }
-        if (fillSpace.get(9) >= inventory.getSize())
+        if (fillSpace.get(recipe.getContent().length) >= inventory.getSize())
             throw new ConfigError("fill space spot " + fillSpace.get(recipe.getContent().length) + " is outside of inventory");
         inventory.setItem(fillSpace.get(recipe.getContent().length), recipe.getResult());
     }
@@ -55,8 +64,11 @@ public abstract class RecipeViewer<RecipeT extends EnhancedRecipe> extends GUIEl
         Map<String, String> placeHolders = new HashMap<String,String>(){{
             put(InfoItemPlaceHolders.Key.getPlaceHolder(), recipe.getKey() == null ? "null" : recipe.getKey());
             put(InfoItemPlaceHolders.MatchMeta.getPlaceHolder(), recipe.getMatchType().getDescription());
+            put(InfoItemPlaceHolders.MatchType.getPlaceHolder(), recipe.getMatchType().getDescription());
             put(InfoItemPlaceHolders.Permission.getPlaceHolder(), recipe.getPermissions() == null ? "null" : recipe.getPermissions());
         }};
+
+        placeHolders.putAll(getPlaceHolders());
 
         for(int i = 0; i < template.length; i++){
             if(fillSpace.contains(i)) continue;

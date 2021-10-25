@@ -5,6 +5,7 @@ import com.dutchjelly.craftenhance.gui.GuiManager;
 import com.dutchjelly.craftenhance.gui.guis.GUIElement;
 import com.dutchjelly.craftenhance.gui.templates.GuiTemplate;
 import com.dutchjelly.craftenhance.gui.util.ButtonType;
+import com.dutchjelly.craftenhance.gui.util.InfoItemPlaceHolders;
 import com.dutchjelly.craftenhance.messaging.Messenger;
 import org.bukkit.entity.Player;
 
@@ -16,6 +17,10 @@ public class FurnaceRecipeEditor extends RecipeEditor<FurnaceRecipe> {
 
     public FurnaceRecipeEditor(GuiManager manager, GuiTemplate template, GUIElement previous, Player p, FurnaceRecipe recipe){
         super(manager, template, previous, p, recipe);
+    }
+
+    public FurnaceRecipeEditor(GuiManager manager, GUIElement previous, Player p, FurnaceRecipe recipe){
+        super(manager, previous, p, recipe);
     }
 
     private int duration;
@@ -33,6 +38,7 @@ public class FurnaceRecipeEditor extends RecipeEditor<FurnaceRecipe> {
                     Messenger.Message("Error, you didn't input a number.", getPlayer());
                     return true;
                 }
+                if(parsed < 0) parsed = 0;
                 Messenger.Message("Successfully set duration to " + parsed, getPlayer());
                 duration = parsed;
                 updatePlaceHolders();
@@ -67,8 +73,8 @@ public class FurnaceRecipeEditor extends RecipeEditor<FurnaceRecipe> {
     @Override
     public Map<String, String> getPlaceHolders() {
         return new HashMap<String, String>(){{
-            put("[exp]", String.valueOf(exp));
-            put("[duration]", String.valueOf(duration));
+            put(InfoItemPlaceHolders.Exp.getPlaceHolder(), String.valueOf(exp));
+            put(InfoItemPlaceHolders.Duration.getPlaceHolder(), String.valueOf(duration));
         }};
     }
 

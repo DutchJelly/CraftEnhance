@@ -1,7 +1,7 @@
 package com.dutchjelly.craftenhance.gui.guis.editors;
 
 import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
-import com.dutchjelly.craftenhance.crafthandling.recipes.MatchType;
+import com.dutchjelly.craftenhance.crafthandling.util.ItemMatchers;
 import com.dutchjelly.craftenhance.exceptions.ConfigError;
 import com.dutchjelly.craftenhance.crafthandling.RecipeLoader;
 import com.dutchjelly.craftenhance.gui.GuiManager;
@@ -33,7 +33,7 @@ public abstract class RecipeEditor<RecipeT extends EnhancedRecipe> extends GUIEl
 
     private String permission;
     private boolean hidden;
-    private MatchType matchType;
+    private ItemMatchers.MatchType matchType;
 
     public RecipeEditor(GuiManager manager, GuiTemplate template, GUIElement previous, Player p, RecipeT recipe){
         super(manager,template,previous,p);
@@ -55,8 +55,37 @@ public abstract class RecipeEditor<RecipeT extends EnhancedRecipe> extends GUIEl
         updatePlaceHolders();
     }
 
+    public RecipeEditor(GuiManager manager, GUIElement previous, Player p, RecipeT recipe){
+        super(manager,previous,p);
+        this.recipe = recipe;
+        inventory = GuiUtil.CopyInventory(getTemplate().getTemplate(), getTemplate().getInvTitle(), this);
+
+        addBtnListener(ButtonType.SaveRecipe, this::saveRecipe);
+        addBtnListener(ButtonType.DeleteRecipe, this::deleteRecipe);
+        addBtnListener(ButtonType.ChangeCategory, this::changeCategory);
+        addBtnListener(ButtonType.SwitchMatchMeta, this::switchMatchMeta);
+        addBtnListener(ButtonType.ResetRecipe, this::resetRecipe);
+        addBtnListener(ButtonType.SetPosition, this::setPosition);
+        addBtnListener(ButtonType.SetPermission, this::setPermission);
+        addBtnListener(ButtonType.SwitchHidden, this::switchHidden);
+
+        initBtnListeners();
+
+        updateRecipeDisplay();
+        updatePlaceHolders();
+    }
+
     private void switchMatchMeta(ItemStack itemStack, ButtonType buttonType) {
-        this.matchType = MatchType.values()[(this.matchType.ordinal() + 1) % MatchType.values().length];
+        ItemMatchers.MatchType[] matchTypes = ItemMatchers.MatchType.values();
+        int i;
+        for(i = 0; i < matchTypes.length; i++) {
+            if(matchTypes[i] == matchType) break;
+        }
+        if(i == matchTypes.length) {
+            Debug.Send("couldn't find match type that's currently selected in the editor");
+            return;
+        }
+        this.matchType = matchTypes[(i+1) % matchTypes.length];
         updatePlaceHolders();
     }
 
@@ -76,6 +105,7 @@ public abstract class RecipeEditor<RecipeT extends EnhancedRecipe> extends GUIEl
 
         if(message.equals("-")){
             permission = "";
+            updatePlaceHolders();
             return false;
         }
 
@@ -155,11 +185,10 @@ public abstract class RecipeEditor<RecipeT extends EnhancedRecipe> extends GUIEl
             inventory.setItem(fillSpace.get(i), recipe.getContent()[i]);
         }
         if(fillSpace.get(recipe.getContent().length) >= inventory.getSize())
-            throw new ConfigError("fill space spot " + fillSpace.get(9) + " is outside of inventory");
+            throw new ConfigError("fill space spot " + fillSpace.get(recipe.getContent().length) + " is outside of inventory");
         inventory.setItem(fillSpace.get(recipe.getContent().length), recipe.getResult());
         matchType = recipe.getMatchType();
         hidden = recipe.isHidden();
-
         onRecipeDisplayUpdate();
     }
 
@@ -171,8 +200,9 @@ public abstract class RecipeEditor<RecipeT extends EnhancedRecipe> extends GUIEl
         Map<String, String> placeHolders = new HashMap<String,String>(){{
             put(InfoItemPlaceHolders.Key.getPlaceHolder(), recipe.getKey() == null ? "null" : recipe.getKey());
             put(InfoItemPlaceHolders.MatchMeta.getPlaceHolder(), matchType.getDescription());
+            put(InfoItemPlaceHolders.MatchType.getPlaceHolder(), matchType.getDescription());
             put(InfoItemPlaceHolders.Hidden.getPlaceHolder(), hidden ? "hide recipe in menu" : "show recipe in menu");
-            put(InfoItemPlaceHolders.Permission.getPlaceHolder(), permission == null || permission.trim().equals("") ? "null" : permission);
+            put(InfoItemPlaceHolders.Permission.getPlaceHolder(), permission == null || permission.trim().equals("") ? "none" : permission);
             put(InfoItemPlaceHolders.Slot.getPlaceHolder(), String.valueOf(recipe.getSlot()));
             put(InfoItemPlaceHolders.Page.getPlaceHolder(), String.valueOf(recipe.getPage()));
         }};

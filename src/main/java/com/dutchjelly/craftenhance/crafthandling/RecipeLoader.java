@@ -3,6 +3,7 @@ package com.dutchjelly.craftenhance.crafthandling;
 import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
+import com.dutchjelly.craftenhance.crafthandling.recipes.RecipeType;
 import com.dutchjelly.craftenhance.crafthandling.util.ServerRecipeTranslator;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.messaging.Messenger;
@@ -34,46 +35,42 @@ public class RecipeLoader implements Listener {
         return instance == null ? instance = new RecipeLoader(Bukkit.getServer()) : instance;
     }
 
+    public static void clearInstance(){
+        instance = null;
+    }
+
     @Getter
     private List<Recipe> serverRecipes = new ArrayList<>();
 
     @Getter
     private List<Recipe> disabledServerRecipes = new ArrayList<>();
 
-    //A map of the server recipes that represent the loaded custom recipes (mapped to their keys).
+
     private Map<String, Recipe> loaded = new HashMap<>();
     private Server server;
 
+    @Getter
+    private final Map<RecipeType, List<RecipeGroup>> mappedGroupedRecipes = new HashMap<>();
 
-    //Recipes are grouped in groups of 'similar' recipes. A server can contain multiple recipes with the same
-    //recipe with different results. Think of a diamond chestplate recipe vs a custom diamond chestplate recipe
-    //with custom diamonds. Or think of a shapeless recipe of a block of diamond vs a shaped recipe of the block of
-    //diamond.
-    @NonNull @Getter
-    private List<RecipeGroup> groupedRecipes = new ArrayList<>();
+    @Getter
+    private List<EnhancedRecipe> loadedRecipes = new ArrayList<>();
 
     private RecipeLoader(Server server){
         this.server = server;
+
         server.recipeIterator().forEachRemaining(serverRecipes::add);
+
+        for (RecipeType type : RecipeType.values()) {
+            mappedGroupedRecipes.put(type, new ArrayList<>());
+        }
     }
 
-
-
     //Adds or merges group with existing group.
-    private RecipeGroup addGroup(RecipeGroup newGroup){
+    private RecipeGroup addGroup(RecipeGroup newGroup, RecipeType type){
 
         if(newGroup == null) return null;
 
-//        if(!newGroup.getServerRecipes().isEmpty()){
-//            //look for merge
-//            for(RecipeGroup group : groupedRecipes){
-//                Debug.Send("Looking if two enhanced recipes are similar for merge.");
-//                if(newGroup.getEnhancedRecipes().stream().anyMatch(x -> group.getEnhancedRecipes().stream().anyMatch(x::isSimilar))){
-//                    return group.mergeWith(newGroup);
-//                }
-//            }
-//        }
-
+        List<RecipeGroup> groupedRecipes = mappedGroupedRecipes.get(type);
         for(RecipeGroup group : groupedRecipes){
 //            Debug.Send("Looking if two enhanced recipes are similar for merge.");
             if(newGroup.getEnhancedRecipes().stream().anyMatch(x -> group.getEnhancedRecipes().stream().anyMatch(x::isSimilar))){
@@ -86,13 +83,13 @@ public class RecipeLoader implements Listener {
     }
 
     public RecipeGroup findGroup(EnhancedRecipe recipe){
-        return groupedRecipes.stream().filter(x -> x.getEnhancedRecipes().contains(recipe)).findFirst().orElse(null);
+        return mappedGroupedRecipes.get(recipe.getType()).stream().filter(x -> x.getEnhancedRecipes().contains(recipe)).findFirst().orElse(null);
     }
 
     //Find groups that contain at least one recipe that maps to result.
-    public List<RecipeGroup> findGroupsByResult(ItemStack result){
+    public List<RecipeGroup> findGroupsByResult(ItemStack result, RecipeType type){
         List<RecipeGroup> originGroups = new ArrayList<>();
-        for(RecipeGroup group : groupedRecipes){
+        for(RecipeGroup group : mappedGroupedRecipes.get(type)){
             if(group.getEnhancedRecipes().stream().anyMatch(x -> result.equals(x.getResult())))
                 originGroups.add(group);
             else if(group.getServerRecipes().stream().anyMatch(x -> result.equals(x.getResult())))
@@ -101,27 +98,32 @@ public class RecipeLoader implements Listener {
         return originGroups;
     }
 
-    public <T extends EnhancedRecipe> RecipeGroup findGroupBySource(ItemStack source){
-        for(RecipeGroup group : groupedRecipes){
-            try{
-                if(group.getEnhancedRecipes().stream().anyMatch(x -> (T)x != null && Arrays.stream(x.getContent()).anyMatch(y -> source.equals(y))))
-                    return group;
-            } catch(ClassCastException e){}
+    public RecipeGroup findMatchingGroup(ItemStack[] matrix, RecipeType type){
+        for(RecipeGroup group : mappedGroupedRecipes.get(type)){
+            if(group.getEnhancedRecipes().stream().anyMatch(x -> x.matches(matrix)))
+                return group;
         }
         return null;
     }
 
-    public <T extends EnhancedRecipe> List<RecipeGroup> findGroupsBySource(ItemStack source){
-        List<RecipeGroup> originGroups = new ArrayList<>();
-        for(RecipeGroup group : groupedRecipes){
-            try{
-                if(group.getEnhancedRecipes().stream().anyMatch(x -> (T)x != null && Arrays.stream(x.getContent()).anyMatch(y -> source.equals(y))))
-                    originGroups.add(group);
-            } catch(ClassCastException e){}
-
-        }
-        return originGroups;
+    public RecipeGroup findSimilarGroup(EnhancedRecipe recipe){
+        return mappedGroupedRecipes.get(recipe.getType()).stream().filter(x ->
+                x.getEnhancedRecipes().stream().anyMatch(y -> y.isSimilar(recipe)) ||
+                        x.getServerRecipes().stream().anyMatch(y -> recipe.isSimilar(y))
+        ).findFirst().orElse(null);
     }
+
+    //There can only be one group that matches a matrix, because that's how they're grouped
+//    public List<RecipeGroup> findMatchingGroups(ItemStack[] matrix, RecipeType type){
+//        List<RecipeGroup> matchingGroups = new ArrayList<>();
+//        for(RecipeGroup group : mappedGroupedRecipes.get(type)){
+//            try{
+//                if(group.getEnhancedRecipes().stream().anyMatch(x -> x.matches(matrix)))
+//                    matchingGroups.add(group);
+//            } catch(ClassCastException e){}
+//        }
+//        return matchingGroups;
+//    }
 
     public boolean isLoadedAsServerRecipe(EnhancedRecipe recipe){
         return loaded.containsKey(recipe.getKey());
@@ -152,7 +154,10 @@ public class RecipeLoader implements Listener {
         disabledServerRecipes.forEach(x ->
             enableServerRecipe(x)
         );
-        groupedRecipes.clear();
+        mappedGroupedRecipes.clear();
+        for (RecipeType type : RecipeType.values()) {
+            mappedGroupedRecipes.put(type, new ArrayList<>());
+        }
         serverRecipes.clear();
         loaded.clear();
         unloadCehRecipes();
@@ -160,6 +165,7 @@ public class RecipeLoader implements Listener {
 
     public void unloadRecipe(EnhancedRecipe recipe){
         RecipeGroup group = findGroup(recipe);
+        loadedRecipes.remove(recipe);
         if(group == null) {
             printGroupsDebugInfo();
             Bukkit.getLogger().log(Level.SEVERE, "Could not unload recipe from groups because it doesn't exist.");
@@ -173,12 +179,14 @@ public class RecipeLoader implements Listener {
             unloadRecipe(serverRecipe);
         }
 
-        //TODO update grouping. This is not a priority because the injector compares the recipes either way.
+        /* TODO (Optimization) When e.g. a shapeless recipe disappears from a recipe, not all recipes in that group are
+            similar anymore. So detect this and make sure they get split up. */
+
         //Remove entire recipe group if it's the last enhanced recipe, or remove a single recipe from the group.
         if(group.getEnhancedRecipes().size() == 1)
-            groupedRecipes.removeIf(x -> x.getEnhancedRecipes().contains(recipe));
+            mappedGroupedRecipes.get(recipe.getType()).remove(group);
         else group.getEnhancedRecipes().remove(recipe);
-        Debug.Send("unloaded a recipe");
+        Debug.Send("Unloaded a recipe");
         printGroupsDebugInfo();
     }
 
@@ -220,11 +228,8 @@ public class RecipeLoader implements Listener {
         RecipeGroup group = new RecipeGroup();
         group.setEnhancedRecipes(Arrays.asList(recipe));
         group.setServerRecipes(similarServerRecipes);
-        addGroup(group);
-    }
-
-    public List<EnhancedRecipe> getLoadedRecipes(){
-        return groupedRecipes.stream().flatMap(x -> x.getEnhancedRecipes().stream()).distinct().collect(Collectors.toList());
+        addGroup(group, recipe.getType());
+        loadedRecipes.add(recipe);
     }
 
     public List<Recipe> getLoadedServerRecipes(){
@@ -232,10 +237,13 @@ public class RecipeLoader implements Listener {
     }
 
     public void printGroupsDebugInfo(){
-        for(RecipeGroup group : groupedRecipes){
-            Debug.Send("group of grouped recipes:");
-            Debug.Send("   enhanced recipes: " + group.getEnhancedRecipes().stream().filter(x -> x != null).map(x -> x.getResult().toString()).collect(Collectors.joining(", ")));
-            Debug.Send("   server recipes: " + group.getServerRecipes().stream().filter(x -> x != null).map(x -> x.getResult().toString()).collect(Collectors.joining(", ")));
+        for (Map.Entry<RecipeType, List<RecipeGroup>> recipeGrouping : mappedGroupedRecipes.entrySet()) {
+            Debug.Send("Groups for recipes of type: " + recipeGrouping.getKey().toString());
+            for (RecipeGroup group : recipeGrouping.getValue()) {
+                Debug.Send("  <group>");
+                Debug.Send("     enhanced recipes: " + group.getEnhancedRecipes().stream().filter(x -> x != null).map(x -> x.getResult().toString()).collect(Collectors.joining(", ")));
+                Debug.Send("     server recipes: " + group.getServerRecipes().stream().filter(x -> x != null).map(x -> x.getResult().toString()).collect(Collectors.joining(", ")));
+            }
         }
     }
 
@@ -245,12 +253,22 @@ public class RecipeLoader implements Listener {
 
             serverRecipes.remove(r);
             disabledServerRecipes.add(r);
-
-            groupedRecipes.forEach(x -> {
-                if(x.getServerRecipes().contains(r))
-                    x.getServerRecipes().remove(r);
-            });
             unloadRecipe(r);
+
+            RecipeType type = RecipeType.getType(r);
+            if(type != null) {
+                for (RecipeGroup recipeGroup : mappedGroupedRecipes.get(type)) {
+                    if(recipeGroup.getServerRecipes().contains(r)) {
+                        recipeGroup.getServerRecipes().remove(r);
+                        EnhancedRecipe alwaysSimilar = recipeGroup.getEnhancedRecipes().stream().filter(x -> x.isAlwaysSimilar(r)).findFirst().orElse(null);
+                        //If there's a recipe that's always similar, we have to load it again.
+                        if(alwaysSimilar != null) {
+                            loaded.put(alwaysSimilar.getKey(), alwaysSimilar.getServerRecipe());
+                            server.addRecipe(alwaysSimilar.getServerRecipe());
+                        }
+                    }
+                }
+            }
             return true;
         }
         return false;
@@ -262,6 +280,20 @@ public class RecipeLoader implements Listener {
             serverRecipes.add(r);
             disabledServerRecipes.remove(r);
             server.addRecipe(r);
+
+            RecipeType type = RecipeType.getType(r);
+            if(type != null) {
+                for (RecipeGroup recipeGroup : mappedGroupedRecipes.get(type)) {
+                    if(recipeGroup.getEnhancedRecipes().stream().anyMatch(x -> x.isSimilar(r))) {
+                        recipeGroup.getServerRecipes().add(r);
+                        EnhancedRecipe alwaysSimilar = recipeGroup.getEnhancedRecipes().stream().filter(x -> x.isAlwaysSimilar(r)).findFirst().orElse(null);
+
+                        //If there's a recipe that's always similar, we have to unload it again.
+                        if(alwaysSimilar != null)
+                            loaded.remove(alwaysSimilar.getKey());
+                    }
+                }
+            }
             return true;
         }
         return false;
