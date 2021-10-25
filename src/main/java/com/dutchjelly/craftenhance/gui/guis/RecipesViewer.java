@@ -6,6 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
+import com.dutchjelly.craftenhance.crafthandling.recipes.FurnaceRecipe;
+import com.dutchjelly.craftenhance.gui.guis.editors.FurnaceRecipeEditor;
+import com.dutchjelly.craftenhance.gui.guis.viewers.FurnaceRecipeViewer;
 import com.dutchjelly.craftenhance.gui.guis.viewers.WBRecipeViewer;
 import com.dutchjelly.craftenhance.util.PermissionTypes;
 
@@ -134,11 +137,15 @@ public class RecipesViewer extends GUIElement {
 	    if((clickType == ClickType.MIDDLE || clickType == ClickType.RIGHT) && getPlayer().hasPermission(PermissionTypes.Edit.getPerm())){
 	        if(clickedRecipe instanceof WBRecipe)
                 getManager().openGUI(getPlayer(), new WBRecipeEditor(getManager(),getManager().getMain().getGuiTemplatesFile().getTemplate(WBRecipeEditor.class), this, getPlayer(), (WBRecipe)clickedRecipe));
-            else Debug.Send("Could not find the class of a clicked recipe.");
+            else if(clickedRecipe instanceof FurnaceRecipe)
+                getManager().openGUI(getPlayer(), new FurnaceRecipeEditor(getManager(), getManager().getMain().getGuiTemplatesFile().getTemplate(FurnaceRecipeEditor.class), this, getPlayer(), (FurnaceRecipe)clickedRecipe));
+	        else Debug.Send("Could not find the class of a clicked recipe.");
             return;
 	    }
         if(clickedRecipe instanceof WBRecipe)
             getManager().openGUI(getPlayer(), new WBRecipeViewer(getManager(),getManager().getMain().getGuiTemplatesFile().getTemplate(WBRecipeViewer.class), this, getPlayer(), (WBRecipe)clickedRecipe));
+        else if(clickedRecipe instanceof FurnaceRecipe)
+            getManager().openGUI(getPlayer(), new FurnaceRecipeViewer(getManager(),getManager().getMain().getGuiTemplatesFile().getTemplate(FurnaceRecipeViewer.class), this, getPlayer(), (FurnaceRecipe) clickedRecipe));
         else Debug.Send("Could not find the class of a clicked recipe.");
     }
 

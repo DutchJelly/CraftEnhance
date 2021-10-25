@@ -41,8 +41,15 @@ public abstract class EnhancedRecipe extends GuiPlacable implements Configuratio
         permissions = (String)args.get("permission");
         if(args.containsKey("shapeless"))
             shapeless = (Boolean) args.get("shapeless");
-        if(args.containsKey("matchmeta"))
-            matchMeta = (Boolean) args.get("matchmeta");
+
+        if(args.containsKey("matchtype")){
+            matchType = MatchType.valueOf((String)args.get("matchtype"));
+        }
+        else if(args.containsKey("matchmeta")){
+            //backwards compatibility
+            matchType = (Boolean) args.get("matchmeta") ? MatchType.META : MatchType.MATERIAL;
+        }
+
         if(args.containsKey("hidden"))
             hidden = (Boolean) args.get("hidden");
 
@@ -70,7 +77,7 @@ public abstract class EnhancedRecipe extends GuiPlacable implements Configuratio
     private boolean shapeless = false; //false by default
 
     @Getter @Setter
-    private boolean matchMeta = true; //true by default
+    private MatchType matchType = MatchType.META;
 
     @Getter @Setter
     private String permissions;
@@ -85,7 +92,7 @@ public abstract class EnhancedRecipe extends GuiPlacable implements Configuratio
             putAll(EnhancedRecipe.super.serialize());
             put("permission", permissions);
             put("shapeless", shapeless);
-            put("matchmeta", matchMeta);
+            put("matchtype", matchType.toString());
             put("hidden", hidden);
             put("result", fm.getItemKey(result));
             put("recipe", Arrays.stream(content).map(x -> fm.getItemKey(x)).toArray(String[]::new));

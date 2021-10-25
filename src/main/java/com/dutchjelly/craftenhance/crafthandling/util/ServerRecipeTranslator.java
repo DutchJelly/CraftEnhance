@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class ServerRecipeTranslator {
 
-    private static final String KeyPrefix = "cehrecipe";
+    public static final String KeyPrefix = "cehrecipe";
 
     private static List<String> UsedKeys = new ArrayList<>();
 

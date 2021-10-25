@@ -1,5 +1,6 @@
 package com.dutchjelly.craftenhance.crafthandling.recipes;
 
+import com.dutchjelly.craftenhance.crafthandling.util.IMatcher;
 import com.dutchjelly.craftenhance.crafthandling.util.ItemMatchers;
 import com.dutchjelly.craftenhance.crafthandling.util.ServerRecipeTranslator;
 import com.dutchjelly.craftenhance.crafthandling.util.WBRecipeComparer;
@@ -119,11 +120,12 @@ public class WBRecipe extends EnhancedRecipe {
 
     @Override
     public boolean matches(ItemStack[] content) {
-        if(isShapeless() && WBRecipeComparer.ingredientsMatch(content, getContent(), isMatchMeta() ? ItemMatchers::matchMeta : ItemMatchers::matchType)){
+
+        if(isShapeless() && WBRecipeComparer.ingredientsMatch(content, getContent(), ItemMatchers.fromMatchType(getMatchType()))){
             return true;
         }
 
-        if(!isShapeless() && WBRecipeComparer.shapeMatches(content, getContent(), isMatchMeta() ? ItemMatchers::matchMeta : ItemMatchers::matchType)){
+        if(!isShapeless() && WBRecipeComparer.shapeMatches(content, getContent(), ItemMatchers.fromMatchType(getMatchType()))){
             return true;
         }
 

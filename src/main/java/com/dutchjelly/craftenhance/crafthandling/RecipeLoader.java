@@ -3,6 +3,7 @@ package com.dutchjelly.craftenhance.crafthandling;
 import com.dutchjelly.bukkitadapter.Adapter;
 import com.dutchjelly.craftenhance.CraftEnhance;
 import com.dutchjelly.craftenhance.crafthandling.recipes.EnhancedRecipe;
+import com.dutchjelly.craftenhance.crafthandling.util.ServerRecipeTranslator;
 import com.dutchjelly.craftenhance.messaging.Debug;
 import com.dutchjelly.craftenhance.messaging.Messenger;
 import lombok.Getter;
@@ -39,7 +40,7 @@ public class RecipeLoader implements Listener {
     @Getter
     private List<Recipe> disabledServerRecipes = new ArrayList<>();
 
-
+    //A map of the server recipes that represent the loaded custom recipes (mapped to their keys).
     private Map<String, Recipe> loaded = new HashMap<>();
     private Server server;
 
@@ -54,9 +55,9 @@ public class RecipeLoader implements Listener {
     private RecipeLoader(Server server){
         this.server = server;
         server.recipeIterator().forEachRemaining(serverRecipes::add);
-
-
     }
+
+
 
     //Adds or merges group with existing group.
     private RecipeGroup addGroup(RecipeGroup newGroup){
@@ -103,7 +104,7 @@ public class RecipeLoader implements Listener {
     public <T extends EnhancedRecipe> RecipeGroup findGroupBySource(ItemStack source){
         for(RecipeGroup group : groupedRecipes){
             try{
-                if(group.getEnhancedRecipes().stream().anyMatch(x -> (T)x != null && Arrays.stream(x.getContent()).anyMatch(y -> y.equals(source))))
+                if(group.getEnhancedRecipes().stream().anyMatch(x -> (T)x != null && Arrays.stream(x.getContent()).anyMatch(y -> source.equals(y))))
                     return group;
             } catch(ClassCastException e){}
         }
@@ -114,7 +115,7 @@ public class RecipeLoader implements Listener {
         List<RecipeGroup> originGroups = new ArrayList<>();
         for(RecipeGroup group : groupedRecipes){
             try{
-                if(group.getEnhancedRecipes().stream().anyMatch(x -> (T)x != null && Arrays.stream(x.getContent()).anyMatch(y -> y.equals(source))))
+                if(group.getEnhancedRecipes().stream().anyMatch(x -> (T)x != null && Arrays.stream(x.getContent()).anyMatch(y -> source.equals(y))))
                     originGroups.add(group);
             } catch(ClassCastException e){}
 
@@ -126,17 +127,35 @@ public class RecipeLoader implements Listener {
         return loaded.containsKey(recipe.getKey());
     }
 
-    private void syncServerRecipeState(){
-        server.clearRecipes();
-        serverRecipes.forEach(server::addRecipe);
-        loaded.values().forEach(server::addRecipe);
+    private void unloadCehRecipes() {
+        Iterator<Recipe> it = server.recipeIterator();
+        while(it.hasNext()) {
+            Recipe r = it.next();
+            if(Adapter.ContainsSubKey(r, ServerRecipeTranslator.KeyPrefix)) {
+                it.remove();
+            }
+        }
+    }
+
+    private void unloadRecipe(Recipe r) {
+        Iterator<Recipe> it = server.recipeIterator();
+        while(it.hasNext()) {
+            Recipe currentRecipe = it.next();
+            if(currentRecipe.equals(r)) {
+                it.remove();
+                return;
+            }
+        }
     }
 
     public void unloadAll(){
+        disabledServerRecipes.forEach(x ->
+            enableServerRecipe(x)
+        );
         groupedRecipes.clear();
         serverRecipes.clear();
         loaded.clear();
-        server.resetRecipes();
+        unloadCehRecipes();
     }
 
     public void unloadRecipe(EnhancedRecipe recipe){
@@ -150,9 +169,8 @@ public class RecipeLoader implements Listener {
 
         //Only unload from server if there are no similar server recipes.
         if(serverRecipe != null){
-            //We can't remove recipes with the iterator because it's immutable.
             loaded.remove(recipe.getKey());
-            syncServerRecipeState();
+            unloadRecipe(serverRecipe);
         }
 
         //TODO update grouping. This is not a priority because the injector compares the recipes either way.
@@ -232,7 +250,7 @@ public class RecipeLoader implements Listener {
                 if(x.getServerRecipes().contains(r))
                     x.getServerRecipes().remove(r);
             });
-            syncServerRecipeState();
+            unloadRecipe(r);
             return true;
         }
         return false;
@@ -243,7 +261,7 @@ public class RecipeLoader implements Listener {
             Debug.Send("[Recipe Loader] enabling server recipe for " + r.getResult().getType().name());
             serverRecipes.add(r);
             disabledServerRecipes.remove(r);
-            syncServerRecipeState();
+            server.addRecipe(r);
             return true;
         }
         return false;
