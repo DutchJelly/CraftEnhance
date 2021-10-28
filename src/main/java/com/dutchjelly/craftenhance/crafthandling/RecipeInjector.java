@@ -26,6 +26,7 @@ import org.bukkit.block.Furnace;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -42,6 +43,7 @@ public class RecipeInjector implements Listener{
 	private JavaPlugin plugin;
 	private RecipeLoader loader;
 	private boolean disableDefaultModeldataCrafts;
+	private boolean makeItemsadderCompatible;
 
     //Stores info to pause furnaces from running their burn event every tick.
     private final Map<Furnace, LocalDateTime> pausedFurnaces = new HashMap<>();
@@ -54,6 +56,7 @@ public class RecipeInjector implements Listener{
 	    this.plugin = plugin;
 		loader = RecipeLoader.getInstance();
 		disableDefaultModeldataCrafts = plugin.getConfig().getBoolean("disable-default-custom-model-data-crafts");
+        makeItemsadderCompatible = plugin.getConfig().getBoolean("make-itemsadder-compatible");
 	}
 
     //Add registrations of owners of containers.
@@ -75,7 +78,7 @@ public class RecipeInjector implements Listener{
                 : ItemMatchers::matchType;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void handleCrafting(PrepareItemCraftEvent e){
 
 	    if(e.getRecipe() == null || e.getRecipe().getResult() == null || !plugin.getConfig().getBoolean("enable-recipes")) return;
@@ -89,9 +92,10 @@ public class RecipeInjector implements Listener{
         List<RecipeGroup> possibleRecipeGroups = loader.findGroupsByResult(serverRecipe.getResult(), RecipeType.WORKBENCH);
 
         if(possibleRecipeGroups == null || possibleRecipeGroups.size() == 0) {
-            if(disableDefaultModeldataCrafts && Adapter.canUseModeldata() &&  containsModeldata(inv)) {
+            if(disableDefaultModeldataCrafts && Adapter.canUseModeldata() && containsModeldata(inv)) {
                 inv.setResult(null);
             }
+            Debug.Send("no matching groups");
             return;
         }
 
@@ -109,7 +113,14 @@ public class RecipeInjector implements Listener{
                     && e.getViewers().stream().allMatch(x -> entityCanCraft(x, wbRecipe))
                     && !CraftEnhanceAPI.fireEvent(wbRecipe, e.getViewers().size() > 0 ? (Player)e.getViewers().get(0) : null, inv, group)){
 
-                    inv.setResult(wbRecipe.getResult());
+                    Debug.Send("Recipe matches, injecting " + wbRecipe.getResult().toString());
+                    if(makeItemsadderCompatible && containsModeldata(inv)) {
+                        Bukkit.getScheduler().runTask(CraftEnhance.self(), () -> {
+                            if (wbRecipe.matches(inv.getMatrix())) {
+                                inv.setResult(wbRecipe.getResult());
+                            }
+                        });
+                    } else inv.setResult(wbRecipe.getResult());
                     return;
                 }
                 Debug.Send("Recipe doesn't match.");

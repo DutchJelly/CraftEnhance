@@ -8,6 +8,9 @@ enable-recipes: true
 # Makes sure that the plugin can still compare NBT of older items. It compares slower.
 enable-backwards-compatible-item-matching: true
 
+# Makes the plugin work with itemsadder (less efficient crafting, higher chance of bugs)
+make-itemsadder-compatible: false
+
 # This will ensure that players won't be able to use default recipes with custom model data items.
 disable-default-custom-model-data-crafts: false
 
