@@ -14,8 +14,9 @@ public class ItemMatchers{
         MATCH_TYPE(constructIMatcher(ItemMatchers::matchType), "match type"),
         MATCH_META(constructIMatcher(ItemMatchers::matchMeta), "match meta"),
         MATCH_NAME(constructIMatcher(ItemMatchers::matchName), "match name"),
-        MATCH_MODELDATA_AND_TYPE(constructIMatcher(ItemMatchers::matchType, ItemMatchers::matchModelData), "match modeldata and type"),
-        MATCH_NAME_AND_TYPE(constructIMatcher(ItemMatchers::matchName, ItemMatchers::matchType), "match name and type");
+        MATCH_MODELDATA_AND_TYPE(constructIMatcher(ItemMatchers::matchType, ItemMatchers::matchModelData), "match modeldata and type");
+//        MATCH_ITEMSADDER()
+//        MATCH_NAME_AND_TYPE(constructIMatcher(ItemMatchers::matchName, ItemMatchers::matchType), "match name and type");
 
         @Getter
         private IMatcher matcher;
@@ -88,4 +89,9 @@ public class ItemMatchers{
         //neither has item meta, and type has to match
         return a.hasItemMeta() == b.hasItemMeta() && a.getType() == b.getType();
     }
+
+//    public static boolean matchItemsadderItems(ItemStack a, ItemStack b) {
+//        CustomStack stack = CustomStack.byItemStack(myItemStack);
+//        CustomStack
+//    }
 }

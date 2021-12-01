@@ -2,6 +2,7 @@ author: DutchJelly
 main: com.dutchjelly.craftenhance.CraftEnhance
 name: CraftEnhance
 version: 2.4.3
+softdepend: [ItemsAdder]
 api-version: 1.13
 commands:
   recipes:

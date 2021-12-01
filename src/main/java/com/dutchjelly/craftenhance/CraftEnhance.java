@@ -64,6 +64,9 @@ public class CraftEnhance extends JavaPlugin{
 
 	private RecipeInjector injector;
 
+	@Getter
+	private boolean usingItemsAdder;
+
 	@Override
 	public void onEnable(){
 	    plugin = this;
@@ -82,6 +85,8 @@ public class CraftEnhance extends JavaPlugin{
 		Messenger.Init(this);
 
 		ItemMatchers.init(getConfig().getBoolean("enable-backwards-compatible-item-matching"));
+
+		this.usingItemsAdder = this.getServer().getPluginManager().getPlugin("ItemsAdder") != null;
 
 		//Most other instances use the file manager, so setup before everything.
         Debug.Send("Setting up the file manager for recipes.");
@@ -188,6 +193,7 @@ public class CraftEnhance extends JavaPlugin{
                 new CleanItemFileCmd(commandHandler),
                 new SetPermissionCmd(commandHandler),
                 new ReloadCmd(),
+                new ViewCmd(commandHandler),
                 new Disabler(commandHandler))
         );
     }
