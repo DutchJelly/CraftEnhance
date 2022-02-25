@@ -206,7 +206,6 @@ public abstract class RecipeEditor<RecipeT extends EnhancedRecipe> extends GUIEl
 			put(InfoItemPlaceHolders.MatchMeta.getPlaceHolder(), matchType.getDescription());
 			put(InfoItemPlaceHolders.MatchType.getPlaceHolder(), matchType.getDescription());
 			put(InfoItemPlaceHolders.Hidden.getPlaceHolder(), hidden ? "hide recipe in menu" : "show recipe in menu");
-			System.out.println("permission " + permission);
 			put(InfoItemPlaceHolders.Permission.getPlaceHolder(), permission == null || permission.trim().equals("") ? "none" : permission);
 			put(InfoItemPlaceHolders.Slot.getPlaceHolder(), String.valueOf(recipe.getSlot()));
 			put(InfoItemPlaceHolders.Page.getPlaceHolder(), String.valueOf(recipe.getPage()));
