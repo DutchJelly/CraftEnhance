@@ -1,0 +1,41 @@
+# ---------------------------------------- #
+# This is the config file of CraftEnhance. #
+# ---------------------------------------- #
+
+enable-debug: false
+enable-recipes: true
+
+# Makes sure that the plugin can still compare NBT of older items. It compares slower.
+enable-backwards-compatible-item-matching: true
+
+# Makes the plugin work with itemsadder (less efficient crafting, higher chance of bugs)
+make-itemsadder-compatible: false
+
+# This will ensure that players won't be able to use default recipes with custom model data items.
+disable-default-custom-model-data-crafts: false
+
+# This update checker checks for new versions on the github page.
+enable-updatechecker: true
+
+# If this option is enabled, people can only see recipes that they have permissions to.
+only-show-available: false
+
+# Enable this to make the players learn the recipes (making them show up in the green recipe book)
+learn-recipes: false
+
+debug-prefix: "[DEBUG] "
+global-prefix: "&7[&bCraft&dEnhance&7] &r"
+
+# These permissions are used globally by all features of the plugin.
+perms:
+  recipe-editor: "craftenhance.edit"
+  recipe-viewer: "craftenhance.view"
+  item-editor: "craftenhance.edititems"
+
+messages:
+  global:
+    no-perms: "You don't have permission to do that."
+  commands:
+    show-options: "You entered an unfinished command. It can be completed by adding one of the following arguments: &e[PLACEHOLDER]&r."
+    few-arguments: "Expected [PLACEHOLDER] arguments for the command." 
+    only-for-players: "This command is only for players."
