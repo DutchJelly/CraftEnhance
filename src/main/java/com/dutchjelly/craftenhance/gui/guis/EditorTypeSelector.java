@@ -20,20 +20,27 @@ public class EditorTypeSelector extends GUIElement {
 
 	private Inventory inventory;
 
+	//TODO add this function to the filemanager instead. 'getFreshRecipeKey()'
+	private String getFreshKey(keySeed) {
+		if(keySeed == null || !self().getFM().isUniqueRecipeKey(keySeed)) {
+			int uniqueKeyIndex = 2;
+			if(keySeed == null) keySeed = "recipe";
+			
+			while (!self().getFm().isUniqueRecipeKey(keySeed + uniqueKeyIndex))
+				uniqueKeyIndex++;
+			keySeed += uniqueKeyIndex;
+		}
+		return keySeed;
+	}
 
 	public EditorTypeSelector(GuiManager manager, GuiTemplate template, GUIElement previousGui, Player player, String key, String permission) {
 		super(manager, template, previousGui, player);
+		
+		
+		
 		this.addBtnListener(ButtonType.ChooseWorkbenchType, (btn, type) -> {
-			final EnhancedRecipe enhancedRecipe = self().getFm().getRecipe(key);
 			WBRecipe newRecipe = new WBRecipe(permission, null, new ItemStack[9]);
-			if (enhancedRecipe != null) {
-				int uniqueKeyIndex = 1;
-				while (!self().getFm().isUniqueRecipeKey("recipe" + uniqueKeyIndex))
-					uniqueKeyIndex++;
-				
-				newRecipe.setKey("recipe" + uniqueKeyIndex);
-			} else
-				newRecipe.setKey(key);
+			newRecipe.setKey(getFreshKey(key == null ? "wbrecipe" : key));
 
 			WBRecipeEditor gui = new WBRecipeEditor(
 					self().getGuiManager(),
@@ -43,16 +50,8 @@ public class EditorTypeSelector extends GUIElement {
 			getManager().openGUI(getPlayer(), gui);
 		});
 		this.addBtnListener(ButtonType.ChooseFurnaceType, (btn, type) -> {
-			final EnhancedRecipe enhancedRecipe = self().getFm().getRecipe(key);
 			FurnaceRecipe newRecipe = new FurnaceRecipe(permission, null, new ItemStack[1]);
-			if (enhancedRecipe != null) {
-				int uniqueKeyIndex = 1;
-				while (!self().getFm().isUniqueRecipeKey("recipe" + uniqueKeyIndex))
-					uniqueKeyIndex++;
-
-				newRecipe.setKey("recipe" + uniqueKeyIndex);
-			} else
-				newRecipe.setKey(key);
+			newRecipe.setKey(getFreshKey(key == null ? "furnacerecipe" : key));
 
 			FurnaceRecipeEditor gui = new FurnaceRecipeEditor(
 					self().getGuiManager(),
